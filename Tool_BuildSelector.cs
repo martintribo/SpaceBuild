@@ -31,7 +31,7 @@ function buildSelectorProjectile::onCollision(%this, %obj, %col)
 		return;
 	}
 	
-	if(getTrust(%col, %client) != 2) //getTrust might be the wrong function
+	if(getTrust(%col, %client) <= 2) //getTrust might be the wrong function
 	{
 		commandToClient(%client, 'bottomPrint', "You must have full trust to select a build!", 3);
 		return;
