@@ -45,13 +45,14 @@ function buildSelectorProjectile::onCollision(%this, %obj, %col)
 		return;
 	}
 	
-	//All checks are go - create the virtualBrickList and add the bricks!
+	//All checks are go - create the virtualBrickList...
 	%vbList = new ScriptObject()
 	{
 		class = "virtualBrickList";
 	};
+	%vbList.addRealBrick(%col); //add the first selected brick
 	
-	//store it in an array
+	//store the virtualBrickList in an array...
 	if($moduleListCount[%client.bl_id] $= "")
 		$moduleListCount[%client.bl_id] = 0;
 	
@@ -76,9 +77,16 @@ function buildSelectorProjectile::onCollision(%this, %obj, %col)
 
 function GameConnection::onBuildSelectorDone(%client, %bf)
 {
-	commandToClient(%client, 'bottomPrint', "Build selected - vbList created. (num " @ $moduleListCount[%client.bl_id] - 1 @ ", ID: " @ $moduleList[%client.bl_id, $moduleListCount[%client.bl_id] - 1] @ ")", 5);
-	//%bf.schedule(10, "delete");
-	echo("BF: " @ %bf);
+	%vbList = $moduleList[%client.bl_id, $moduleListCount[%client.bl_id] - 1];
+	
+	//add the bricks from the brickFinder to the vbList
+	for(%i = 0; %i < %bf.foundBricks.getCount(); %i++)
+	{
+		%vbList.addRealBrick(%bf.foundBricks.getObject(%i));
+	}
+	
+	commandToClient(%client, 'bottomPrint', "Build selected - vbList created and added to. (num " @ $moduleListCount[%client.bl_id] - 1 @ ", ID: " @ %vbList @ ")", 8);
+	%bf.schedule(10, "delete");
 }
 
 function serverCmdMoveBuildToMe(%client, %num)
@@ -92,6 +100,8 @@ function serverCmdMoveBuildToMe(%client, %num)
 	%vbList = $moduleList[%client.bl_id, %num];
 	
 	commandToClient(%client, 'bottomPrint', "Moving bricks...", 5);
+	
 	%vbList.shiftBricks(vectorSub(%client.player.getPosition(), %vbList.getCenter()));
-	commandToClient(%client, 'bottomPrint', "\c2Move successful!", 5);
+	
+	commandToClient(%client, 'bottomPrint', "\c2Move successful! (Hopefully!)", 5);
 }
