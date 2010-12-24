@@ -1,7 +1,7 @@
 $gravityTickTime = 5;
 $gravityDefaultScale = "2 2 3";
 $gravityDefaultMod = 0.25;
-$gravityActivateHeight = 270;
+$gravityActivateHeight = 350; //270
 
 if(!isObject(gravityFieldGroup))
 {

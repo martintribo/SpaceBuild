@@ -6,6 +6,14 @@
 //$moduleList[158, 0] = aloshivblist;
 //$moduleListCount[158] = 1;
 
+function buildSelectorImage::onFire(%this, %obj)
+{
+	%types = ($TypeMasks::FxBrickAlwaysObjectType);
+	%col = containerRaycast(%obj.getEyePoint(), VectorAdd(VectorScale(%obj.getEyeVector(), 8), %obj.getEyePoint()), %types);
+	%col = getWord(%col, 0);
+	buildSelectorProjectile::onCollision(%this, %obj, %col);
+}
+
 datablock ItemData(buildSelectorItem : wandItem)
 {
 	uiName = "Build Selector";
@@ -25,13 +33,13 @@ function buildSelectorProjectile::onCollision(%this, %obj, %col)
 {
 	%client = %obj.client;
 	
-	if(%col.getClassName() !$= "fxDTSBrick")
+	if(!isObject(%col) || %col.getClassName() !$= "fxDTSBrick")
 	{
 		commandToClient(%client, 'bottomPrint', "You must select a brick!", 3);
 		return;
 	}
 	
-	if(getTrust(%col, %client) <= 2) //getTrust might be the wrong function
+	if(getTrustLevel(%col, %client) < 2)
 	{
 		commandToClient(%client, 'bottomPrint', "You must have full trust to select a build!", 3);
 		return;
@@ -60,7 +68,7 @@ function buildSelectorProjectile::onCollision(%this, %obj, %col)
 	};
 	
 	//%bf.setOnSelectCommand(%client @ ".onBuildSelected(%sb);");
-	%bf.setFinishCommand(%client @ ".onBuildSelectorDone(" @ %client @ ", " @ %bf @ ");");
+	%bf.setFinishCommand(%client @ ".onBuildSelectorDone(" @ %bf @ ");");
 	%bf.search(%col, "chain", "all", "", 1);
 	
 	//From here on out, we wait for the brickFinder to finish up. It'll call GameConnection::onBuildSelectorDone(%client, %bf); when it's finished, so continue there.
@@ -68,12 +76,14 @@ function buildSelectorProjectile::onCollision(%this, %obj, %col)
 
 function GameConnection::onBuildSelectorDone(%client, %bf)
 {
-	commandToClient(%client, 'bottomPrint', "Build selected - vbList created. (num " @ $moduleListCount[%client.bl_id] @ ", " @ %vbList @ ")");
+	commandToClient(%client, 'bottomPrint', "Build selected - vbList created. (num " @ $moduleListCount[%client.bl_id] - 1 @ ", ID: " @ $moduleList[%client.bl_id, $moduleListCount[%client.bl_id] - 1] @ ")", 5);
+	//%bf.schedule(10, "delete");
+	echo("BF: " @ %bf);
 }
 
 function serverCmdMoveBuildToMe(%client, %num)
 {
-	if(%num >= $moduleListCount[%client.bl_id)
+	if(!isObject($moduleList[%client.bl_id, %num]))
 	{
 		commandToClient(%client, 'bottomPrint', "Invalid build number.", 4);
 		return;
@@ -82,6 +92,6 @@ function serverCmdMoveBuildToMe(%client, %num)
 	%vbList = $moduleList[%client.bl_id, %num];
 	
 	commandToClient(%client, 'bottomPrint', "Moving bricks...", 5);
-	%vbList.shift(vectorSub(%client.player.getPosition(), %vbList.getCenter()));
-	commandToClient(%client, 'bottomPrint', "\c3Move successful!", 3);
+	%vbList.shiftBricks(vectorSub(%client.player.getPosition(), %vbList.getCenter()));
+	commandToClient(%client, 'bottomPrint', "\c2Move successful!", 5);
 }
