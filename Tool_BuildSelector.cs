@@ -61,7 +61,7 @@ function buildSelectorProjectile::onCollision(%this, %obj, %col)
 	
 	//%bf.setOnSelectCommand(%client @ ".onBuildSelected(%sb);");
 	%bf.setFinishCommand(%client @ ".onBuildSelectorDone(" @ %client @ ", " @ %bf @ ");");
-	%bf.search(%col, "chain", "add all", "", 1);
+	%bf.search(%col, "chain", "all", "", 1);
 	
 	//From here on out, we wait for the brickFinder to finish up. It'll call GameConnection::onBuildSelectorDone(%client, %bf); when it's finished, so continue there.
 }
@@ -69,4 +69,19 @@ function buildSelectorProjectile::onCollision(%this, %obj, %col)
 function GameConnection::onBuildSelectorDone(%client, %bf)
 {
 	commandToClient(%client, 'bottomPrint', "Build selected - vbList created. (num " @ $moduleListCount[%client.bl_id] @ ", " @ %vbList @ ")");
+}
+
+function serverCmdMoveBuildToMe(%client, %num)
+{
+	if(%num >= $moduleListCount[%client.bl_id)
+	{
+		commandToClient(%client, 'bottomPrint', "Invalid build number.", 4);
+		return;
+	}
+	
+	%vbList = $moduleList[%client.bl_id, %num];
+	
+	commandToClient(%client, 'bottomPrint', "Moving bricks...", 5);
+	%vbList.shift(vectorSub(%client.player.getPosition(), %vbList.getCenter()));
+	commandToClient(%client, 'bottomPrint', "\c3Move successful!", 3);
 }
