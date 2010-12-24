@@ -79,17 +79,20 @@ function GameConnection::onBuildSelectorDone(%client, %bf)
 {
 	%vbList = $moduleList[%client.bl_id, $moduleListCount[%client.bl_id] - 1];
 	
+	
+	//*****THIS SHOULD BE ASYNC******
 	//add the bricks from the brickFinder to the vbList
 	for(%i = 0; %i < %bf.foundBricks.getCount(); %i++)
 	{
 		%vbList.addRealBrick(%bf.foundBricks.getObject(%i));
 	}
+	//*******************************
 	
 	commandToClient(%client, 'bottomPrint', "Build selected - vbList created and added to. (num " @ $moduleListCount[%client.bl_id] - 1 @ ", ID: " @ %vbList @ ")", 8);
 	%bf.schedule(10, "delete");
 }
 
-function serverCmdMoveBuildToMe(%client, %num)
+function serverCmdCopyBuild(%client, %num)
 {
 	if(!isObject($moduleList[%client.bl_id, %num]))
 	{
@@ -99,9 +102,10 @@ function serverCmdMoveBuildToMe(%client, %num)
 	
 	%vbList = $moduleList[%client.bl_id, %num];
 	
-	commandToClient(%client, 'bottomPrint', "Moving bricks...", 5);
+	commandToClient(%client, 'bottomPrint', "Copying bricks...", 5);
 	
 	%vbList.shiftBricks(vectorSub(%client.player.getPosition(), %vbList.getCenter()));
+	%vbList.createBricks();
 	
-	commandToClient(%client, 'bottomPrint', "\c2Move successful! (Hopefully!)", 5);
+	commandToClient(%client, 'bottomPrint', "\c2Copy successful!", 5);
 }
