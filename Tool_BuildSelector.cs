@@ -3,7 +3,7 @@
 //Relies heavily on virtualBrickList functions.
 
 //vbList storage example:
-//$moduleList[158_0] = aloshivblist;
+//$moduleList[158, 0] = aloshivblist;
 //$moduleListCount[158] = 1;
 
 datablock ItemData(buildSelectorItem : wandItem)
@@ -47,7 +47,7 @@ function buildSelectorProjectile::onCollision(%this, %obj, %col)
 	if($moduleListCount[%client.bl_id] $= "")
 		$moduleListCount[%client.bl_id] = 0;
 	
-	$moduleList[%client.bl_id @ "_" @ $moduleListCount[%client.bl_id]] = %vbList;
+	$moduleList[%client.bl_id, $moduleListCount[%client.bl_id]] = %vbList;
 	$moduleListCount[%client.bl_id]++;
 	
 	
