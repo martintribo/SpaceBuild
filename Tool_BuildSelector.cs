@@ -76,15 +76,31 @@ function buildSelectorProjectile::onCollision(%this, %obj, %col)
 function GameConnection::onBuildSelectorBrickFound(%client, %sb)
 {
 	%vbList = $moduleList[%client.bl_id, $moduleListCount[%client.bl_id] - 1];
+	
+	//Add the found brick to the vbList.
 	%vbList.addRealBrick(%sb);
+	//Then, delete the brick.
+	%sb.delete();
 }
 
 function GameConnection::onBuildSelectorDone(%client, %bf)
 {
 	%vbList = $moduleList[%client.bl_id, $moduleListCount[%client.bl_id] - 1];
 	
-	commandToClient(%client, 'bottomPrint', "Build selected - vbList created and added to. (num " @ $moduleListCount[%client.bl_id] - 1 @ ", ID: " @ %vbList @ ")", 8);
+	//Delete the real bricks that the brickFinder found
 	%bf.schedule(10, "delete");
+	
+	//the vbList is populated - now, create a cargo player for a physical representation of it
+	%cargo = new Player()
+	{
+		datablock = playerCargo;
+		virtualBrickList = %vbList;
+		owner = %client;
+	};
+	%cargo.setTransform(%vbList.getCenter());
+	%cargo.setScale("1 1 1"); //make this proportional to build size later on (?)
+	
+	commandToClient(%client, 'bottomPrint', "Build packaged; cargo created. (ID: " @ %cargo @ ")", 5);
 }
 
 function serverCmdCopyBuild(%client, %num)

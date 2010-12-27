@@ -1,8 +1,3 @@
-if(!isObject(cargoGroup))
-{
-	new simGroup(cargoGroup);
-}
-
 //Animations for the cargo playertype (really just no animation, but this fixes some 'no animation exists!' errors)
 datablock TSShapeConstructor(cargoPlayerDts)
 {
@@ -48,7 +43,7 @@ datablock TSShapeConstructor(cargoPlayerDts)
   sequence38 = "./cargo_root.dsq leftrecoil";
 };
 
-datablock PlayerData(PlayerCargo : PlayerStandardArmor)
+datablock PlayerData(playerCargo : PlayerStandardArmor)
 {
 	shapeFile = "./cargoPlayer.dts";
 	boundingBox			= "1 1 1";				//vectorScale("1 1 1", 4);
@@ -69,9 +64,3 @@ datablock PlayerData(PlayerCargo : PlayerStandardArmor)
 	
 	uiName = ""; //we don't want this player to be selectable - it does nothing, so that would be stupid
 };
-
-//Cargo players need to be in a group so they are affected by 
-function PlayerCargo::onAdd(%this, %obj)
-{
-	cargoGroup.add(%obj);
-}
