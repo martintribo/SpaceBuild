@@ -59,34 +59,29 @@ function buildSelectorProjectile::onCollision(%this, %obj, %col)
 	$moduleList[%client.bl_id, $moduleListCount[%client.bl_id]] = %vbList;
 	$moduleListCount[%client.bl_id]++;
 	
-	
-	
-	//This will find all bricks connected to %col and add them to the list.
-	//------Should this be a seperate function?
+	//This will find all bricks connected to %col.
 	%bf = new ScriptObject()
 	{
 		class = "BrickFinder";
 	};
 	
-	//%bf.setOnSelectCommand(%client @ ".onBuildSelected(%sb);");
+	%bf.setOnSelectCommand(%client @ ".onBuildSelectorBrickFound(%sb);");
 	%bf.setFinishCommand(%client @ ".onBuildSelectorDone(" @ %bf @ ");");
 	%bf.search(%col, "chain", "all", "", 1);
 	
-	//From here on out, we wait for the brickFinder to finish up. It'll call GameConnection::onBuildSelectorDone(%client, %bf); when it's finished, so continue there.
+	//From here on out, we wait for the brickFinder to finish up. It'll call GameConnection::onBuildSelectorDone(%client, %bf) when it's finished, so continue there.
+	//Every time the brickFinder finds a brick, it calls GameConnection::onBuildSelectorBrickFound(%client, %sb), which keeps the adding-to-vbList lag-free.
+}
+
+function GameConnection::onBuildSelectorBrickFound(%client, %sb)
+{
+	%vbList = $moduleList[%client.bl_id, $moduleListCount[%client.bl_id] - 1];
+	%vbList.addRealBrick(%sb);
 }
 
 function GameConnection::onBuildSelectorDone(%client, %bf)
 {
 	%vbList = $moduleList[%client.bl_id, $moduleListCount[%client.bl_id] - 1];
-	
-	
-	//*****THIS SHOULD BE ASYNC******
-	//add the bricks from the brickFinder to the vbList
-	for(%i = 0; %i < %bf.foundBricks.getCount(); %i++)
-	{
-		%vbList.addRealBrick(%bf.foundBricks.getObject(%i));
-	}
-	//*******************************
 	
 	commandToClient(%client, 'bottomPrint', "Build selected - vbList created and added to. (num " @ $moduleListCount[%client.bl_id] - 1 @ ", ID: " @ %vbList @ ")", 8);
 	%bf.schedule(10, "delete");
