@@ -99,6 +99,7 @@ function GameConnection::onBuildSelectorDone(%client, %bf)
 	};
 	%cargo.setTransform(%vbList.getCenter());
 	%cargo.setScale("1 1 1"); //make this proportional to build size later on (?)
+	%vbList.cargoObject = %cargo;
 	
 	commandToClient(%client, 'bottomPrint', "Build packaged; cargo created. (ID: " @ %cargo @ ")", 5);
 }
