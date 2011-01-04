@@ -80,7 +80,7 @@ function GameConnection::onBuildSelectorBrickFound(%client, %sb)
 	//Add the found brick to the vbList.
 	%vbList.addRealBrick(%sb);
 	//Then, delete the brick.
-	%sb.delete();
+	//%sb.delete();
 }
 
 function GameConnection::onBuildSelectorDone(%client, %bf)
@@ -101,23 +101,38 @@ function GameConnection::onBuildSelectorDone(%client, %bf)
 	%cargo.setScale("1 1 1"); //make this proportional to build size later on (?)
 	%vbList.cargoObject = %cargo;
 	
-	commandToClient(%client, 'bottomPrint', "Build packaged; cargo created. (ID: " @ %cargo @ ")", 5);
+	commandToClient(%client, 'bottomPrint', "Build packaged; cargo created.", 5);
 }
 
-function serverCmdCopyBuild(%client, %num)
+function expandCargoPlayer(%obj, %client)
 {
-	if(!isObject($moduleList[%client.bl_id, %num]))
-	{
-		commandToClient(%client, 'bottomPrint', "Invalid build number.", 4);
-		return;
-	}
-	
-	%vbList = $moduleList[%client.bl_id, %num];
-	
-	commandToClient(%client, 'bottomPrint', "Copying bricks...", 5);
+	%vbList = %obj.virtualBrickList;
 	
 	%vbList.shiftBricks(vectorSub(%client.player.getPosition(), %vbList.getCenter()));
 	%vbList.createBricks();
 	
-	commandToClient(%client, 'bottomPrint', "\c2Copy successful!", 5);
+	%obj.removeBody(); //delete the cargo in an interesting way (yay particles!)
+	%vbList.delete(); //the vbList's job is done - it can die now :D
+	
+	if(isObject(%client))
+		commandToClient(%client, 'bottomPrint', "Build expanded!", 4);
+}
+
+function serverCmdExpandCargo(%client)
+{
+	%mouseVec = %client.player.getEyeVector();
+	%cameraPoint = %client.player.getEyePoint();
+	%selectRange = 25;
+	%mouseScaled = VectorScale(%mouseVec, %selectRange);
+	%rangeEnd = VectorAdd(%cameraPoint, %mouseScaled);
+	%searchMasks = $TypeMasks::PlayerObjectType;
+	%target = ContainerRayCast(%cameraPoint, %rangeEnd, %searchMasks, %client.player);
+	%target = getWord(%target, 0);
+	
+	if(!isObject(%target))
+		return;
+	if(!isObject(%target.virtualBrickList))
+		return;
+	
+	expandCargoPlayer(%target, %client);
 }

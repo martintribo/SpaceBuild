@@ -45,9 +45,10 @@ datablock TSShapeConstructor(cargoPlayerDts)
 
 datablock PlayerData(playerCargo : PlayerStandardArmor)
 {
-	shapeFile = "./cargoPlayer.dts";
-	boundingBox			= "1 1 1";				//vectorScale("1 1 1", 4);
-  crouchBoundingBox	= "1 1 1";			//vectorScale("1 1 1", 4);
+	//leaving as normal - until we have real models, it's just annoying
+	//shapeFile = "./cargoPlayer.dts";
+	//boundingBox			= "1 1 1";				//vectorScale("1 1 1", 4);
+  //crouchBoundingBox	= "1 1 1";			//vectorScale("1 1 1", 4);
 	
 	jumpForce = 0;
 	canJet = 0;
