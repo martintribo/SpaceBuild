@@ -1,7 +1,7 @@
 $gravityTickTime = 5;
 $gravityDefaultScale = "2 2 3";
 $gravityDefaultMod = 0.25;
-$gravityActivateHeight = 360;
+$spaceHeight = 360;
 
 if(!isObject(gravityFieldGroup))
 {
@@ -18,7 +18,7 @@ function gravityTick()
 		{
 			%grav.delete();
 		}else{
-			if(getWord(%obj.getPosition(), 2) >= $gravityActivateHeight)
+			if(getWord(%obj.getPosition(), 2) >= $spaceHeight)
 			{
 				if(!%grav.isActivated)
 				{
