@@ -12,3 +12,9 @@ exec("./Brick_Space.cs");
 
 //Cargo player.
 exec("./Player_Cargo.cs");
+
+//Construction Building ScriptObject
+exec("./Script_MCF.cs");
+
+//Modules
+exec("./Script_Modules.cs");
