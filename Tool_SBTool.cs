@@ -250,8 +250,20 @@ datablock ShapeBaseImageData(SBToolImage)
 
 };
 
-//do nitramtj magic here
 function SBToolProjectile::onCollision(%this,%obj,%col,%fade,%pos,%normal)
 {
-
+	%mcf = $DebugMCF;
+	
+	%client = %obj.client;
+	
+	if(!isObject(%col) || %col.getClassName() !$= "fxDTSBrick")
+		return;
+	
+	if(getTrustLevel(%col, %client) < 1)
+	{
+		commandToClient(%client, 'bottomPrint', "You must have trust to select a build!", 3);
+		return;
+	}
+	
+	%mcf.scanBuild(%col);
 }
