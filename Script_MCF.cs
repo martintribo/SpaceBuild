@@ -57,3 +57,8 @@ function MCFacility::addToQueue(%obj, %mod)
 	echo("add to queue" SPC %mod);
 	%obj.queue.add(%mod);
 }
+
+function MCFacility::debugAttach(%obj)
+{
+	%obj.queue.getObject(1).attachTo(%obj.queue.getObject(0), "hatch1", "hatch0");
+}
