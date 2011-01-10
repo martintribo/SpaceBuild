@@ -72,18 +72,4 @@ function CargoPlayer::onImpact(%this, %obj)
 	return;
 }
 
-function createCargoPlayerFromModule(%module)
-{
-	%cargo = new Player()
-	{
-		datablock = playerCargo;
-		moduleSO = %module;
-		//owner = %client;
-	};
-	
-	%cargo.setTransform(%module.getPosition());
-	%cargo.setScale("1 1 1"); //make this proportional to build size later on (?)
-	
-	%module.cargoPlayer = %cargo;
-	%module.setState("cargo");
-}
+
