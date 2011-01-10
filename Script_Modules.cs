@@ -57,7 +57,10 @@ function ModuleSO::setState(%obj, %state)
 function ModuleSO::getPosition(%obj)
 {
 	//this eventually needs to change depending on the state
-	return %obj.vbl.getCenter();
+	if(%state $= "cargo")
+		return %obj.cargoPlayer.getPosition();
+	else
+		return %obj.vbl.getCenter();
 }
 
 function ModuleSO::setPosition(%obj, %pos)
