@@ -67,3 +67,19 @@ function ModuleSO::setPosition(%obj, %pos)
 {
 	%obj.vbl.recenter(%pos);
 }
+
+function moduleSO::createCargoPlayer(%module)
+{
+	%cargo = new Player()
+	{
+		datablock = playerCargo;
+		moduleSO = %module;
+		//owner = %client;
+	};
+	
+	%cargo.setTransform(%module.getPosition());
+	%cargo.setScale("1 1 1"); //make this proportional to build size later on (?)
+	
+	%module.cargoPlayer = %cargo;
+	%module.setState("cargo");
+}
