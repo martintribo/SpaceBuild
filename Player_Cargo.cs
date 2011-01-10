@@ -61,7 +61,29 @@ datablock PlayerData(playerCargo : PlayerStandardArmor)
 	maxSideSpeed = "0";
 	maxBackwardSpeed = "0";
 	
-	maxDamage = 300;
+	maxDamage = 500;
 	
 	uiName = ""; //we don't want this player to be selectable - it does nothing, so that would be stupid
 };
+
+//don't allow it to die from fall damage!
+function CargoPlayer::onImpact(%this, %obj)
+{
+	return;
+}
+
+function createCargoPlayerFromModule(%module)
+{
+	%cargo = new Player()
+	{
+		datablock = playerCargo;
+		moduleSO = %module;
+		//owner = %client;
+	};
+	
+	%cargo.setTransform(%module.getPosition());
+	%cargo.setScale("1 1 1"); //make this proportional to build size later on (?)
+	
+	%module.cargoPlayer = %cargo;
+	%module.setState("cargo");
+}
