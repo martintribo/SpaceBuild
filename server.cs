@@ -24,3 +24,6 @@ exec("./Script_Station.cs");
 
 //SBTool
 exec("./Tool_SBTool.cs");
+
+//SpaceShuttle
+exec("./Vehicle_SpaceShuttle.cs");

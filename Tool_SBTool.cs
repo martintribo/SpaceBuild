@@ -309,7 +309,7 @@ function ServerCmdFirstModule(%client)
 		};
 		%mod = $DebugMCF.popModule();
 		%mod.state = "Deployed"; //we're manually setting this up
-		%mod.vbl.shiftBricks("0 0 100"); //going to change this to somethign better, but good for testing
+		%mod.vbl.shiftBricks("400 2000 4000"); //going to change this to somethign better, but good for testing
 		%mod.vbl.createBricks();
 		$DebugStation.addModule(%mod);
 		$stationPos = $DebugStation.getPosition();
