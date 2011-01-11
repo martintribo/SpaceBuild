@@ -3,6 +3,8 @@ $gravityDefaultScale = "2 2 3";
 $gravityDefaultMod = 0.25;
 $spaceHeight = 360;
 
+$stationPos = ""; //define this manually ingame!
+
 if(!isObject(gravityFieldGroup))
 {
 	new SimGroup(gravityFieldGroup);
@@ -28,8 +30,50 @@ function gravityTick()
 				
 				%trans = VectorSub(getWords(%obj.getTransform(), 0, 2), getWord(%grav.scale, 0) * 0.5 SPC getWord(%grav.scale, 1) * -0.5 SPC getWord(%grav.scale, 2) * 0);
 				%grav.setTransform(%trans);
+				
+				if($stationPos !$= "")
+				{
+				//Calculate space station guage
+				%stationPos = $stationPos;
+				%stationPos = vectorSub(getWords(%obj.getTransform(), 0, 2), %stationPos);
+				%x = getWord(%stationPos, 0);
+				%y = getWord(%stationPos, 1);
+				%z = getWord(%stationPos, 2);
+				
+				if(%x < 200)
+					%xColor = "\c2";
+				
+				if(%x < 400 && %x > 200)
+					%xColor = "\c3";
+				
+				if(%x < 600 && %x > 400)
+					%xColor = "\c0";
+				//============================
+				if(%y < 200)
+					%yColor = "\c2";
+				
+				if(%y < 400 && %y > 200)
+					%yColor = "\c3";
+				
+				if(%y < 600 && %y > 400)
+					%yColor = "\c0";
+				//============================
+				if(%z < 200)
+					%zColor = "\c2";
+				
+				if(%z < 400 && %z > 200)
+					%zColor = "\c3";
+				
+				if(%z < 600 && %z > 400)
+					%zColor = "\c0";
+				
+				
 				if(%grav.isActivated && isObject(%obj.client))
-					commandtoclient(%obj.client, 'bottomPrint', "\c2Your current gravity: x" @ %grav.gravityMod @ ". (Z Pos: " @ mFloor(getWord(%obj.getPosition(), 2)) @ ")", 0.2);
+					commandToClient(%obj.client, 'bottomPrint', "\c2Gravity: x" @ %grav.gravityMod @ ". Altitude: " @ getWord(%obj.getTransform(), 2) @ " Station: " @ %xColor @ "X" SPC %yColor @ "Y" SPC %zColor @ "Z" @ ".", 5);
+				}else{
+					if(%grav.isActivated && isObject(%obj.client))
+						commandToClient(%obj.client, 'bottomPrint', "\c2Gravity: x" @ %grav.gravityMod @ ". Altitude: " @ getWord(%obj.getTransform(), 2) @ ".", 5);
+				}
 			}else{
 				if(%grav.isActivated)
 				{
