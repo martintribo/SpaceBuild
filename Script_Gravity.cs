@@ -3,7 +3,7 @@ $gravityDefaultScale = "2 2 3";
 $gravityDefaultMod = 0.25;
 $spaceHeight = 360;
 
-$stationPos = ""; //define this manually ingame!
+//$stationPos = ""; //define this manually ingame!
 
 if(!isObject(gravityFieldGroup))
 {
@@ -69,10 +69,10 @@ function gravityTick()
 				
 				
 				if(%grav.isActivated && isObject(%obj.client))
-					commandToClient(%obj.client, 'bottomPrint', "\c2Gravity: x" @ %grav.gravityMod @ ". Altitude: " @ getWord(%obj.getTransform(), 2) @ " Station: " @ %xColor @ "X" SPC %yColor @ "Y" SPC %zColor @ "Z" @ ".", 5);
+					commandToClient(%obj.client, 'bottomPrint', "\c2Gravity: x" @ %grav.gravityMod @ ". Altitude: " @ mFloor(getWord(%obj.getTransform(), 2)) @ " Station: " @ %xColor @ "X" SPC %yColor @ "Y" SPC %zColor @ "Z" @ ".", 5);
 				}else{
 					if(%grav.isActivated && isObject(%obj.client))
-						commandToClient(%obj.client, 'bottomPrint', "\c2Gravity: x" @ %grav.gravityMod @ ". Altitude: " @ getWord(%obj.getTransform(), 2) @ ".", 5);
+						commandToClient(%obj.client, 'bottomPrint', "\c2Gravity: x" @ %grav.gravityMod @ ". Altitude: " @ mFloor(getWord(%obj.getTransform(), 2)) @ ".", 5);
 				}
 			}else{
 				if(%grav.isActivated)
