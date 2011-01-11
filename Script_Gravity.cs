@@ -34,42 +34,35 @@ function gravityTick()
 				if($stationPos !$= "")
 				{
 				//Calculate space station guage
-				%stationPos = $stationPos;
+				%stationPos = $stationPos; //convert to function at a later date
 				%stationPos = vectorSub(getWords(%obj.getTransform(), 0, 2), %stationPos);
-				%x = getWord(%stationPos, 0);
-				%y = getWord(%stationPos, 1);
-				%z = getWord(%stationPos, 2);
+				%x = mFloor(getWord(%stationPos, 0));
+				%y = mFloor(getWord(%stationPos, 1));
+				%z = mFloor(getWord(%stationPos, 2));
 				
-				if(%x < 200)
+				if(%x < 300)
 					%xColor = "\c2";
-				
-				if(%x < 400 && %x > 200)
+				if(%x < 500 && %x > 300)
 					%xColor = "\c3";
-				
-				if(%x < 600 && %x > 400)
+				if(%x > 500)
 					%xColor = "\c0";
 				//============================
-				if(%y < 200)
+				if(%y < 300)
 					%yColor = "\c2";
-				
-				if(%y < 400 && %y > 200)
+				if(%y < 500 && %y > 300)
 					%yColor = "\c3";
-				
-				if(%y < 600 && %y > 400)
+				if(%y > 500)
 					%yColor = "\c0";
 				//============================
-				if(%z < 200)
+				if(%z < 300)
 					%zColor = "\c2";
-				
-				if(%z < 400 && %z > 200)
+				if(%z < 500 && %z > 300)
 					%zColor = "\c3";
-				
-				if(%z < 600 && %z > 400)
+				if(%z > 500)
 					%zColor = "\c0";
 				
-				
 				if(%grav.isActivated && isObject(%obj.client))
-					commandToClient(%obj.client, 'bottomPrint', "\c2Gravity: x" @ %grav.gravityMod @ ". Altitude: " @ mFloor(getWord(%obj.getTransform(), 2)) @ " Station: " @ %xColor @ "X" SPC %yColor @ "Y" SPC %zColor @ "Z" @ ".", 5);
+					commandToClient(%obj.client, 'bottomPrint', "\c2Gravity: x" @ %grav.gravityMod @ ". Altitude: " @ mFloor(getWord(%obj.getTransform(), 2)) @ " \c6Station: " @ %xColor @ %x SPC %yColor @ %y SPC %zColor @ %z @ ".", 5);
 				}else{
 					if(%grav.isActivated && isObject(%obj.client))
 						commandToClient(%obj.client, 'bottomPrint', "\c2Gravity: x" @ %grav.gravityMod @ ". Altitude: " @ mFloor(getWord(%obj.getTransform(), 2)) @ ".", 5);
