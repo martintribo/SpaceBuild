@@ -19,5 +19,8 @@ exec("./Script_MCF.cs");
 //Modules
 exec("./Script_Modules.cs");
 
+//Station
+exec("./Script_Station.cs");
+
 //SBTool
 exec("./Tool_SBTool.cs");

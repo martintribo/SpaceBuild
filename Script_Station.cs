@@ -23,3 +23,9 @@ function StationSO::addModule(%obj, %mod)
 	%mod.owner = %obj;
 	%obj.modules.add(%mod);
 }
+
+function StationSO::getPosition(%obj)
+{
+	if (isObject(%obj.base))
+		return %obj.base.getPosition();
+}
