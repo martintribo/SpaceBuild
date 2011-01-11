@@ -1,3 +1,6 @@
+//This tool is mostly for debugging, it allows users to interface with the gamemode
+//This will be done through events later
+
 datablock AudioProfile(SBToolExplosionSound)
 {
    filename    = "./sound/arrowHit.wav";
@@ -282,5 +285,33 @@ function ServerCmdSBTool(%client)
 	{
 		%client.player.updateArm(SBToolImage);
 		%client.player.mountImage(SBToolImage, 0);
+	}
+}
+
+function ServerCmdSetupSpace(%client)
+{
+	if (%client.isAdmin)
+	{
+		$DebugMCF = new ScriptObject()
+		{
+			class = "MCFacility";
+		};
+	}
+}
+
+function ServerCmdFirstModule(%client)
+{
+	if (%client.isAdmin)
+	{
+		$DebugStation = new ScriptObject()
+		{
+			class = "StationSO";
+		};
+		%mod = $DebugMCF.popModule();
+		%mod.state = "Deployed"; //we're manually setting this up
+		%mod.vbl.shiftBricks("0 0 100"); //going to change this to somethign better, but good for testing
+		%mod.vbl.createBricks();
+		$DebugStation.addModule(%mod);
+		$stationPos = $DebugStation.getPosition();
 	}
 }
