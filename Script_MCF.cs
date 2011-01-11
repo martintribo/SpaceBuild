@@ -39,6 +39,7 @@ function MCFacility::onFoundBrick(%obj, %sb, %mod)
 				%point = getWord(%box, 0) SPC getWords(%pos, 1, 2);
 		}
 		%sb.setColor(%mod.numHatches);
+		%sb.hatchId = %mod.numHatches;
 		%mod.addHatch(%point, %sb.getAngleId());
 	}
 	%mod.addBrick(%sb);
@@ -58,7 +59,45 @@ function MCFacility::addToQueue(%obj, %mod)
 	%obj.queue.add(%mod);
 }
 
+function MCFacility::popModule(%obj)
+{
+	%mod = false;
+	if (%obj.queue.getCount() > 0)
+	{
+		%mod = %obj.queue.getObject(0);
+		%obj.queue.remove(%mod);
+	}
+	
+	return %mod;
+}
+
 function MCFacility::debugAttach(%obj)
 {
 	%obj.queue.getObject(1).attachTo(%obj.queue.getObject(0), "hatch1", "hatch0");
+}
+
+
+//so we can save hatchbricks
+addCustSave("SPACEHATCH");
+function virtualBrickList::cs_addReal_SPACEHATCH(%obj, %num, %brick)
+{
+	if (%brick.hatchId !$= "") %obj.virBricks[%num, "SPACEHATCH"] = %brick.hatchId;
+	else %obj.virBricks[%num, "SPACEHATCH"] = "";
+}
+
+function virtualBrickList::cs_create_SPACEHATCH(%obj, %num, %brick)
+{
+	if (%obj.virBricks[%num, "SPACEHATCH"] !$= "")
+		%brick.hatchId = %obj.virBricks[%num, "SPACEHATCH"];
+}
+
+function virtualBrickList::cs_save_SPACEHATCH(%obj, %num, %file)
+{
+	if (%brick.hatchId !$= "")
+		%file.writeLine("+-SPACEHATCH" SPC %obj.virBricks[%num, "SPACEHATCH"]);
+}
+
+function virtualBrickList::cs_load_SPACEHATCH(%obj, %num, %addData, %addInfo, %addArgs, %line)
+{
+	%obj.virBricks[%num, "SPACEHATCH"] = %addInfo;
 }
