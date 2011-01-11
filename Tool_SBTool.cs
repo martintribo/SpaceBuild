@@ -256,14 +256,31 @@ function SBToolProjectile::onCollision(%this,%obj,%col,%fade,%pos,%normal)
 	
 	%client = %obj.client;
 	
-	if(!isObject(%col) || %col.getClassName() !$= "fxDTSBrick")
+	if(!isObject(%col) || %col.getClassName() !$= "fxDTSBrick" || !%client.isAdmin)
 		return;
 	
-	if(getTrustLevel(%col, %client) < 1)
+	//if(getTrustLevel(%col, %client) < 1)
+	//{
+	//	commandToClient(%client, 'bottomPrint', "You must have trust to select a build!", 3);
+	//	return;
+	//}
+	if (%col.getDatablock().getId() != brick1x4x3SpaceHatchData.getId())
+		%mcf.scanBuild(%col);
+	else
 	{
-		commandToClient(%client, 'bottomPrint', "You must have trust to select a build!", 3);
-		return;
+		%mod = %mcf.popModule();
+		if (isObject(%mod))
+		{
+			%mod.attachTo(0, %col.module, %col.hatchId);
+		}
 	}
-	
-	%mcf.scanBuild(%col);
+}
+
+function ServerCmdSBTool(%client)
+{
+	if (isObject(%client.player))
+	{
+		%client.player.updateArm(SBToolImage);
+		%client.player.mountImage(SBToolImage, 0);
+	}
 }

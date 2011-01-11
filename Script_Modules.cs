@@ -2,11 +2,14 @@ function newModuleSO(%vbl)
 {
 	if (!isObject(%vbl))
 		%vbl = newVBL(1);
-	return new ScriptObject()
+	%mod = new ScriptObject()
 	{
 		class = "ModuleSO";
 		vbl = %vbl;
 	};
+	%vbl.module = %mod;
+	
+	return %mod;
 }
 
 function ModuleSO::onAdd(%this, %obj)
@@ -33,11 +36,16 @@ function ModuleSO::addHatch(%obj, %point, %dir1, %dir2)
 
 function ModuleSO::attachTo(%obj, %objHatch, %mod, %modHatch)
 {
+	echo("got in attach");
 	//besides just setting up links and etc, the states and owners of modules must be changed
-	%obj.vbl.markers[%objHatch].alignWith(%mod.vbl.markers[%modHatch]);
-	%obj.vbl.createBricks();
+	%obj.vbl.markers["hatch" @ %objHatch].alignWith(%mod.vbl.markers["hatch" @ %modHatch]);
+	echo("got through alignwith");
+	//%obj.vbl.createBricks();
 	%obj.setPosition(%obj.vbl.getCenter());
+	echo("got through set position");
+	%obj.owner = %mod.owner; //update ownership, change?
 	%obj.deploy();
+	echo("got through deploy");
 }
 
 function ModuleSO::deploy(%obj)
@@ -50,14 +58,14 @@ function ModuleSO::setState(%obj, %state)
 {
 	//the position can be calculated differently depending on the state, make sure it stays the same
 	%pos = %obj.getPosition();
-	%obj.setState(%state);
+	%obj.state = %state;
 	%obj.setPosition(%pos);
 }
 
 function ModuleSO::getPosition(%obj)
 {
 	//this eventually needs to change depending on the state
-	if(%state $= "cargo")
+	if(%obj.state $= "cargo")
 		return %obj.cargoPlayer.getPosition();
 	else
 		return %obj.vbl.getCenter();
@@ -67,6 +75,22 @@ function ModuleSO::setPosition(%obj, %pos)
 {
 	%obj.vbl.recenter(%pos);
 }
+
+package ModulePack
+{
+	function virtualBrickList::onCreateBrick(%obj, %b)
+	{
+		if (%b.getDatablock().getId() == brick1x4x3SpaceHatchData.getId())
+		{
+			echo("createbrick");
+			%b.module = %obj.module;
+			%b.setColliding(1); //it's easier for it not to be colliding on the ground, but it needs to be solid in space
+		}
+		Parent::onCreateBrick(%obj, %b);
+	}
+};
+
+activatePackage(ModulePack);
 
 function moduleSO::createCargoPlayer(%module)
 {
