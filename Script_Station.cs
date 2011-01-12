@@ -29,3 +29,22 @@ function StationSO::getPosition(%obj)
 	if (isObject(%obj.base))
 		return %obj.base.getPosition();
 }
+
+function StationSO::export(%obj, %file)
+{
+	%name = fileBase(%file);
+	%path = filePath(%file);
+	%f = new FileObject();
+	
+	%f.openForWrite(%file);
+	
+	for (%m = 0; %m < %obj.modules.getCount(); %m++)
+	{
+		%mod = %obj.modules.getObject(%m);
+		%modPath = %path @ "/" @ %name @ "_mod" @ %m @ ".mod";
+		%mod.export(%modPath);
+		%f.writeLine("mod" TAB %modPath);
+	}
+	%f.close();
+	%f.delete();
+}

@@ -17,7 +17,7 @@ function MCFacility::scanBuild(%obj, %brick)
 	};
 	%bf.setOnSelectCommand(%obj @ ".onFoundBrick(%sb, " @ %mod @ ");");
 	%bf.setFinishCommand(%obj @ ".onFinishedFinding(" @ %mod @ ", " @ %bf @ ");");
-	%bf.search(%brick, "chain", "all", "", 1);
+	%bf.search(%brick, "chain", "all", "spaceSupport", 0);
 }
 
 function MCFacility::onFoundBrick(%obj, %sb, %mod)
@@ -101,3 +101,12 @@ function virtualBrickList::cs_load_SPACEHATCH(%obj, %num, %addData, %addInfo, %a
 {
 	%obj.virBricks[%num, "SPACEHATCH"] = %addInfo;
 }
+
+function bfSpaceSupport(%brick)
+{
+	if (%brick.getName() $= "_spaceSupport")
+		return 1;
+	return 0;
+}
+
+addBFType("spaceSupport", "bfSpaceSupport");

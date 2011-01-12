@@ -153,7 +153,7 @@ datablock WheeledVehicleData(SpaceShuttleVehicle)
 
 function SpaceShuttleVehicle::onTrigger(%this, %obj, %trig, %val)
 {
-	echo("blah");
+	//echo("blah");
 	if (%trig == 2)
 	{
 		if (%val)
@@ -171,3 +171,14 @@ function WheeledVehicle::launchTick(%obj)
 	%obj.applyImpulse(%obj.getPosition(), VectorScale(%vec, 2000));
 	%obj.launchTick = %obj.schedule(100, "launchTick");
 }
+
+package shuttleTrust
+{
+	function getTrustLevel(%obj, %other, %a1, %a2)
+	{
+		echo("trust level: " SPC %obj SPC %other SPC %a1 SPC %a2);
+		Parent::getTrustLevel(%obj, %other, %a1, %a2);
+	}
+};
+
+activatePackage(shuttleTrust);
