@@ -107,3 +107,25 @@ function moduleSO::createCargoPlayer(%module)
 	%module.cargoPlayer = %cargo;
 	%module.setState("cargo");
 }
+
+function ModuleSO::export(%obj, %file)
+{
+	%name = fileBase(%file);
+	%path = filePath(%file);
+	%f = new FileObject();
+	
+	%f.openForWrite(%file);
+	
+	%f.writeLine("STATE" TAB %obj.state);
+	
+	%f.writeLine("HATCHES" TAB %obj.numHatches);
+	for (%h = 0; %h < %obj.numHatches; %h++)
+		%f.writeLine("HATCH" TAB %obj.hatches[%obj.numHatches, "point"] TAB %obj.hatches[%obj.numHatches, "direction"]);
+	
+	%vblPath = %path @ "/" @ %name @ "_vbl" @ %m @ ".bls";
+	%obj.vbl.exportBLSFile(%vblPath);
+	%f.writeLine("vbl" TAB %vblPath);
+		
+	%f.close();
+	%f.delete();
+}
