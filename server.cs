@@ -1,11 +1,7 @@
 //This will exec all other SpaceBuild-specific files.
 
-//Contains no-gravity player scripts.
+//Contains no-gravity player scripts (should be replaced soon)
 //exec("./Script_Gravity.cs");
-
-//Contains Build Selector tool, which creates vbLists for builds.
-
-exec("./Tool_BuildSelector.cs");
 
 //Space Bricks
 exec("./Brick_Space.cs");
@@ -25,5 +21,5 @@ exec("./Script_Station.cs");
 //SBTool
 exec("./Tool_SBTool.cs");
 
-//SpaceShuttle
+//Space Shuttle (also execs Particle_Shuttle.cs)
 exec("./Vehicle_SpaceShuttle.cs");
