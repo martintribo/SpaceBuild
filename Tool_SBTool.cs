@@ -255,26 +255,45 @@ datablock ShapeBaseImageData(SBToolImage)
 
 function SBToolProjectile::onCollision(%this,%obj,%col,%fade,%pos,%normal)
 {
-	%mcf = $DebugMCF;
-	
 	%client = %obj.client;
 	
-	if(!isObject(%col) || %col.getClassName() !$= "fxDTSBrick" || !%client.isAdmin)
+	%mcf = $DebugMCF;
+	
+	if(!isObject(%mcf))
+	{
+		commandToClient(%client, 'bottomPrint', "No MCF object found - fix with \c3/SetupSpace\c0.", 5);
 		return;
+	}
+	if(!isObject(%col) || %col.getClassName() !$= "fxDTSBrick")
+	{
+		commandToClient(%client, 'bottomPrint', "You must hit a brick.", 4);
+		return;
+	}
+	if(!%client.isAdmin)
+	{
+		commandToClient(%client, 'bottomPrint', "You must be an admin to use this tool.", 4);
+		return;
+	}
 	
 	//if(getTrustLevel(%col, %client) < 1)
 	//{
-	//	commandToClient(%client, 'bottomPrint', "You must have trust to select a build!", 3);
+	//	commandToClient(%client, 'bottomPrint', "You must have build trust to select a build!", 3);
 	//	return;
 	//}
+	
 	if (%col.getDatablock().getId() != brick1x4x3SpaceHatchData.getId())
+	{
 		%mcf.scanBuild(%col);
+		commandToClient(%client, 'bottomPrint', "Scanning your build. \c3Hit a hatch brick to attach your module.", 5);
+	}
 	else
 	{
 		%mod = %mcf.popModule();
 		if (isObject(%mod))
 		{
+			commandToClient(%client, 'bottomPrint', "Attaching your module...", 2);
 			%mod.attachTo(0, %col.module, %col.hatchId);
+			commandToClient(%client, 'bottomPrint', "Your module was attached!", 4);
 		}
 	}
 }
