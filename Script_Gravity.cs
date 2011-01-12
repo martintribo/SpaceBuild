@@ -1,3 +1,6 @@
+//This script should be replaced by Nitramtj's physical zone auto maker thing as soon as possible.
+//The messaging commands will be replaced with Script_SBTick.cs.
+
 $gravityTickTime = 5;
 $gravityDefaultScale = "2 2 3";
 $gravityDefaultMod = 0.25;
@@ -135,12 +138,12 @@ package gravityPackage
 		%scale = getWords(%obj.getObjectBox(), 3, 5);
 		createGravityField(%obj, %scale);
 	}
-	function Armor::onTrigger(%this, %obj, %trig, %val)
-	{
-		if(%val && %trig == 3 && %obj.isInSpace())
-		{
-			%obj.setVelocity(vectorAdd(%obj.getVelocity(), "0 0 -1.5"));
-		}
-	}
+	//function Armor::onTrigger(%this, %obj, %trig, %val)
+	//{
+	//	if(%val && %trig == 3 && %obj.isInSpace())
+	//	{
+	//		%obj.setVelocity(vectorAdd(%obj.getVelocity(), "0 0 -1.5"));
+	//	}
+	//}
 };
 activatePackage(gravityPackage);
