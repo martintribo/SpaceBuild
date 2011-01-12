@@ -40,29 +40,29 @@ function gravityTick()
 				%y = mFloor(getWord(%stationPos, 1));
 				%z = mFloor(getWord(%stationPos, 2));
 				
-				if(%x < 300)
+				if(mAbs(%x) < 200)
 					%xColor = "\c2";
-				if(%x < 500 && %x > 300)
+				if(mAbs(%x) < 400 && mAbs(%x) > 200)
 					%xColor = "\c3";
-				if(%x > 500)
+				if(mAbs(%x) > 400)
 					%xColor = "\c0";
 				//============================
-				if(%y < 300)
+				if(mAbs(%y) < 200)
 					%yColor = "\c2";
-				if(%y < 500 && %y > 300)
+				if(mAbs(%y) < 400 && mAbs(%y) > 200)
 					%yColor = "\c3";
-				if(%y > 500)
+				if(mAbs(%y) > 400)
 					%yColor = "\c0";
 				//============================
-				if(%z < 300)
+				if(mAbs(%z) < 200)
 					%zColor = "\c2";
-				if(%z < 500 && %z > 300)
+				if(mAbs(%z) < 400 && mAbs(%z) > 200)
 					%zColor = "\c3";
-				if(%z > 500)
+				if(mAbs(%z) > 400)
 					%zColor = "\c0";
 				
 				if(%grav.isActivated && isObject(%obj.client))
-					commandToClient(%obj.client, 'bottomPrint', "\c2Gravity: x" @ %grav.gravityMod @ ". Altitude: " @ mFloor(getWord(%obj.getTransform(), 2)) @ " \c6Station: " @ %xColor @ %x SPC %yColor @ %y SPC %zColor @ %z @ ".", 5);
+					commandToClient(%obj.client, 'bottomPrint', "\c2Gravity: x" @ %grav.gravityMod @ ". Altitude: " @ mFloor(getWord(%obj.getTransform(), 2)) @ ". \c6Station: " @ %xColor @ %x SPC %yColor @ %y SPC %zColor @ %z @ ".", 5);
 				}else{
 					if(%grav.isActivated && isObject(%obj.client))
 						commandToClient(%obj.client, 'bottomPrint', "\c2Gravity: x" @ %grav.gravityMod @ ". Altitude: " @ mFloor(getWord(%obj.getTransform(), 2)) @ ".", 5);
@@ -118,6 +118,15 @@ function createGravityField(%obj, %scale)
 		gravityTick();
 }
 
+//A duplicate from Script_Lifesupport, which isn't execed yet. Remove later.
+function Armor::isInSpace(%obj)
+{
+	if(getWord(%obj.getTransform(), 2) >= $spaceHeight)
+		return(1);
+	else
+		return(0);
+}
+
 package gravityPackage
 {
 	function Armor::onNewDatablock(%this, %obj) //onNewDatablock
@@ -125,6 +134,13 @@ package gravityPackage
 		parent::onNewDatablock(%this, %obj);
 		%scale = getWords(%obj.getObjectBox(), 3, 5);
 		createGravityField(%obj, %scale);
+	}
+	function Armor::onTrigger(%this, %obj, %trig, %val)
+	{
+		if(%val && %trig == 3 && %obj.isInSpace())
+		{
+			%obj.setVelocity(vectorAdd(%obj.getVelocity(), "0 0 -1.5"));
+		}
 	}
 };
 activatePackage(gravityPackage);
