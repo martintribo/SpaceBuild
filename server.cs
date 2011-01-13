@@ -6,8 +6,8 @@
 //Space Bricks
 exec("./Brick_Space.cs");
 
-//Cargo player.
-exec("./Player_Cargo.cs");
+//Cargo player (not yet used)
+//exec("./Player_Cargo.cs");
 
 //Construction Building ScriptObject
 exec("./Script_MCF.cs");
@@ -23,3 +23,9 @@ exec("./Tool_SBTool.cs");
 
 //Space Shuttle (also execs Particle_Shuttle.cs)
 exec("./Vehicle_SpaceShuttle.cs");
+
+//SBTick (currently just burning up script)
+exec("./Script_SBTick.cs");
+
+//Old gravity script (needs to be replaced)
+exec("./Script_Gravity.cs");
