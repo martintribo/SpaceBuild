@@ -109,7 +109,7 @@ function SBToolImage::onFire(%this, %obj, %slot)
 	%rangeEnd = VectorAdd(%cameraPoint, %mouseScaled);
 	%searchMasks = $TypeMasks::FxBrickAlwaysObjectType;
 	%target = ContainerRayCast(%cameraPoint, %rangeEnd, %searchMasks, %client.player);
-	%%col = getWord(%target, 0);
+	%col = getWord(%target, 0);
 	
 	if(isObject(%target))
 	{
