@@ -1,7 +1,7 @@
 //This will exec all other SpaceBuild-specific files.
 
 //Contains no-gravity player scripts (should be replaced soon)
-//exec("./Script_Gravity.cs");
+exec("./Script_Gravity.cs");
 
 //Space Bricks
 exec("./Brick_Space.cs");
