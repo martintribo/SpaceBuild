@@ -58,7 +58,7 @@ datablock ShapeBaseImageData(shuttleFlameImage)
 };
 
 //Makes the particle stick with moving objects better..
-burnParticleA.inheritedVelFactor = 0.725;
+burnParticleA.inheritedVelFactor = 0.6;
 
 //function shuttleFlameImage1::onDone(%this,%obj,%slot)
 //{
