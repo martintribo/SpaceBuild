@@ -23,16 +23,30 @@ function MCFacility::setMCFSize(%obj, %size)
 	%obj.MCFSize = %size;
 }
 
-function MCFacility::getSlotWorldPos(%obj, %slot)
+function MCFacility::setPosition(%obj, %pos)
+{
+	%obj.position = %pos;
+}
+
+//will get the center of the given module slot
+function MCFacility::getSlotWorldCenter(%obj, %slot)
 {
 	%pos = getWord(%obj.moduleSlotSize, 0) * getWord(%obj.MCFSize, 0) SPC getWord(%obj.moduleSlotSize, 1) * getWord(%obj.MCFSize, 1) SPC getWord(%obj.moduleSlotSize, 2); //max size
-	%pos = vectorScale(%pos, 0.5); //half of max size 
-	%pos = vectorSub(%obj.position, %pos); //subtract it from MCF position (get corner)
+	%pos = vectorScale(%pos, 0.5); //half of max size
+	%pos = vectorSub(%obj.position, %pos); //get corner
+	
 	
 	%slotpos = getWord(%obj.moduleSlotSize, 0) * getWord(%slot, 0) SPC getWord(%obj.moduleSlotSize, 1) * getWord(%slot, 1) SPC getWord(%obj.moduleSlotSize, 2) * getWord(%slot, 2);
 	%slotpos = vectorAdd(%slotpos, %pos); //this should be the top left corner of the slot
 	
 	return(%slotpos);
+}
+
+//will give the bottom of the given module slot
+function MCFacility::getSlotWorldBottom(%obj, %slot)
+{
+	%pos = %obj.getSlotWorldCenter(%slot);
+	%pos = vectorSub(%pos, "0 0 " @ getWord(%obj.moduleSlotSize, 2) / 2);
 }
 
 //generate a module slot, owned by %client (optional)
@@ -45,10 +59,8 @@ function MCFacility::generateModuleSlot(%obj, %slot, %client)
 	};
 	%vbList.loadBLSFile("config/" @ %obj.moduleSlotLoad @ ".bls");
 	
-	//world coordinate format but without offset of MCF position
-	//%slotpos = getWord(%obj.moduleSlotSize, 0) * getWord(%slot, 0) SPC getWord(%obj.moduleSlotSize, 1) * getWord(%slot, 1) SPC getWord(%obj.moduleSlotSize, 2) * getWord(%slot, 2);
-	//%slotpos = vectorAdd(%slotpos, %obj.getTopLeftCorner()); //this should be the top left corner of the slot
-	%slotpos = %obj.getSlotWorldPos(%slot);
+	%slotpos = %obj.getSlotWorldBottom(%slot);
+	%vbList.shiftBricks(vectorSub(%slotpos, %vbList.getBottomFace()));
 	
 	%vbList.createBricks(%client);
 	
