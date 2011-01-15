@@ -5,117 +5,25 @@ datablock ItemData(SBToolItem : wandItem)
 {
 	uiName = "SB Tool";
 	doColorShift = true;
-	colorShiftColor = "1 0 1 1";
+	colorShiftColor = "0.8 0 0.8 1";
 	image = SBToolImage;
 };
 
-////////////////
-//weapon image//
-////////////////
-datablock ShapeBaseImageData(SBToolImage)
+datablock ShapeBaseImageData(SBToolImage : wandImage)
 {
-   // Basic Item properties
-   shapeFile = "base/data/shapes/wand.dts";
-   emap = true;
-
-   // Specify mount point & offset for 3rd person, and eye offset
-   // for first person rendering.
-   mountPoint = 0;
-   offset = "0 0 0";
-   eyeOffset = 0; //"0.7 1.2 -0.5";
-   rotation = eulerToMatrix( "0 0 10" );
-
-   // When firing from a point offset from the eye, muzzle correction
-   // will adjust the muzzle vector to point to the eye LOS point.
-   // Since this weapon doesn't actually fire from the muzzle point,
-   // we need to turn this off.  
-   correctMuzzleVector = true;
-
-   // Add the WeaponImage namespace as a parent, WeaponImage namespace
-   // provides some hooks into the inventory system.
-   className = "WeaponImage";
-
-   // Projectile && Ammo.
-   item = SBToolItem;
-   ammo = " ";
-   projectile = SBToolProjectile;
-   projectileType = Projectile;
-
-   //melee particles shoot from eye node for consistancy
-   melee = false;
-   //raise your arm up or not
-   armReady = true;
-
-   doColorShift = true;
-   colorShiftColor = SBToolItem.colorShiftColor;
-
-   //casing = " ";
-
-   // Images have a state system which controls how the animations
-   // are run, which sounds are played, script callbacks, etc. This
-   // state system is downloaded to the client so that clients can
-   // predict state changes and animate accordingly.  The following
-   // system supports basic ready->fire->reload transitions as
-   // well as a no-ammo->dryfire idle state.
-
-   // Initial start up state
-	stateName[0]                     = "Activate";
-	stateTimeoutValue[0]             = 0.5;
-	stateTransitionOnTimeout[0]       = "Ready";
-	stateSound[0]					= weaponSwitchSound;
-
-	stateName[1]                     = "Ready";
-	stateTransitionOnTriggerDown[1]  = "Fire";
-	stateAllowImageChange[1]         = true;
-
-	stateName[2]                    = "Fire";
-	stateTransitionOnTimeout[2]     = "Reload";
-	stateTimeoutValue[2]            = 0.05;
-	stateFire[2]                    = true;
-	stateAllowImageChange[2]        = false;
-	stateSequence[2]                = "Fire";
-	stateScript[2]                  = "onFire";
-	stateWaitForTimeout[2]			= true;
-	stateSound[2]					= SBToolFireSound;
-
-	stateName[3]			= "Reload";
-	stateSequence[3]                = "Reload";
-	stateAllowImageChange[3]        = false;
-	stateTimeoutValue[3]            = 0.5;
-	stateWaitForTimeout[3]		= true;
-	stateTransitionOnTimeout[3]     = "Check";
-
-	stateName[4]			= "Check";
-	stateTransitionOnTriggerUp[4]	= "StopFire";
-	stateTransitionOnTriggerDown[4]	= "Fire";
-
-	stateName[5]                    = "StopFire";
-	stateTransitionOnTimeout[5]     = "Ready";
-	stateTimeoutValue[5]            = 0.2;
-	stateAllowImageChange[5]        = false;
-	stateWaitForTimeout[5]		= true;
-	//stateSequence[5]                = "Reload";
-	stateScript[5]                  = "onStopFire";
-
-
+	item = SBToolItem;
+	doColorShift = true;
+	colorShiftColor = SBToolItem.colorShiftColor;
 };
 
 function SBToolImage::onFire(%this, %obj, %slot)
 {
-	%mouseVec = %obj.getEyeVector();
-	%cameraPoint = %obj.getEyePoint();
-	%selectRange = 5;
-	%mouseScaled = VectorScale(%mouseVec, %selectRange);
-	%rangeEnd = VectorAdd(%cameraPoint, %mouseScaled);
-	%searchMasks = $TypeMasks::FxBrickAlwaysObjectType;
-	%target = ContainerRayCast(%cameraPoint, %rangeEnd, %searchMasks, %client.player);
-	%col = getWord(%target, 0);
+	%types = ($TypeMasks::FxBrickAlwaysObjectType);
+	%col = containerRaycast(%obj.getEyePoint(), VectorAdd(VectorScale(%obj.getEyeVector(), 8), %obj.getEyePoint()), %types);
+	%col = getWord(%col, 0);
 	
-	if(isObject(%target))
-	{
+	if(isObject(%col))
 		SBToolCollision(%obj, %col);
-	}
-	
 }
 
 function SBToolCollision(%obj, %col)
