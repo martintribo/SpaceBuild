@@ -1,7 +1,7 @@
 $SBTickSpeed = 100;
 $SBTickAutoStart = 1;
 
-$playerBurnSpeed = 40;
+$playerBurnSpeed = 55;
 $playerBurnDamage = 10;
 $showStationLocator = 0;
 

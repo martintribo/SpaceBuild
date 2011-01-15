@@ -1,7 +1,7 @@
 //$spaceHeight - this is when you enter 'space' (defined in Script_Gravity)
 $defaultOxygen = 100;					//how much air you have when you spawn
-$oxygenChangeRate = 1;				//how much air you gain/lose per tick
-$lifeSupportTickTime = 500;		//how much time between lifesupport ticks (in ms)
+$oxygenGainRate = 2;				//how much air you gain per tick
+$oxygenLossRate = 1;				//how much air you lose per tick
 
 package lifeSupportPackage
 {
@@ -13,7 +13,7 @@ package lifeSupportPackage
 };
 activatePackage(gravityPackage);
 
-function Armor::isInSpace(%obj)
+function Player::isInSpace(%obj)
 {
 	if(getWord(%obj.getTransform(), 2) >= $spaceHeight)
 		return(1);
@@ -21,23 +21,24 @@ function Armor::isInSpace(%obj)
 		return(0);
 }
 
-function Armor::setOxygenLevel(%obj, %amount)
+function Player::setOxygenLevel(%obj, %amount)
 {
 	%obj.oxygenLevel = %amount;
 	//update oxygen ui here - just bottomprint as a placeholder
 	commandToClient(%obj.client, 'bottomPrint', "Your oxygen: " @ %amount, 10);
 }
 
-function Armor::getOxygenLevel(%obj)
+function Player::getOxygenLevel(%obj)
 {
 	return(%obj.oxygenLevel);
 }
 
-function Armor::inOxygenEnvironment(%obj)
+function Player::inOxygenEnvironment(%obj)
 {
 	//to do
 }
 
+//Should be called by SBTick or merged with it
 function lifeSupportTick()
 {
 	for(%i = 0; %i < clientGroup.getCount(); %i++)
@@ -48,17 +49,12 @@ function lifeSupportTick()
 		
 		if(%isSafe && %client.player.oxygenLevel < $defaultOxygen)
 		{
-			%client.player.setOxygenLevel(%oxy + $oxygenChangeRate);
+			%client.player.setOxygenLevel(%oxy + $oxygenGainRate);
 		}
 		if(%client.player.isInSpace())
 		{
 			if(!%isSafe)
-				%client.player.setOxygenLevel(%oxy - $oxygenChangeRate);
+				%client.player.setOxygenLevel(%oxy - $oxygenLossRate);
 		}
 	}
-	
-	if(isEventPending($lifeSupportSched))
-		cancel($lifeSupportSched);
-	
-	$lifeSupportSched = schedule($lifeSupportTickTime, 0, "lifeSupportTick");
 }

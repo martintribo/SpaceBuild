@@ -5,6 +5,69 @@ function MCFacility::onAdd(%this, %obj)
 {
 	//create the queue for modules
 	%obj.queue = new SimSet(); //assuming objects keep order inserted in, might be wrong
+	
+	//set up module slot size, bounds of MCF, MCF position, default module slot vblist to load
+	%obj.moduleSlotSize = "32 32 32"; //size that each module slot takes up
+	%obj.MCFSize = "6 6"; //how big we get before going to the next floor
+	%obj.position = "0 0 0"; //where the center of the MCF is
+	%obj.moduleSlotLoad = ""; //name of the vbList file to load
+}
+
+function MCFacility::setModuleSlotSize(%obj, %size)
+{
+	%obj.moduleSlotSize = %size;
+}
+
+function MCFacility::setMCFSize(%obj, %size)
+{
+	%obj.MCFSize = %size;
+}
+
+function MCFacility::getSlotWorldPos(%obj, %slot)
+{
+	%pos = getWord(%obj.moduleSlotSize, 0) * getWord(%obj.MCFSize, 0) SPC getWord(%obj.moduleSlotSize, 1) * getWord(%obj.MCFSize, 1) SPC getWord(%obj.moduleSlotSize, 2); //max size
+	%pos = vectorScale(%pos, 0.5); //half of max size 
+	%pos = vectorSub(%obj.position, %pos); //subtract it from MCF position (get corner)
+	
+	%slotpos = getWord(%obj.moduleSlotSize, 0) * getWord(%slot, 0) SPC getWord(%obj.moduleSlotSize, 1) * getWord(%slot, 1) SPC getWord(%obj.moduleSlotSize, 2) * getWord(%slot, 2);
+	%slotpos = vectorAdd(%slotpos, %pos); //this should be the top left corner of the slot
+	
+	return(%slotpos);
+}
+
+//generate a module slot, owned by %client (optional)
+//this is pretty much entirely psuedo-code but with correct syntax
+function MCFacility::generateModuleSlot(%obj, %slot, %client)
+{
+	%vbList = new ScriptObject()
+	{
+		class = virtualBrickList;
+	};
+	%vbList.loadBLSFile("config/" @ %obj.moduleSlotLoad @ ".bls");
+	
+	//world coordinate format but without offset of MCF position
+	//%slotpos = getWord(%obj.moduleSlotSize, 0) * getWord(%slot, 0) SPC getWord(%obj.moduleSlotSize, 1) * getWord(%slot, 1) SPC getWord(%obj.moduleSlotSize, 2) * getWord(%slot, 2);
+	//%slotpos = vectorAdd(%slotpos, %obj.getTopLeftCorner()); //this should be the top left corner of the slot
+	%slotpos = %obj.getSlotWorldPos(%slot);
+	
+	%vbList.createBricks(%client);
+	
+	%vbList.delete();
+}
+
+function MCFacility::buildNextFloor(%obj)
+{
+
+}
+
+function MCFacility::deleteModuleSlot(%obj, %slot)
+{
+	
+}
+
+function MCFacility::firstFreeSlot(%obj)
+{
+	
 }
 
 function MCFacility::scanBuild(%obj, %brick)
