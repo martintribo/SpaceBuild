@@ -24,12 +24,14 @@ function ModuleSO::onAdd(%this, %obj)
 function ModuleSO::addBrick(%obj, %brick)
 {
 	%obj.vbl.addRealBrick(%brick);
+	if (%brick.getDatablock().getId() == brick1x4x3SpaceHatchData.getId())
+		%obj.addHatch();
 }
 
 function ModuleSO::addHatch(%obj, %point, %dir1, %dir2)
 {
-	%obj.hatches[%obj.numHatches, "point"] = %point;
-	%obj.hatches[%obj.numHatches, "direction"] = %dir1;
+	//%obj.hatches[%obj.numHatches, "point"] = %point;
+	//%obj.hatches[%obj.numHatches, "direction"] = %dir1;
 	%obj.vbl.addMarker("Hatch" @ %obj.numHatches, %point, %dir1, %dir2);
 	%obj.numHatches++;
 }
@@ -119,8 +121,8 @@ function ModuleSO::export(%obj, %file)
 	%f.writeLine("STATE" TAB %obj.state);
 	
 	%f.writeLine("HATCHES" TAB %obj.numHatches);
-	for (%h = 0; %h < %obj.numHatches; %h++)
-		%f.writeLine("HATCH" TAB %obj.hatches[%obj.numHatches, "point"] TAB %obj.hatches[%obj.numHatches, "direction"]);
+	//for (%h = 0; %h < %obj.numHatches; %h++)
+	//	%f.writeLine("HATCH" TAB %obj.hatches[%obj.numHatches, "point"] TAB %obj.hatches[%obj.numHatches, "direction"]);
 	
 	%vblPath = %path @ "/" @ %name @ "_vbl" @ %m @ ".bls";
 	%obj.vbl.exportBLSFile(%vblPath);

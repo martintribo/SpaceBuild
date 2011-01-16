@@ -68,6 +68,12 @@ function SBToolCollision(%obj, %col)
 			%mod.attachTo(0, %col.module, %col.hatchId);
 			commandToClient(%client, 'bottomPrint', "Your module was attached!", 4);
 		}
+		else
+		{
+			%col.setColliding(false);
+			%col.setRendering(false);
+			%col.setRaycasting(false);
+		}
 	}
 }
 
@@ -105,5 +111,28 @@ function ServerCmdFirstModule(%client, %x, %y, %z)
 		%mod.vbl.createBricks();
 		$DebugStation.addModule(%mod);
 		$stationPos = $DebugStation.getPosition();
+	}
+}
+
+function ServerCmdCheckModules(%client)
+{
+	if (%client.isAdmin)
+	{
+		messageClient(%client, '', "\c2There are \c0" @ $debugMCF.queue.getCount() @ "\c2 modules in the queue.");
+	}
+}
+
+function ServerCmdClearModules(%client)
+{
+	if (%client.isAdmin)
+	{
+		%mod = $DebugMCF.popModule();
+		while (isObject(%mod))
+		{
+			%mod.delete();
+			%mod = $DebugMCF.popModule();
+		}
+		
+		messageClient(%client, '', "\c2Module queue cleared.");
 	}
 }
