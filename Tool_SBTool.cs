@@ -54,25 +54,38 @@ function SBToolCollision(%obj, %col)
 	//	return;
 	//}
 	
-	if (%col.getDatablock().getId() != brick1x4x3SpaceHatchData.getId())
+	if (!%col.isHatch())
 	{
 		%mcf.scanBuild(%col);
 		commandToClient(%client, 'bottomPrint', "Scanning your build. \c3Hit a hatch brick to attach your module.", 5);
 	}
 	else
 	{
-		%mod = %mcf.popModule();
-		if (isObject(%mod))
+		%attachId = -1;
+		
+		//see if there is a compatible hatch
+		%colType = %col.module.getHatchType(%col.hatchId);
+		%mod = %mcf.peekModule();
+		%list = %mod.getCompatibleHatches(%colType);
+		
+		if (getFieldCount(%list) > 0)
+			%attachId = getField(%list, 0);
+		
+		if (%attachId != -1)
 		{
-			commandToClient(%client, 'bottomPrint', "Attaching your module...", 2);
-			%mod.attachTo(0, %col.module, %col.hatchId);
-			commandToClient(%client, 'bottomPrint', "Your module was attached!", 4);
-		}
-		else
-		{
-			%col.setColliding(false);
-			%col.setRendering(false);
-			%col.setRaycasting(false);
+			%mod = %mcf.popModule();
+			if (isObject(%mod))
+			{
+				commandToClient(%client, 'bottomPrint', "Attaching your module...", 2);
+				%mod.attachTo(%attachId, %col.module, %col.hatchId);
+				commandToClient(%client, 'bottomPrint', "Your module was attached!", 4);
+			}
+			else
+			{
+				%col.setColliding(false);
+				%col.setRendering(false);
+				%col.setRaycasting(false);
+			}
 		}
 	}
 }
