@@ -24,8 +24,8 @@ function ModuleSO::onAdd(%this, %obj)
 function ModuleSO::addBrick(%obj, %brick)
 {
 	%obj.vbl.addRealBrick(%brick);
-	if (%brick.getDatablock().getId() == brick1x4x3SpaceHatchData.getId())
-		%obj.addHatch();
+	//if (%brick.getDatablock().getId() == brick1x4x3SpaceHatchData.getId()) This part is done by the scan function, revise?
+	//	%obj.addHatch();
 }
 
 function ModuleSO::addHatch(%obj, %point, %dir1, %dir2)
@@ -34,6 +34,23 @@ function ModuleSO::addHatch(%obj, %point, %dir1, %dir2)
 	//%obj.hatches[%obj.numHatches, "direction"] = %dir1;
 	%obj.vbl.addMarker("Hatch" @ %obj.numHatches, %point, %dir1, %dir2);
 	%obj.numHatches++;
+}
+
+function ModuleSO::getHatchType(%obj, %i)
+{
+	%type = 0;
+	if (%i < %obj.numHatches)
+	{
+		%dir = %obj.vbl.getMarkerPrimary("hatch" @ %i);
+		if (%dir < 4)
+			%type = "horizontal";
+		else if (%dir == 4)
+			%type = "up";
+		else
+			%type = "down";
+	}
+	
+	return %type;
 }
 
 function ModuleSO::attachTo(%obj, %objHatch, %mod, %modHatch)
@@ -82,9 +99,8 @@ package ModulePack
 {
 	function virtualBrickList::onCreateBrick(%obj, %b)
 	{
-		if (%b.getDatablock().getId() == brick1x4x3SpaceHatchData.getId())
+		if (isObject(%obj.module))
 		{
-			echo("createbrick");
 			%b.module = %obj.module;
 			%b.setColliding(1); //it's easier for it not to be colliding on the ground, but it needs to be solid in space
 		}
@@ -93,6 +109,29 @@ package ModulePack
 };
 
 activatePackage(ModulePack);
+
+function moduleSO::getCompatibleHatches(%obj, %type)
+{
+	// if (%dir < 4)
+		// %type = "horizontal";
+	// else if (%dir == 4)
+		// %type = "down";
+	// else
+		// %type = "up";
+	
+	if (%type $= "down")
+		%type = "up";
+	else if (%type $= "up")
+		%type = "down";
+	
+	%list = "";
+	
+	for (%i = 0; %i < %obj.numHatches; %i++)
+		if (%obj.getHatchType(%i) $= %type)
+			%list = %list @ %i @ "\t";
+	
+	return %list;
+}
 
 function moduleSO::createCargoPlayer(%module)
 {
@@ -131,3 +170,8 @@ function ModuleSO::export(%obj, %file)
 	%f.close();
 	%f.delete();
 }
+
+
+
+
+

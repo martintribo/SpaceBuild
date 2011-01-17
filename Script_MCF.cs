@@ -98,24 +98,43 @@ function MCFacility::scanBuild(%obj, %brick)
 function MCFacility::onFoundBrick(%obj, %sb, %mod)
 {
 	echo("%sb = " @ %sb);
-	if (%sb.getDatablock().getId() == brick1x4x3SpaceHatchData.getId())
+	if (%sb.isHatch())
 	{
 		%box = %sb.getWorldBox();
 		%pos = %sb.getPosition();
-		switch (%sb.getAngleId())
+		if (%sb.isHorizontalHatch())
 		{
-			case 0:
-				%point = getWord(%pos, 0) SPC getWord(%box, 4) SPC getWord(%pos, 2);
-			case 1:
-				%point = getWord(%box, 3) SPC getWords(%pos, 1, 2);
-			case 2:
-				%point = getWord(%pos, 0) SPC getWord(%box, 1) SPC getWord(%pos, 2);
-			case 3:
-				%point = getWord(%box, 0) SPC getWords(%pos, 1, 2);
+			switch (%sb.getAngleId())
+			{
+				case 0:
+					%point = getWord(%pos, 0) SPC getWord(%box, 4) SPC getWord(%pos, 2);
+				case 1:
+					%point = getWord(%box, 3) SPC getWords(%pos, 1, 2);
+				case 2:
+					%point = getWord(%pos, 0) SPC getWord(%box, 1) SPC getWord(%pos, 2);
+				case 3:
+					%point = getWord(%box, 0) SPC getWords(%pos, 1, 2);
+			}
+			%dir = %sb.getAngleId();
 		}
+		else
+		{
+			if (%sb.isUpHatch())
+			{
+				%point = getWords(%pos, 0, 1) SPC getWord(%box, 5);
+				%dir = 4; //up
+			}
+			else
+			{
+				%point = getWords(%pos, 0, 1) SPC getWord(%box, 2);
+				%dir = 5; //down
+			}
+			
+		}
+		
 		%sb.setColor(%mod.numHatches);
 		%sb.hatchId = %mod.numHatches;
-		%mod.addHatch(%point, %sb.getAngleId());
+		%mod.addHatch(%point, %dir);
 	}
 	%mod.addBrick(%sb);
 }
@@ -132,6 +151,16 @@ function MCFacility::addToQueue(%obj, %mod)
 {
 	echo("add to queue" SPC %mod);
 	%obj.queue.add(%mod);
+}
+
+function MCFacility::peekModule(%obj, %i)
+{
+	if (%i $= "")
+		%i = 0;
+	%mod = 0;
+	if (%i < %obj.queue.getCount())
+		%mod = %obj.queue.getObject(%i);
+	return %mod;
 }
 
 function MCFacility::popModule(%obj)
