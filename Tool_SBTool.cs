@@ -56,37 +56,56 @@ function SBToolCollision(%obj, %col)
 	
 	if (!%col.isHatch())
 	{
+		if (isObject(%col.module))
+		{
+			if (%client.deleteModule)
+			{
+				%col.module.delete();
+				%client.deleteModule = false;
+				commandToClient(%client, 'bottomPrint', "\c3Module Removed.", 2);
+			}
+			else
+				commandToClient(%client, 'centerPrint', "\c3If you want to delete this module, type /DeleteModule.", 3);
+		}
 		%mcf.scanBuild(%col);
 		commandToClient(%client, 'bottomPrint', "Scanning your build. \c3Hit a hatch brick to attach your module.", 5);
 	}
 	else
 	{
 		%attachId = -1;
-		
-		//see if there is a compatible hatch
-		%colType = %col.module.getHatchType(%col.hatchId);
 		%mod = %mcf.peekModule();
-		%list = %mod.getCompatibleHatches(%colType);
-		
-		if (getFieldCount(%list) > 0)
-			%attachId = getField(%list, 0);
-		
+		//see if there is a compatible hatch
+		if (isObject(%mod))
+		{
+			%colType = %col.module.getHatchType(%col.hatchId);
+			%list = %mod.getCompatibleHatches(%colType);
+			
+			if (getFieldCount(%list) > 0)
+				%attachId = getField(%list, 0);
+		}
 		if (%attachId != -1)
 		{
 			%mod = %mcf.popModule();
-			if (isObject(%mod))
-			{
-				commandToClient(%client, 'bottomPrint', "Attaching your module...", 2);
-				%mod.attachTo(%attachId, %col.module, %col.hatchId);
-				commandToClient(%client, 'bottomPrint', "Your module was attached!", 4);
-			}
-			else
-			{
-				%col.setColliding(false);
-				%col.setRendering(false);
-				%col.setRaycasting(false);
-			}
+			
+			commandToClient(%client, 'bottomPrint', "Attaching your module...", 2);
+			%mod.attachTo(%attachId, %col.module, %col.hatchId);
+			commandToClient(%client, 'bottomPrint', "Your module was attached!", 4);
 		}
+		else
+		{
+			%col.setColliding(false);
+			%col.setRendering(false);
+			%col.setRaycasting(false);
+		}
+	}
+}
+
+function ServerCmdDeleteModule(%client)
+{
+	if (%client.isAdmin)
+	{
+		%client.deleteModule = true;
+		commandToClient(%client, 'centerPrint', "\c3Hit the module you would like to delete.", 3);
 	}
 }
 

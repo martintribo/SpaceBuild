@@ -55,16 +55,15 @@ function ModuleSO::getHatchType(%obj, %i)
 
 function ModuleSO::attachTo(%obj, %objHatch, %mod, %modHatch)
 {
-	echo("got in attach");
 	//besides just setting up links and etc, the states and owners of modules must be changed
 	%obj.vbl.markers["hatch" @ %objHatch].alignWith(%mod.vbl.markers["hatch" @ %modHatch]);
-	echo("got through alignwith");
+	
 	//%obj.vbl.createBricks();
 	%obj.setPosition(%obj.vbl.getCenter());
-	echo("got through set position");
+	
 	%obj.owner = %mod.owner; //update ownership, change?
+	%obj.owner.addModule(%obj);
 	%obj.deploy();
-	echo("got through deploy");
 }
 
 function ModuleSO::deploy(%obj)
@@ -102,7 +101,8 @@ package ModulePack
 		if (isObject(%obj.module))
 		{
 			%b.module = %obj.module;
-			%b.setColliding(1); //it's easier for it not to be colliding on the ground, but it needs to be solid in space
+			if (%obj.isHatchBrick())
+				%b.setColliding(1); //it's easier for it not to be colliding on the ground, but it needs to be solid in space
 		}
 		Parent::onCreateBrick(%obj, %b);
 	}
@@ -170,6 +170,17 @@ function ModuleSO::export(%obj, %file)
 	%f.close();
 	%f.delete();
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
