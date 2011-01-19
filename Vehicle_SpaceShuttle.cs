@@ -188,14 +188,26 @@ package shuttleTrust
 {
 	function getTrustLevel(%obj, %other, %a1, %a2)
 	{
-		if(%obj.getDataBlock() != 0 && %obj.getDataBlock().getName() $= "SpaceShuttleVehicle" && isObject(%obj.getMountedObject(0)))
+		if(%obj.getDataBlock() != 0 && %obj.getDataBlock().getName() $= "SpaceShuttleVehicle")
 			return 1;
 		
-		if(%other.getDataBlock() != 0 && %other.getDataBlock().getName() $= "SpaceShuttleVehicle" && isObject(%other.getMountedObject(0)))
+		if(%other.getDataBlock() != 0 && %other.getDataBlock().getName() $= "SpaceShuttleVehicle")
 			return 1;
 		
 		Parent::getTrustLevel(%obj, %other, %a1, %a2);
 	}
+	
+	//This disabled trust for passengers, but only people with trust can get in as drivers. Not quite ideal, but may be useful in the future.
+	// function getTrustLevel(%obj, %other, %a1, %a2)
+	// {
+		// if(%obj.getDataBlock() != 0 && %obj.getDataBlock().getName() $= "SpaceShuttleVehicle" && isObject(%obj.getMountedObject(0)))
+			// return 1;
+		
+		// if(%other.getDataBlock() != 0 && %other.getDataBlock().getName() $= "SpaceShuttleVehicle" && isObject(%other.getMountedObject(0)))
+			// return 1;
+		
+		// Parent::getTrustLevel(%obj, %other, %a1, %a2);
+	// }
 };
 
 activatePackage(shuttleTrust);
