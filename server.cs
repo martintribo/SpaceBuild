@@ -3,22 +3,22 @@
 //Contains no-gravity player scripts (should be replaced soon)
 exec("./Script_Gravity.cs");
 
-//Space Bricks
+//Space bricks (hatches)
 exec("./Brick_Space.cs");
 
-//Cargo player (not yet used)
+//Cargo player (not yet used, waste of datablocks)
 //exec("./Player_Cargo.cs");
 
-//Construction Building ScriptObject
+//Module creation facility script object, generation functions
 exec("./Script_MCF.cs");
 
-//Modules
+//Modules script object
 exec("./Script_Modules.cs");
 
-//Station
+//Station script object
 exec("./Script_Station.cs");
 
-//SBTool
+//SBTool, for interfacing with the gamemode
 exec("./Tool_SBTool.cs");
 
 //Space Shuttle (also execs Particle_Shuttle.cs)
@@ -27,5 +27,5 @@ exec("./Vehicle_SpaceShuttle.cs");
 //SBTick (currently just burning up script)
 exec("./Script_SBTick.cs");
 
-//Old gravity script (needs to be replaced)
-exec("./Script_Gravity.cs");
+//Enforces rules for the server (no hammers/wrenches/wands/building in space)
+exec("./Script_Rules.cs");
