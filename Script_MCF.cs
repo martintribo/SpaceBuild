@@ -7,15 +7,21 @@ function MCFacility::onAdd(%this, %obj)
 	%obj.queue = new SimSet(); //assuming objects keep order inserted in, might be wrong
 	
 	//set up module slot size, bounds of MCF, MCF position, default module slot vblist to load
-	%obj.moduleSlotSize = "32 32 32"; //size that each module slot takes up
+	%obj.moduleSlotSize = VectorScale("32 32 32", 0.33); //size that each module slot takes up
 	%obj.MCFSize = "6 6"; //how big we get before going to the next floor
 	%obj.position = "0 0 0"; //where the center of the MCF is
-	%obj.moduleSlotLoad = ""; //name of the vbList file to load
+	%obj.moduleSlotLoad = "test"; //name of the vbList .bls file to load
 }
 
-function MCFacility::setModuleSlotSize(%obj, %size)
+//if %convert is true, then it'll autoconvert your units to brick units instead of world units
+function MCFacility::setModuleSlotSize(%obj, %size, %convert)
 {
+	if(%convert)
+		%size = vectorScale(%size, 0.33);
+	
 	%obj.moduleSlotSize = %size;
+	
+	//possibly add some code to load the VBL and auto-correct sizing information? wouldn't be hard...later, maybe
 }
 
 function MCFacility::setMCFSize(%obj, %size)
@@ -23,34 +29,41 @@ function MCFacility::setMCFSize(%obj, %size)
 	%obj.MCFSize = %size;
 }
 
+//usually you need to up this position's Z by 1/2 of moduleSlotSize's Z, or it's in the ground, if you set it at a player location
 function MCFacility::setPosition(%obj, %pos)
 {
 	%obj.position = %pos;
 }
 
-//will get the center of the given module slot
+//will get the center of the given module slot - it works!
 function MCFacility::getSlotWorldCenter(%obj, %slot)
 {
-	%pos = getWord(%obj.moduleSlotSize, 0) * getWord(%obj.MCFSize, 0) SPC getWord(%obj.moduleSlotSize, 1) * getWord(%obj.MCFSize, 1) SPC getWord(%obj.moduleSlotSize, 2); //max size
-	%pos = vectorScale(%pos, 0.5); //half of max size
-	%pos = vectorSub(%obj.position, %pos); //get corner
+	%slotSizeX = getWord(%obj.moduleSlotSize, 0);
+	%slotSizeY = getWord(%obj.moduleSlotSize, 1);
+	%slotSizeZ = getWord(%obj.moduleSlotSize, 2);
+	%MCFSizeX = getWord(%obj.MCFSize, 0);
+	%MCFSizeY = getWord(%obj.MCFSize, 1);
 	
+	//get corner
+	%pos = vectorSub(%obj.position, (0.5 * %MCFSizeX * %slotSizeX) SPC (0.5 * %MCFSizeY * %slotSizeY) SPC 0);
 	
-	%slotpos = getWord(%obj.moduleSlotSize, 0) * getWord(%slot, 0) SPC getWord(%obj.moduleSlotSize, 1) * getWord(%slot, 1) SPC getWord(%obj.moduleSlotSize, 2) * getWord(%slot, 2);
-	%slotpos = vectorAdd(%slotpos, %pos); //this should be the top left corner of the slot
+	//now find the correct x/y for module
+	%pos = vectorAdd(%pos, (getWord(%slot, 0) * %slotSizeX - (0.5 * %slotSizeX)) SPC (getWord(%slot, 1) * %slotSizeY - (0.5 * %slotSizeY)));
 	
-	return(%slotpos);
+	//find correct Z
+	%pos = getWords(%pos, 0, 1) SPC %slotSizeZ * getWord(%slot, 2) * 0.5;
+	
+	return(%pos);
 }
 
-//will give the bottom of the given module slot
+//will give the bottom of the given module slot - it works!
 function MCFacility::getSlotWorldBottom(%obj, %slot)
 {
 	%pos = %obj.getSlotWorldCenter(%slot);
 	%pos = vectorSub(%pos, "0 0 " @ getWord(%obj.moduleSlotSize, 2) / 2);
 }
 
-//generate a module slot, owned by %client (optional)
-//this is pretty much entirely psuedo-code but with correct syntax
+//generate a module slot, owned by %client (optional) - offset is wrong because of vbl shifting!
 function MCFacility::generateModuleSlot(%obj, %slot, %client)
 {
 	%vbList = new ScriptObject()
@@ -60,10 +73,11 @@ function MCFacility::generateModuleSlot(%obj, %slot, %client)
 	%vbList.loadBLSFile("config/" @ %obj.moduleSlotLoad @ ".bls");
 	
 	%slotpos = %obj.getSlotWorldBottom(%slot);
-	%vbList.shiftBricks(vectorSub(%slotpos, %vbList.getBottomFace()));
+	
+	echo("Slot pos: " @ %slotpos);
+	%vbList.realign("down\t" @ %slotpos);
 	
 	%vbList.createBricks(%client);
-	
 	%vbList.delete();
 }
 
@@ -81,6 +95,9 @@ function MCFacility::firstFreeSlot(%obj)
 {
 	
 }
+
+
+
 
 function MCFacility::scanBuild(%obj, %brick)
 {
