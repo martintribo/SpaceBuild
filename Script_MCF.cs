@@ -6,17 +6,20 @@ function MCFacility::onAdd(%this, %obj)
 	//create the queue for modules
 	%obj.queue = new SimSet(); //assuming objects keep order inserted in, might be wrong
 	
-	//set up module slot size, bounds of MCF, MCF position, default module slot vblist to load
+	//set up module creation parameters
 	%obj.moduleSlotSize = VectorScale("32 32 32", 0.33); //size that each module slot takes up
-	%obj.MCFSize = "6 6"; //how big we get before going to the next floor
-	%obj.position = "0 0 0"; //where the center of the MCF is
-	%obj.moduleSlotLoad = "test"; //name of the vbList .bls file to load
+	%obj.MCFSize = "6 6"; //how big we get before going to the next floor, should be integers
+	%obj.position = "0 0 0"; //where the center of the MCF is, should be modified with setPosition
+	%obj.moduleSlotLoad = "test"; //name of the vbList .bls file to load (in the config/ directory)
+	
+	//and some default variables, that shouldn't be changed
+	%obj.highestfloor = 0; //handled internally
 }
 
 //if %convert is true, then it'll autoconvert your units to brick units instead of world units
-function MCFacility::setModuleSlotSize(%obj, %size, %convert)
+function MCFacility::setModuleSlotSize(%obj, %size, %dontconvert)
 {
-	if(%convert)
+	if(!%dontconvert)
 		%size = vectorScale(%size, 0.33);
 	
 	%obj.moduleSlotSize = %size;
@@ -79,11 +82,9 @@ function MCFacility::generateModuleSlot(%obj, %slot, %client)
 	
 	%vbList.createBricks(%client);
 	%vbList.delete();
-}
-
-function MCFacility::buildNextFloor(%obj)
-{
-
+	
+	if(getWord(%slot, 2) > %obj.highestfloor)
+		%obj.highestfloor = getWord(%slot, 2);
 }
 
 function MCFacility::deleteModuleSlot(%obj, %slot)
@@ -91,11 +92,25 @@ function MCFacility::deleteModuleSlot(%obj, %slot)
 	
 }
 
-function MCFacility::firstFreeSlot(%obj)
+function MCFacility::slotOccupied(%obj, %slot)
 {
 	
 }
 
+function MCFacility::firstFreeSlot(%obj)
+{
+	for(%z = 0; %z < %obj.highestfloor; %z++)
+	{
+		for(%x = 0; %x < getWord(%obj.MCFSize, 0); %x++)
+		{
+			for(%y = 0; %y < getWord(%obj.MCFSize, 1); %y++)
+			{
+				if(!%obj.slotOccupied(%x SPC %y SPC %z))
+					return %x SPC %y SPC %z;
+			}
+		}
+	}
+}
 
 
 
