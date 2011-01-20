@@ -1,5 +1,36 @@
 //Module Construction Facility
-//This needs to be able to store modules
+//This script object contains build generation scripts and module scanning scripts.
+
+//DEBUG COMMAND (also untested)
+function serverCmdSetUpMCF(%client)
+{
+	if(!%client.isAdmin)
+		return;
+	
+	if(isObject($DebugMCF))
+		$DebugMCF.delete();
+	
+	%obj = new ScriptObject()
+	{
+		class = "MCFacility";
+	};
+	
+	$DebugMCF = %obj;
+	
+	%slotSizeX = getWord(%obj.moduleSlotSize, 0);
+	%slotSizeY = getWord(%obj.moduleSlotSize, 1);
+	%slotSizeZ = getWord(%obj.moduleSlotSize, 2);
+	%MCFSizeX = getWord(%obj.MCFSize, 0);
+	%MCFSizeY = getWord(%obj.MCFSize, 1);
+	
+	%pos = getWords(%client.player.getTransform(), 0, 2);
+	//%pos = vectorAdd(%pos, "0 0 " @ (getWord(%obj.moduleSlotSize, 2) * 0.5) + 0.5);
+	%pos = vectorAdd(%pos, (0.5 * %MCFSizeX * %slotSizeX) SPC (0.5 * %MCFSizeY * %slotSizeY) SPC 0);
+	
+	%obj.setPosition(%pos);
+	
+	commandToClient(%client, 'centerPrint', "Set up as \c3$DebugMCF\c0.", 4);
+}
 
 function MCFacility::onAdd(%this, %obj)
 {
@@ -7,7 +38,7 @@ function MCFacility::onAdd(%this, %obj)
 	%obj.queue = new SimSet(); //assuming objects keep order inserted in, might be wrong
 	
 	//set up module creation parameters
-	%obj.moduleSlotSize = VectorScale("32 32 32", 0.33); //size that each module slot takes up
+	%obj.moduleSlotSize = VectorScale("64 64 40", 0.5); //size that each module slot takes up
 	%obj.MCFSize = "6 6"; //how big we get before going to the next floor, should be integers
 	%obj.position = "0 0 0"; //where the center of the MCF is, should be modified with setPosition
 	%obj.moduleSlotLoad = "test"; //name of the vbList .bls file to load (in the config/ directory)
@@ -20,7 +51,7 @@ function MCFacility::onAdd(%this, %obj)
 function MCFacility::setModuleSlotSize(%obj, %size, %dontconvert)
 {
 	if(!%dontconvert)
-		%size = vectorScale(%size, 0.33);
+		%size = vectorScale(%size, 0.5);
 	
 	%obj.moduleSlotSize = %size;
 	
@@ -54,7 +85,7 @@ function MCFacility::getSlotWorldCenter(%obj, %slot)
 	%pos = vectorAdd(%pos, (getWord(%slot, 0) * %slotSizeX - (0.5 * %slotSizeX)) SPC (getWord(%slot, 1) * %slotSizeY - (0.5 * %slotSizeY)));
 	
 	//find correct Z
-	%pos = getWords(%pos, 0, 1) SPC %slotSizeZ * getWord(%slot, 2) * 0.5;
+	%pos = getWords(%pos, 0, 1) SPC (getWord(%obj.position, 2) + (getWord(%slot, 2) * %slotSizeZ) + (%slotSizeZ * 0.5));
 	
 	return(%pos);
 }
@@ -78,7 +109,11 @@ function MCFacility::generateModuleSlot(%obj, %slot, %client)
 	%slotpos = %obj.getSlotWorldBottom(%slot);
 	
 	echo("Slot pos: " @ %slotpos);
-	%vbList.realign("down\t" @ %slotpos);
+	//%vbList.realign("down\t" @ %slotpos);
+	
+	%shift = vectorSub(%slotpos, getWords(%vbList.getCenter(), 0, 1) SPC %vbList.getBottomFace());
+	
+	%vbList.shiftBricks(%shift);
 	
 	%vbList.createBricks(%client);
 	%vbList.delete();
