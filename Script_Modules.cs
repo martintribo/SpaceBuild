@@ -102,7 +102,11 @@ package ModulePack
 		{
 			%b.module = %obj.module;
 			if (%obj.isHatchBrick())
+			{
 				%b.setColliding(1); //it's easier for it not to be colliding on the ground, but it needs to be solid in space
+				%b.setRendering(1);
+				%b.setRaycasting(1);
+			}
 		}
 		Parent::onCreateBrick(%obj, %b);
 	}
