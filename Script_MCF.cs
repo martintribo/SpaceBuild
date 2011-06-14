@@ -7,6 +7,78 @@ function MCFacility::onAdd(%this, %obj)
 	%obj.queue = new SimSet(); //assuming objects keep order inserted in, might be wrong
 }
 
+function MCFacility::setPosition(%this, %pos)
+{
+	%this.position = %pos;
+}
+
+function MCFacility::getPosition(%this)
+{
+	return %this.position;
+}
+
+function MCFacility::setMCL(%this, %mcl)
+{
+	%this.mclayout = %mcl;
+	%mcl.mcfacility = %this;
+}
+
+function MCFacility::getMCL(%this)
+{
+	return %this.mclayout;
+}
+
+function MCFacility::createSlotForClient(%this, %client)
+{
+	%this.getMCL().createSlot(%this.getMCL().nextFreeSlot(), %client);
+}
+
+function MCFacility::getSlot(%this, %num)
+{
+	return %this.slot[%num];
+}
+
+function MCFacility::setSlot(%this, %num, %obj)
+{
+	%this.slot[%num] = %obj;
+}
+
+function MCFacility::nextFreeSlot(%this)
+{
+	for(%i = 0; %i < %this.getMCL().maxSlots; %i++)
+	{
+		if(!isObject(%this.getSlot(%i)))
+			return(%i);
+	}
+	
+	return -1;
+}
+
+//Bonus!
+function MCFacility::findSlotByBLID(%this, %blid)
+{
+	for(%i = 0; %i < %this.getMCL().maxSlots; %i++)
+	{
+		if(%this.getSlot(%i).ownerBLID == %blid)
+			return %this.getSlot(%i);
+	}
+}
+
+//Bonus!
+function MCFacility::findSlotByName(%this, %name)
+{
+	for(%i = 0; %i < %this.getMCL().maxSlots; %i++)
+	{
+		if(%this.getSlot(%i).ownerName $= %name)
+			return %this.getSlot(%i);
+	}
+}
+
+
+
+
+
+
 function MCFacility::scanBuild(%obj, %brick)
 {
 	//need to just initialize the scan here
