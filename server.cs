@@ -11,6 +11,8 @@ exec("./Brick_Space.cs");
 
 //Module creation facility script object, generation functions
 exec("./Script_MCF.cs");
+exec("./Script_MCSlot.cs");
+exec("./Script_MCL_Grid.cs");
 
 //Modules script object
 exec("./Script_Modules.cs");
