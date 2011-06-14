@@ -3,11 +3,6 @@ function MCL_Grid::onAdd(%this)
 	//absolute maximum number of slots we should ever have; usually never reached
 	//this is required so the MCF knows how many slots to go through in fors
 	%this.maxSlots = 5000;
-
-	//Set some properties (used by this MCLayout, not mandatory)
-	%this.sizeX = 64; //X length of template
-	%this.sizeY = 64; //Y length of template
-	%this.sizeZ = 64; //Z length of template
 	
 	%this.countX = 6; //how many columns of slots to have
 	%this.countY = 6; //how many rows of slots to have
@@ -18,7 +13,7 @@ function MCL_Grid::onAdd(%this)
 		class = "VirtualBrickList";
 	};
 	
-	%this.templateVBL.loadBLSFile("./MCL_Grid_Template.bls");
+	%this.templateVBL.loadBLSFile("config/MCL_Grid_Template.bls");
 	
 	//Loop through template and set all names to _spacebuildSupport here
 }
@@ -68,8 +63,7 @@ function MCL_Grid::nextFreeSlot(%this)
 function MCL_Grid::numberToPosition(%this, %num)
 {
 	%startPos = %this.getMCF().getPosition();
-	%i = %num;
-	%x = 0;
+	%x = %num;
 	%y = 0;
 	%z = 0;
 	
@@ -85,7 +79,7 @@ function MCL_Grid::numberToPosition(%this, %num)
 		%y -= %this.countY;
 	}
 	
-	%pos = (%x * %this.sizeX) SPC (%y * %this.sizeY) SPC (%z * %this.sizeZ);
+	%pos = (%x * %this.templateVBL.getSizeX()) SPC (%y * %this.templateVBL.getSizeY()) SPC (%z * %this.templateVBL.getSizeZ());
 	%pos = vectorAdd(%pos, %startPos);
 	return(%pos);
 }
