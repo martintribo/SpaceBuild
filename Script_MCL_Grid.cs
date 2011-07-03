@@ -7,6 +7,11 @@ function MCL_Grid::onAdd(%this)
 	%this.countX = 6; //how many columns of slots to have
 	%this.countY = 6; //how many rows of slots to have
 	
+	//how much space to leave between slots on each axis
+	%this.paddingX = 0;
+	%this.paddingY = 0;
+	%this.paddingZ = 16;
+	
 	//Load VBL that we're going to use for the template
 	%this.templateVBL = new ScriptObject()
 	{
@@ -79,7 +84,7 @@ function MCL_Grid::numberToPosition(%this, %num)
 		%y -= %this.countY;
 	}
 	
-	%pos = (%x * %this.templateVBL.getSizeX()) SPC (%y * %this.templateVBL.getSizeY()) SPC (%z * %this.templateVBL.getSizeZ());
+	%pos = (%x * (%this.templateVBL.getSizeX() + %this.paddingX)) SPC (%y * (%this.templateVBL.getSizeY() + %this.paddingY)) SPC (%z * (%this.templateVBL.getSizeZ() + %this.paddingZ));
 	%pos = vectorAdd(%pos, %startPos);
 	return(%pos);
 }
