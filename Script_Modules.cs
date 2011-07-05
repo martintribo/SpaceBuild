@@ -101,7 +101,7 @@ package ModulePack
 		if (isObject(%obj.module))
 		{
 			%b.module = %obj.module;
-			if (%obj.isHatchBrick())
+			if (%b.isHatchBrick())
 			{
 				%b.setColliding(1); //it's easier for it not to be colliding on the ground, but it needs to be solid in space
 				%b.setRendering(1);
@@ -175,9 +175,25 @@ function ModuleSO::export(%obj, %file)
 	%f.delete();
 }
 
+function ModuleSO::import(%obj, %file)
+{
+	%f = new FileObject();
+	%f.openForRead(%file);
+	
+	%obj.state = getField(%f.readLine(), 1);
+	
+	%obj.vbl.loadBLSFile(getField(%f.readLine(), 1));
+	
+	%f.close();
+	%f.delete();
+}
 
-
-
+function loadModuleSO(%file)
+{
+	%mod = newModuleSO();
+	%mod.import(%file);
+	return %mod;
+}
 
 
 

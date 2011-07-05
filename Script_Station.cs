@@ -49,9 +49,33 @@ function StationSO::export(%obj, %file)
 	%f.delete();
 }
 
+function StationSO::import(%obj, %file)
+{
+	%f = new FileObject();
+	
+	%f.openForRead(%file);
+	
+	while (!%f.isEOF())
+	{
+		%line = %f.readLine();	
+		%numFields = getFieldCount(%line);
+		for (%i = 0; %i < %numFiels; %i++)
+			%fields[%i] = getField(%line, %i);
+		%obj.addModule(loadModuleSO(%fields[1]));
+	}
+	
+	%f.close();
+	%f.delete();
+}
 
-
-
+function StationSO::createBricks(%obj)
+{
+	for (%i = 0; %i < %obj.modules.getCount(); %i++)
+	{
+		%mod = %obj.modules.getObject(%i);
+		%mod.vbl.createBricks();
+	}
+}
 
 
 
