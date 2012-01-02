@@ -31,3 +31,6 @@ exec("./Script_SBTick.cs");
 
 //Enforces rules for the server (no hammers/wrenches/wands/building in space)
 exec("./Script_Rules.cs");
+
+//Contains helper functions for testing out specific parts of the gamemode
+exec("./Script_Tests.cs");
