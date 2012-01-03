@@ -96,12 +96,15 @@ function ModuleSO::setPosition(%obj, %pos)
 
 package ModulePack
 {
+	//Interesting note!
+	//Support_ToolBrick must be executed before this, or this is never called!
+	//TODO: Make this use a BrickFactory instead of the old way
 	function virtualBrickList::onCreateBrick(%obj, %b)
 	{
 		if (isObject(%obj.module))
 		{
 			%b.module = %obj.module;
-			if (%b.isHatchBrick())
+			if (%b.isHatch())
 			{
 				%b.setColliding(1); //it's easier for it not to be colliding on the ground, but it needs to be solid in space
 				%b.setRendering(1);
