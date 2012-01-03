@@ -184,8 +184,9 @@ function ModuleSO::import(%obj, %file)
 	%f.openForRead(%file);
 	
 	%obj.state = getField(%f.readLine(), 1);
-	
+	%obj.numHatches = getField(%f.readLine(), 1);
 	%obj.vbl.loadBLSFile(getField(%f.readLine(), 1));
+	%obj.vbl.createBricks();
 	
 	%f.close();
 	%f.delete();
