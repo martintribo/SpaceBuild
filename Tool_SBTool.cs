@@ -72,27 +72,34 @@ function SBToolCollision(%obj, %col)
 	}
 	else
 	{
+		//%col is a hatch by this point
 		%attachId = -1;
 		%mod = %mcf.peekModule();
-		//see if there is a compatible hatch
+		//see if there is a compatible hatch on the module being connected
 		if (isObject(%mod))
 		{
+			//get the type of the hatch %col is, find compatible hatch on module
 			%colType = %col.module.getHatchType(%col.hatchId);
 			%list = %mod.getCompatibleHatches(%colType);
 			
 			if (getFieldCount(%list) > 0)
 				%attachId = getField(%list, 0);
-		}
-		if (%attachId != -1)
-		{
-			%mod = %mcf.popModule();
 			
-			commandToClient(%client, 'bottomPrint', "Attaching your module...", 2);
-			%mod.attachTo(%attachId, %col.module, %col.hatchId);
-			commandToClient(%client, 'bottomPrint', "Your module was attached!", 4);
+			//if compatible hatch was found
+			if (%attachId != -1)
+			{
+				%mod = %mcf.popModule();
+				
+				commandToClient(%client, 'bottomPrint', "Attaching your module...", 2);
+				%mod.attachTo(%attachId, %col.module, %col.hatchId);
+				commandToClient(%client, 'bottomPrint', "Your module was attached!", 4);
+			}
+			else
+				commandToClient(%client, 'bottomPrint', "Compatible module not found!", 4);
 		}
-		else
+		else //hit a hatch, but no module to attach, open the hatch
 		{
+			//TODO: Make function to open and close hatches
 			%col.setColliding(false);
 			%col.setRendering(false);
 			%col.setRaycasting(false);
