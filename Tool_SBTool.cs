@@ -121,29 +121,35 @@ function ServerCmdSBTool(%client)
 function ServerCmdSetupSpace(%client)
 {
 	if (%client.isAdmin)
+		setupSpace();
+}
+
+function setupSpace()
+{
+	$DebugMCF = new ScriptObject()
 	{
-		$DebugMCF = new ScriptObject()
-		{
-			class = "MCFacility";
-		};
-	}
+		class = "MCFacility";
+	};
 }
 
 function ServerCmdFirstModule(%client, %x, %y, %z)
 {
 	if (%client.isAdmin)
+		firstModule(%x, %y, %z);
+}
+
+function firstModule(%x, %y, %z)
+{
+	$DebugStation = new ScriptObject()
 	{
-		$DebugStation = new ScriptObject()
-		{
-			class = "StationSO";
-		};
-		%mod = $DebugMCF.popModule();
-		%mod.state = "Deployed"; //we're manually setting this up
-		%mod.vbl.shiftBricks(%x SPC %y SPC %z); //going to change this to somethign better, but good for testing
-		%mod.vbl.createBricks();
-		$DebugStation.addModule(%mod);
-		$stationPos = $DebugStation.getPosition();
-	}
+		class = "StationSO";
+	};
+	%mod = $DebugMCF.popModule();
+	%mod.state = "Deployed"; //we're manually setting this up
+	%mod.vbl.shiftBricks(%x SPC %y SPC %z); //going to change this to somethign better, but good for testing
+	%mod.vbl.createBricks();
+	$DebugStation.addModule(%mod);
+	$stationPos = $DebugStation.getPosition();
 }
 
 function ServerCmdCheckModules(%client)
@@ -158,13 +164,18 @@ function ServerCmdClearModules(%client)
 {
 	if (%client.isAdmin)
 	{
-		%mod = $DebugMCF.popModule();
-		while (isObject(%mod))
-		{
-			%mod.delete();
-			%mod = $DebugMCF.popModule();
-		}
+		clearModules();
 		
 		messageClient(%client, '', "\c2Module queue cleared.");
+	}
+}
+
+function clearModules()
+{
+	%mod = $DebugMCF.popModule();
+	while (isObject(%mod))
+	{
+		%mod.delete();
+		%mod = $DebugMCF.popModule();
 	}
 }
