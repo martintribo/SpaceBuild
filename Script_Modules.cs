@@ -156,6 +156,53 @@ function moduleSO::createCargoPlayer(%module)
 	%module.setState("cargo");
 }
 
+//error codes:
+//1 - module does not fit bounds
+//2 - module is empty/too few bricks
+function ModuleSO::verifyVBL(%obj)
+{
+	%maxBounds = "8 16 8.2"; //16 32 12.66 to users
+	%minBricks = 1;
+	%allowSwitchingXandY = true;
+	
+	%x = %obj.vbl.getSizeX();
+	%y = %obj.vbl.getSizeY();
+	%z = %obj.vbl.getSizeZ();
+	
+	//check max bounds
+	if (%allowSwitchingXandY)
+	{
+		//this is a bit complicated;
+		//it checks that either rotation of the VBL will fit the max bounds
+		%highest = getMax(getWord(%maxBounds, 0), getWord(%maxBounds, 1));
+		%lowest = getMin(getWord(%maxBounds, 0), getWord(%maxBounds, 1));
+		
+		if (%x > %lowest)
+		{
+			if (%x > %highest)
+				return 1;
+			else
+				if (%y > %lowest)
+					return 1;
+		}else{
+			if (%y > %highest)
+				return 1;
+		}
+	}else{
+		if (%x > getWord(%maxBounds, 0))
+			return 1;
+		if (%y > getWord(%maxBounds, 1))
+				return 1;
+	}
+	
+	if (%z > getWord(%maxBounds, 2))
+			return 1;
+	
+	//check min bricks
+	if (%obj.vbl.getCount() < %minBricks)
+		return 2;
+}
+
 function ModuleSO::export(%obj, %file)
 {
 	%name = fileBase(%file);

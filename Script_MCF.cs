@@ -140,6 +140,24 @@ function MCFacility::onFinishedFinding(%obj, %mod, %bf)
 {
 	//delete the Brick Finder and make a new module with that vbl
 	echo("onfinishedfinding" SPC %mod SPC %bf);
+	
+	%verificationError = %mod.verifyVBL();
+	switch (%verificationError) //this should report errors in a better way, directly to the user
+	{
+		case 1: //module does not fit bounds
+			error("SpaceBuild module verification error - does not fit within maximum module bounds!");
+		case 2: //module is empty/doesn't have min bricks
+			error("SpaceBuild module verification error - module is empty/has too few bricks!");
+	}
+	
+	//If there was any error, abort making the module
+	if (%verificationError != 0)
+	{
+		%mod.delete();
+		%bf.delete();
+		return;
+	}
+	
 	%obj.addToQueue(%mod);
 	%bf.delete();
 }
