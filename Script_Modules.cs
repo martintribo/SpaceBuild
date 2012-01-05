@@ -201,6 +201,9 @@ function ModuleSO::verifyVBL(%obj)
 	//check min bricks
 	if (%obj.vbl.getCount() < %minBricks)
 		return 2;
+		
+	//note: functions don't return 0 by default
+	return 0;
 }
 
 function ModuleSO::export(%obj, %file)
