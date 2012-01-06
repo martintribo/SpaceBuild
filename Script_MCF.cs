@@ -212,7 +212,7 @@ function virtualBrickList::cs_create_SPACEHATCH(%obj, %num, %brick)
 
 function virtualBrickList::cs_save_SPACEHATCH(%obj, %num, %file)
 {
-	if (%brick.hatchId !$= "")
+	if (%obj.virBricks[%num, "SPACEHATCH"] !$= "")
 		%file.writeLine("+-SPACEHATCH" SPC %obj.virBricks[%num, "SPACEHATCH"]);
 }
 
