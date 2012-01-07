@@ -137,6 +137,11 @@ function setupSpace()
 	{
 		class = "MCFacility";
 	};
+	$DebugMCL = new ScriptObject()
+	{
+		class = "MCL_Grid";
+	};
+	$DebugMCF.setMCL($DebugMCL);
 }
 
 function ServerCmdFirstModule(%client, %x, %y, %z)
@@ -156,7 +161,7 @@ function firstModule(%x, %y, %z)
 	%mod.vbl.shiftBricks(%x SPC %y SPC %z); //going to change this to somethign better, but good for testing
 	%mod.vbl.createBricks();
 	$DebugStation.addModule(%mod);
-	$stationPos = $DebugStation.getPosition();
+	//$stationPos = $DebugStation.getPosition();
 }
 
 function ServerCmdCheckModules(%client)

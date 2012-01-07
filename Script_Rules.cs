@@ -62,3 +62,20 @@ function serverCmdUptime(%client)
 	%time = getTimeString(mFloor(getSimTime() / 1000));
 	messageClient(%client, "", "\c2This server has been running for \c0" @ %time @ "\c2.");
 }
+
+//easy save
+function ServerCmdSaveSpaceBuild(%client)
+{
+	if(!%client.isAdmin)
+		return;
+	
+	$DebugStation.export("config/server/SpaceBuild/debugstation.sbs");
+}
+
+function ServerCmdLoadSpaceBuild(%client)
+{
+	if(!%client.isAdmin)
+		return;
+	
+	$DebugStation.import("config/server/SpaceBuild/debugstation.sbs"); //also creates bricks (in moduleSO.import)
+}
