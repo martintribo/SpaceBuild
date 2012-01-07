@@ -13,7 +13,8 @@ function GameConnection::giveModuleSlot(%client)
 		return;
 	}
 	
-	%client.player.setTransform(vectorAdd(%mcf.getSlot(%slot).getPosition(), "0 0 4"));
+	%client.player.setVelocity("0 0 0");
+	%client.player.setTransform(vectorAdd(%slot.getPosition(), "-12 0 -6") SPC "0 0 1" SPC $pi/2);
 }
 
 registerOutputEvent("GameConnection","giveModuleSlot","",0);
