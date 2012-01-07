@@ -47,6 +47,9 @@ else
 	//Enforces rules for the server (no hammers/wrenches/wands/building in space)
 	exec("./Script_Rules.cs");
 
+	//Events for interacting with the MCF
+	exec("./Event_Space.cs");
+
 	//Contains helper functions for testing out specific parts of the gamemode
 	exec("./Script_Tests.cs");
 }

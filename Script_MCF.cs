@@ -33,9 +33,9 @@ function MCFacility::createSlotForClient(%this, %client)
 	%slot = %this.getMCL().nextFreeSlot();
 	
 	if(%slot != -1)
-		%this.getMCL().createSlot(%slot, %client);
-	
-	return %slot;
+		return %this.getMCL().createSlot(%slot, %client);
+	else
+		return -1;
 }
 
 function MCFacility::getSlot(%this, %num)
