@@ -206,20 +206,18 @@ function MCFacility::debugAttach(%obj)
 
 function MCFacility::export(%obj, %filePath)
 {
-	%path = fileBase(%filePath);
-	
 	%file = new FileObject();
 	%file.openForWrite(%filePath);
 	
 	%file.writeLine(%obj.getPosition()); //first line is always position
 	for(%i = 0; %i < %obj.getMCL().maxSlots; %i++)
 	{
-		if(isObject(%this.slot[%i]))
+		if(isObject(%obj.slot[%i]))
 		{
 			//save format is:
 			//slotNum^ownerBLID^ownerName
 			//position can be derived from slotNum (MCL.numberToPosition(slot))
-			%file.writeLine(%i TAB %this.slot[%i].ownerBLID TAB %this.slot[%i].ownerName);
+			%file.writeLine(%i TAB %obj.slot[%i].ownerBLID TAB %obj.slot[%i].ownerName);
 		}
 	}
 	%file.close();
@@ -228,8 +226,6 @@ function MCFacility::export(%obj, %filePath)
 
 function MCFacility::import(%obj, %file)
 {
-	%path = fileBase(%filePath);
-	
 	%file = new FileObject();
 	%file.openForRead(%filePath);
 	%obj.setPosition(%file.readLine()); //first line is always position
@@ -239,7 +235,7 @@ function MCFacility::import(%obj, %file)
 		
 		%slotNum = getField(%line, 0);
 		%blid = getField(%line, 1);
-		%name = getField9%line, 2);
+		%name = getField(%line, 2);
 		
 		%slotSO = new ScriptObject()
 		{

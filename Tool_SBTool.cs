@@ -141,6 +141,7 @@ function setupSpace()
 	{
 		class = "MCL_Grid";
 	};
+	$DebugMCF.setPosition("-472 393 163"); //fair lands space coordinates
 	$DebugMCF.setMCL($DebugMCL);
 }
 

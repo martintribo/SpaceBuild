@@ -39,7 +39,7 @@ function MCL_Grid::createSlot(%this, %num, %client)
 		number = %num;
 		position = %pos;
 		ownerBLID = %client.bl_id;
-		ownerName = %client.getName();
+		ownerName = %client.name;
 	};
 	%slot.createTemplate(%this.templateVBL);
 	
