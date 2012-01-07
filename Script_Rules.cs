@@ -69,6 +69,10 @@ function ServerCmdSaveSpaceBuild(%client)
 	if(!%client.isAdmin)
 		return;
 	
+	if(!isObject($DebugStation))
+		return;
+	
+	$DebugMCF.export("config/server/SpaceBuild/debugmcf.sbm");
 	$DebugStation.export("config/server/SpaceBuild/debugstation.sbs");
 }
 
@@ -77,5 +81,9 @@ function ServerCmdLoadSpaceBuild(%client)
 	if(!%client.isAdmin)
 		return;
 	
+	if(!isObject($DebugStation))
+		setupSpace();
+	
+	$DebugMCF.import("config/server/SpaceBuild/debugmcf.sbm");
 	$DebugStation.import("config/server/SpaceBuild/debugstation.sbs"); //also creates bricks (in moduleSO.import)
 }
