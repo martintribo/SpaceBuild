@@ -3,7 +3,7 @@ $SBTickAutoStart = 1;
 
 $playerBurnSpeed = 55;
 $playerBurnDamage = 10;
-$showStationLocator = 0;
+$showStationLocator = 1;
 
 if($SBTickAutoStart)
 	schedule(1000, 0, "SBTick");
@@ -29,9 +29,9 @@ function SBTick()
 				else if(%client.player.getMountedImage(2) == NameToID("shuttleFlameImage"))
 					removeBurnEffects(%client.player);
 				
-				if($stationPos !$= "" && $showStationLocator)
+				if(isObject($DebugStation) && $DebugStation.getPosition() !$= "" && $showStationLocator)
 				{
-					%stationPos = $stationPos; //convert to function at a later date!
+					%stationPos = $DebugStation.getPosition(); //$stationPos; //convert to function at a later date!
 					%stationPos = vectorSub(getWords(%client.player.getTransform(), 0, 2), %stationPos);
 					%rx = mFloor(getWord(%stationPos, 0));
 					%ry = mFloor(getWord(%stationPos, 1));
@@ -62,9 +62,9 @@ function SBTick()
 					if(%z > 400)
 						%zColor = "\c0";
 					
-					commandToClient(%client, 'bottomPrint', "\c2Gravity: x" @ %grav @ ". Altitude: " @ %rz @ ". \c6Station: " @ %xColor @ %rx SPC %yColor @ %ry SPC %zColor @ %rz @ ".", 5);
+					commandToClient(%client, 'bottomPrint', "\c2Gravity: x" @ %grav @ ". Altitude: " @ %rz @ ". \c6Station: " @ %xColor @ %rx SPC %yColor @ %ry SPC %zColor @ %rz @ ".", 3);
 				}else{
-					commandToClient(%client, 'bottomPrint', "\c2Gravity: x" @ %grav @ ". Altitude: " @ mFloor(getWord(%client.player.getTransform(), 2)) @ ".", 5);
+					commandToClient(%client, 'bottomPrint', "\c2Gravity: x" @ %grav @ ". Altitude: " @ mFloor(getWord(%client.player.getTransform(), 2)) @ ".", 3);
 				}
 			}
 		}

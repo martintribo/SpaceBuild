@@ -18,7 +18,7 @@ function MCL_Grid::onAdd(%this)
 		class = "VirtualBrickList";
 	};
 	
-	%this.templateVBL.loadBLSFile("config/MCL_Grid_Template.bls");
+	%this.templateVBL.loadBLSFile("add-ons/Gamemode_SpaceBuild/MCL_Grid_Template.bls");
 	
 	//Loop through template and set all names to _spacebuildSupport here
 }
@@ -72,6 +72,11 @@ function MCL_Grid::numberToPosition(%this, %num)
 	%y = 0;
 	%z = 0;
 	
+	//hardcoded for now; needs to take in to account conversions
+	%sizeX = 32;
+	%sizeY = 32;
+	%sizeZ = 14;
+	
 	while(%x >= %this.countX)
 	{
 		%y++;
@@ -84,7 +89,7 @@ function MCL_Grid::numberToPosition(%this, %num)
 		%y -= %this.countY;
 	}
 	
-	%pos = (%x * (%this.templateVBL.getSizeX() + %this.paddingX)) SPC (%y * (%this.templateVBL.getSizeY() + %this.paddingY)) SPC (%z * (%this.templateVBL.getSizeZ() + %this.paddingZ));
+	%pos = (%x * (%sizeX + %this.paddingX)) SPC (%y * (%sizeY + %this.paddingY)) SPC (%z * (%sizeZ + %this.paddingZ));
 	%pos = vectorAdd(%pos, %startPos);
 	return(%pos);
 }

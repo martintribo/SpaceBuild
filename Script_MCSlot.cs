@@ -21,6 +21,7 @@ function MCSlot::createTemplate(%this, %vbl)
 function MCSlotBrickFactory::onCreateBrick(%obj, %brick)
 {
 	%brick.slot = %obj.slot;
+	%brick.setNTObjectName("spacebuildSupport");
 }
 
 function fxDTSBrick::findSlot(%obj)
