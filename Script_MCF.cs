@@ -30,7 +30,12 @@ function MCFacility::getMCL(%this)
 
 function MCFacility::createSlotForClient(%this, %client)
 {
-	%this.getMCL().createSlot(%this.getMCL().nextFreeSlot(), %client);
+	%slot = %this.getMCL().nextFreeSlot();
+	
+	if(%slot != -1)
+		%this.getMCL().createSlot(%slot, %client);
+	
+	return %slot;
 }
 
 function MCFacility::getSlot(%this, %num)
@@ -62,6 +67,8 @@ function MCFacility::findSlotByBLID(%this, %blid)
 		if(%this.getSlot(%i).ownerBLID == %blid)
 			return %this.getSlot(%i);
 	}
+	
+	return -1;
 }
 
 //Bonus!
@@ -72,6 +79,8 @@ function MCFacility::findSlotByName(%this, %name)
 		if(%this.getSlot(%i).ownerName $= %name)
 			return %this.getSlot(%i);
 	}
+	
+	return -1;
 }
 
 
@@ -195,6 +204,56 @@ function MCFacility::debugAttach(%obj)
 	%obj.queue.getObject(1).attachTo(%obj.queue.getObject(0), "hatch1", "hatch0");
 }
 
+function MCFacility::export(%obj, %filePath)
+{
+	%path = fileBase(%filePath);
+	
+	%file = new FileObject();
+	%file.openForWrite(%filePath);
+	
+	%file.writeLine(%obj.getPosition()); //first line is always position
+	for(%i = 0; %i < %obj.getMCL().maxSlots; %i++)
+	{
+		if(isObject(%this.slot[%i]))
+		{
+			//save format is:
+			//slotNum^ownerBLID^ownerName
+			//position can be derived from slotNum (MCL.numberToPosition(slot))
+			%file.writeLine(%i TAB %this.slot[%i].ownerBLID TAB %this.slot[%i].ownerName);
+		}
+	}
+	%file.close();
+	%file.delete();
+}
+
+function MCFacility::import(%obj, %file)
+{
+	%path = fileBase(%filePath);
+	
+	%file = new FileObject();
+	%file.openForRead(%filePath);
+	%obj.setPosition(%file.readLine()); //first line is always position
+	while(!%file.isEOF())
+	{
+		%line = %file.readLine();
+		
+		%slotNum = getField(%line, 0);
+		%blid = getField(%line, 1);
+		%name = getField9%line, 2);
+		
+		%slotSO = new ScriptObject()
+		{
+			class = "MCSlot";
+			number = %slotNum;
+			position = %obj.getMCL().numberToPosition(%slotNum);
+			ownerBLID = %blid;
+			ownerName = %name;
+		};
+		%obj.setSlot(%i, %slotSO);
+	}
+	%file.close();
+	%file.delete();
+}
 
 //so we can save hatchbricks
 addCustSave("SPACEHATCH");
