@@ -206,6 +206,9 @@ function MCFacility::debugAttach(%obj)
 
 function MCFacility::export(%obj, %filePath)
 {
+	%path = filePath(%filePath);
+	%fileName = fileBase(%filePath);
+	
 	%file = new FileObject();
 	%file.openForWrite(%filePath);
 	
@@ -217,15 +220,21 @@ function MCFacility::export(%obj, %filePath)
 			//save format is:
 			//slotNum^ownerBLID^ownerName
 			//position can be derived from slotNum (MCL.numberToPosition(slot))
-			%file.writeLine(%i TAB %obj.slot[%i].ownerBLID TAB %obj.slot[%i].ownerName);
+			%file.writeLine(%i TAB %obj.slot[%i].ownerBLID TAB %obj.slot[%i].ownerName TAB %obj.slot[%i].size);
+			
+			//save VBL
+			%obj.slot[%i].vbl.exportBLSFile(%path @ "/" @ %fileName @ "_vbl" @ %i @ ".vbl");
 		}
 	}
 	%file.close();
 	%file.delete();
 }
 
-function MCFacility::import(%obj, %file)
+function MCFacility::import(%obj, %filePath)
 {
+	%path = filePath(%filePath);
+	%fileName = fileBase(%filePath);
+	
 	%file = new FileObject();
 	%file.openForRead(%filePath);
 	%obj.setPosition(%file.readLine()); //first line is always position
@@ -236,7 +245,8 @@ function MCFacility::import(%obj, %file)
 		%slotNum = getField(%line, 0);
 		%blid = getField(%line, 1);
 		%name = getField(%line, 2);
-		
+		%size = getField(%line, 3);
+		%vblPath = %path @ "/" @ %fileName @ "_vbl" @ %slotNum @ ".vbl";
 		%slotSO = new ScriptObject()
 		{
 			class = "MCSlot";
@@ -244,7 +254,12 @@ function MCFacility::import(%obj, %file)
 			position = %obj.getMCL().numberToPosition(%slotNum);
 			ownerBLID = %blid;
 			ownerName = %name;
+			size = %size;
 		};
+		
+		//load VBL
+		%slotSO.vbl.loadBLSFile(%vblPath);
+		
 		%obj.setSlot(%i, %slotSO);
 	}
 	%file.close();

@@ -7,6 +7,11 @@ function MCL_Grid::onAdd(%this)
 	%this.countX = 6; //how many columns of slots to have
 	%this.countY = 6; //how many rows of slots to have
 	
+	//how big the slot is; used for validity checks and the grid
+	%this.sizeX = 32;
+	%this.sizeY = 32;
+	%this.sizeZ = 14;
+	
 	//how much space to leave between slots on each axis
 	%this.paddingX = 0;
 	%this.paddingY = 0;
@@ -40,6 +45,7 @@ function MCL_Grid::createSlot(%this, %num, %client)
 		position = %pos;
 		ownerBLID = %client.bl_id;
 		ownerName = %client.name;
+		size = %this.sizeX SPC %this.sizeY SPC %this.sizeZ;
 	};
 	%slot.createTemplate(%this.templateVBL);
 	
@@ -72,11 +78,6 @@ function MCL_Grid::numberToPosition(%this, %num)
 	%y = 0;
 	%z = 0;
 	
-	//hardcoded for now; needs to take in to account conversions
-	%sizeX = 32;
-	%sizeY = 32;
-	%sizeZ = 14;
-	
 	while(%x >= %this.countX)
 	{
 		%y++;
@@ -89,7 +90,7 @@ function MCL_Grid::numberToPosition(%this, %num)
 		%y -= %this.countY;
 	}
 	
-	%pos = (%x * (%sizeX + %this.paddingX)) SPC (%y * (%sizeY + %this.paddingY)) SPC (%z * (%sizeZ + %this.paddingZ));
+	%pos = (%x * (%this.sizeX + %this.paddingX)) SPC (%y * (%this.sizeY + %this.paddingY)) SPC (%z * (%this.sizeZ + %this.paddingZ));
 	%pos = vectorAdd(%pos, %startPos);
 	return(%pos);
 }

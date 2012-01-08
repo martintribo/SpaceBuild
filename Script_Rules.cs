@@ -41,19 +41,128 @@ package SpaceBuildRulesPackage {
 		parent::onHitObject(%this, %obj, %a, %col, %fade, %pos, %normal);
 	}
 	
-	function serverCmdPlantBrick(%client)
+	//function serverCmdPlantBrick(%client)
+	//{
+	//	if(getWord(%client.player.tempbrick.getPosition(), 2) >= $spaceHeight && !%client.isAdmin && $sbRemindBuilding)
+	//	{
+	//		commandToClient(%client, 'centerPrint', "\c3You can't build in space!\n\c0Build a module on the ground!", 5);
+	//		return;
+	//	}
+	//	parent::serverCmdPlantBrick(%client);
+	//}
+	
+	//function getTrustLevel(%obj, %other, %a1, %a2)
+	//{
+	//	if(%obj.dataBlock != 0 && %obj.getDataBlock().getName() $= "SpaceShuttleVehicle")
+	//		return 1;
+		
+	//	if(%other.dataBlock != 0 && %other.getDataBlock().getName() $= "SpaceShuttleVehicle")
+	//		return 1;
+		
+	//	Parent::getTrustLevel(%obj, %other, %a1, %a2);
+	//}
+	
+	function fxDTSBrick::onPlant(%this)
 	{
-		if(getWord(%client.player.tempbrick.getPosition(), 2) >= $spaceHeight && !%client.isAdmin && $sbRemindBuilding)
+		parent::onPlant(%this);
+		
+		%client = %this.client;
+		%slotFound = -1;
+		for(%i = 0; %i < %this.getNumDownBricks(); %i++)
 		{
-			commandToClient(%client, 'centerPrint', "\c3You can't build in space!\n\c0Build a module on the ground!", 5);
+			%brick = %this.getDownBrick(%i);
+			if(isObject(%brick.slot))
+			{
+				if(%slotFound == -1)
+				{
+					%slotFound = %brick.slot;
+				}else{
+					//a slot was already found; that means this brick is on 2 or more slots
+					//this is not allowed, so break the brick and send an error message
+					%this.killBrick();
+					commandToClient(%client, 'centerPrint', "Bricks can only be in one building area!", 3);
+					return;
+				}
+			}
+		}
+		
+		//repeat the check for upBricks
+		for(%i = 0; %i < %this.getNumUpBricks(); %i++)
+		{
+			%brick = %this.getUpBrick(%i);
+			if(isObject(%brick.slot))
+			{
+				if(%slotFound == -1)
+				{
+					%slotFound = %brick.slot;
+				}else{
+					//a slot was already found; that means this brick is on 2 or more slots
+					//this is not allowed, so break the brick and send an error message
+					%this.killBrick();
+					commandToClient(%client, 'centerPrint', "Bricks can only be in one building area!", 3);
+					return;
+				}
+			}
+		}
+		
+		if(%slotFound == -1)
+		{
+			//no slot was found; they're probably building on the ground, or somewhere they shouldn't
+			//unless they're admin, kill their brick and send an error message
+			if(!%client.isAdmin)
+			{
+				%this.killBrick();
+				commandToClient(%client, 'centerPrint', "You can only build in the building areas!", 3);
+				return;
+			}else{
+				//if it's not connected to anything, well...there's no point continuing our checks
+				return;
+			}
+		}
+		
+		//okay, they're building in a slot; do they have permission to build on it?
+		//this check should be taken care of by the normal getTrustLevel in the original function.
+		
+		//is this brick within the bounds of the MCSlotSO it's connected to?
+		if(!%this.withinBounds(%slotFound.getPosition(), %slotFound.size))
+		{
+			%this.killBrick();
+			commandToClient(%client, 'centerPrint', "You're building too far out of your building area!", 3);
 			return;
 		}
-		parent::serverCmdPlantBrick(%client);
+		
+		//okay, they passed all checks! now, we can add this new brick to the VBL of the slot... (this also sets the brick's slot property to %slotFound)
+		%slotFound.addBrick(%this);
 	}
+	
+	function fxDTSBrick::onRemove(%this)
+	{
+		//if this brick is in a slot, remove it from the slot's VBL
+		if(isObject(%this.slot))
+			%this.slot.removeBrick(%this);
+		
+		parent::onRemove(%this);
+	}
+	
 };
 activatePackage(SpaceBuildRulesPackage);
 
-
+function fxDTSBrick::withinBounds(%this, %center, %checkSize)
+{
+	%brickBox = %this.getWorldBox();
+	%checkBoxMin = vectorSub(%center, vectorScale(%checkSize, 0.5));
+	%checkBoxMax = vectorAdd(%center, vectorScale(%checkSize, 0.5));
+	
+	for(%i = 0; %i < 3; %i++)
+	{
+		if(getWord(%brickBox, %i) < getWord(%checkBoxMin, %i))
+			return false;
+		if(getWord(%brickBox, %i + 3) > getWord(%checkBoxMax, %i))
+			return false;
+	}
+	
+	return true;
+}
 
 
 //bonus commands!
