@@ -1,3 +1,12 @@
+function MCSlot::onAdd(%this)
+{
+	//create a VBL to store our bricks in
+	%this.vbl = new ScriptObject()
+	{
+		class = "VirtualBrickList";
+	};
+}
+
 function MCSlot::getPosition(%this)
 {
 	return %this.position;
@@ -6,6 +15,39 @@ function MCSlot::getPosition(%this)
 //Places bricks in the VBL as-is, at this slot's position.
 function MCSlot::createTemplate(%this, %vbl)
 {
+	%factory = new ScriptObject(MCSlotTemplateBrickFactory)
+	{
+		class = "BrickFactory";
+		slot = %this;
+	};
+	%pos = %this.getPosition();
+	%vbl.recenter(%pos);
+	%factory.createBricks(%vbl);
+	%factory.delete();
+}
+
+function MCSlotTemplateBrickFactory::onCreateBrick(%this, %brick)
+{
+	%brick.slot = %this.slot;
+	%brick.setNTObjectName("spacebuildSupport"); //mark template bricks as such
+	
+	%this.addBrick(%brick); //add the template bricks to be part of our VBL
+}
+
+function MCSlot::addBrick(%this, %brick)
+{
+	%brick.slot = %this;
+	%this.vbl.addRealBrick(%brick);
+}
+
+function MCSlot::removeBrick(%this, %brick)
+{
+	//the VBL has no support for this
+	//silly nitramtj
+}
+
+function MCSlot::createBricks(%this)
+{
 	%factory = new ScriptObject(MCSlotBrickFactory)
 	{
 		class = "BrickFactory";
@@ -13,15 +55,13 @@ function MCSlot::createTemplate(%this, %vbl)
 	};
 	%pos = %this.getPosition();
 	%vbl.recenter(%pos);
-	//%vbl.createBricks();
 	%factory.createBricks(%vbl);
 	%factory.delete();
 }
 
-function MCSlotBrickFactory::onCreateBrick(%obj, %brick)
+function MCSlotBrickFactory::onCreateBrick(%this, %brick)
 {
-	%brick.slot = %obj.slot;
-	%brick.setNTObjectName("spacebuildSupport");
+	%brick.slot = %this.slot;
 }
 
 function fxDTSBrick::findSlot(%obj)
