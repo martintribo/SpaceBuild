@@ -29,9 +29,8 @@ function MCSlot::createTemplate(%this, %vbl)
 function MCSlotTemplateBrickFactory::onCreateBrick(%this, %brick)
 {
 	%brick.slot = %this.slot;
+	%brick.isSBTemplate = true;
 	%brick.setNTObjectName("spacebuildSupport"); //mark template bricks as such
-	
-	%this.addBrick(%brick); //add the template bricks to be part of our VBL
 }
 
 function MCSlot::addBrick(%this, %brick)
@@ -46,6 +45,7 @@ function MCSlot::removeBrick(%this, %brick)
 	//silly nitramtj
 }
 
+//used for loading bricks
 function MCSlot::createBricks(%this)
 {
 	%factory = new ScriptObject(MCSlotBrickFactory)
@@ -62,20 +62,4 @@ function MCSlot::createBricks(%this)
 function MCSlotBrickFactory::onCreateBrick(%this, %brick)
 {
 	%brick.slot = %this.slot;
-}
-
-function fxDTSBrick::findSlot(%obj)
-{
-	%slot = 0;
-	if (%obj.getNumDownBricks())
-		%slot = %obj.getDownBrick(0).slot;
-	else if (%obj.getNumUpBricks())
-		%slot = %obj.getUpBrick(0).slot;
-	
-	return %slot;
-}
-
-function fxDTSBrick::isInSlot(%obj)
-{
-	
 }

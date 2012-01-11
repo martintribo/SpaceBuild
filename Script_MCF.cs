@@ -232,6 +232,17 @@ function MCFacility::export(%obj, %filePath)
 
 function MCFacility::import(%obj, %filePath)
 {
+	if(!isObject(%obj.getMCL()))
+	{
+		error("MCFacility::import - this MCF has no MCL!");
+		return;
+	}
+	if(!isObject(%obj.getMCL().templateVBL))
+	{
+		error("MCFacility::import - this MCF's MCL has no templateVBL!");
+		return;
+	}
+	
 	%path = filePath(%filePath);
 	%fileName = fileBase(%filePath);
 	
@@ -247,6 +258,7 @@ function MCFacility::import(%obj, %filePath)
 		%name = getField(%line, 2);
 		%size = getField(%line, 3);
 		%vblPath = %path @ "/" @ %fileName @ "_vbl" @ %slotNum @ ".vbl";
+		
 		%slotSO = new ScriptObject()
 		{
 			class = "MCSlot";
@@ -257,11 +269,19 @@ function MCFacility::import(%obj, %filePath)
 			size = %size;
 		};
 		
+		//create template
+		%slotSO.createTemplate(%obj.getMCL().templateVBL);
+		
 		//load VBL
 		%slotSO.vbl.loadBLSFile(%vblPath);
 		
+		//place VBL bricks
+		%slotSO.createBricks();
+		
+		//register slotSO with this MCF
 		%obj.setSlot(%i, %slotSO);
 	}
+	
 	%file.close();
 	%file.delete();
 }

@@ -51,16 +51,20 @@ package SpaceBuildRulesPackage {
 	//	parent::serverCmdPlantBrick(%client);
 	//}
 	
-	//function getTrustLevel(%obj, %other, %a1, %a2)
-	//{
-	//	if(%obj.dataBlock != 0 && %obj.getDataBlock().getName() $= "SpaceShuttleVehicle")
-	//		return 1;
+	function getTrustLevel(%obj, %other, %a1, %a2)
+	{
+		//if either of these objects are SB Template bricks, limit the max trust level to 1
+		//(you can't delete your own template bricks, nor can anyone else)
+		if(%obj.isSBTemplate || %other.isSBTemplate)
+		{
+			%ret = Parent::getTrustLevel(%obj, %other, %a1, %a2);
+			if(%ret >= 2)
+				%ret = 1;
+			return %ret;
+		}
 		
-	//	if(%other.dataBlock != 0 && %other.getDataBlock().getName() $= "SpaceShuttleVehicle")
-	//		return 1;
-		
-	//	Parent::getTrustLevel(%obj, %other, %a1, %a2);
-	//}
+		Parent::getTrustLevel(%obj, %other, %a1, %a2);
+	}
 	
 	function fxDTSBrick::onPlant(%this)
 	{
