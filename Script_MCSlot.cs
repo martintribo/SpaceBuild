@@ -7,6 +7,11 @@ function MCSlot::onAdd(%this)
 	};
 }
 
+function MCSlot::onRemove(%this, %obj)
+{
+	%this.vbl.delete();
+}
+
 function MCSlot::getPosition(%this)
 {
 	return %this.position;
