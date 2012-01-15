@@ -189,10 +189,10 @@ package shuttleTrust
 	function getTrustLevel(%obj, %other, %a1, %a2)
 	{
 		//Now uses .dataBlock instead of .getDataBlock() - no more console errors about checking with objects that don't have a datablock.
-		if(%obj.dataBlock != 0 && %obj.getDataBlock().getName() $= "SpaceShuttleVehicle")
+		if(%obj.getClassName() $= "WheeledVehicle" && %obj.getDataBlock().getName() $= "SpaceShuttleVehicle")
 			return 1;
 		
-		if(%other.dataBlock != 0 && %other.getDataBlock().getName() $= "SpaceShuttleVehicle")
+		if(%other.getClassName() $= "WheeledVehicle" && %other.getDataBlock().getName() $= "SpaceShuttleVehicle")
 			return 1;
 		
 		Parent::getTrustLevel(%obj, %other, %a1, %a2);
