@@ -29,6 +29,17 @@ function MCSlot::createTemplate(%this, %vbl)
 	%vbl.recenter(%pos);
 	%factory.createBricksForBlid(%vbl, %this.ownerBLID);
 	%factory.delete();
+	
+	//Cheap fix, should be removed
+	%bottomCenter = getWords(%vbl.getCenter(), 0, 1) SPC getWord(%pos, 2) - %vbl.getSizeZ()/2;
+	
+	%supportCenter = VectorAdd(%bottomCenter, "0 0 -15.9");
+	
+	%supportVBL = newVBL();
+	echo("adding new brick" SPC %supportCenter SPC "|" SPC %pos SPC "|" SPC %vbl.getSizeZ() SPC "vbl" SPC %vbl);
+	%supportVBL.addBrick(brick64xCubeData, %supportCenter, 0, 1, 15, "", 0, 0, 1, 1, 1);
+	%supportVBL.createBricks();
+	%supportVBL.delete();
 }
 
 function MCSlotTemplateBrickFactory::onCreateBrick(%this, %brick)
