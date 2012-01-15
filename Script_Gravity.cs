@@ -4,7 +4,6 @@
 $gravityTickTime = 5;
 $gravityDefaultScale = "2 2 3";
 $gravityDefaultMod = 0.25;
-$spaceHeight = 360;
 
 //$stationPos = ""; //define this manually ingame!
 
@@ -33,43 +32,6 @@ function gravityTick()
 				
 				%trans = VectorSub(getWords(%obj.getTransform(), 0, 2), getWord(%grav.scale, 0) * 0.5 SPC getWord(%grav.scale, 1) * -0.5 SPC getWord(%grav.scale, 2) * 0);
 				%grav.setTransform(%trans);
-				
-				if($stationPos !$= "")
-				{
-				//Calculate space station guage
-				%stationPos = $stationPos; //convert to function at a later date
-				%stationPos = vectorSub(getWords(%obj.getTransform(), 0, 2), %stationPos);
-				%x = mFloor(getWord(%stationPos, 0));
-				%y = mFloor(getWord(%stationPos, 1));
-				%z = mFloor(getWord(%stationPos, 2));
-				
-				if(mAbs(%x) < 200)
-					%xColor = "\c2";
-				if(mAbs(%x) < 400 && mAbs(%x) > 200)
-					%xColor = "\c3";
-				if(mAbs(%x) > 400)
-					%xColor = "\c0";
-				//============================
-				if(mAbs(%y) < 200)
-					%yColor = "\c2";
-				if(mAbs(%y) < 400 && mAbs(%y) > 200)
-					%yColor = "\c3";
-				if(mAbs(%y) > 400)
-					%yColor = "\c0";
-				//============================
-				if(mAbs(%z) < 200)
-					%zColor = "\c2";
-				if(mAbs(%z) < 400 && mAbs(%z) > 200)
-					%zColor = "\c3";
-				if(mAbs(%z) > 400)
-					%zColor = "\c0";
-				
-				if(%grav.isActivated && isObject(%obj.client))
-					commandToClient(%obj.client, 'bottomPrint', "\c2Gravity: x" @ %grav.gravityMod @ ". Altitude: " @ mFloor(getWord(%obj.getTransform(), 2)) @ ". \c6Station: " @ %xColor @ %x SPC %yColor @ %y SPC %zColor @ %z @ ".", 5);
-				}else{
-					if(%grav.isActivated && isObject(%obj.client))
-						commandToClient(%obj.client, 'bottomPrint', "\c2Gravity: x" @ %grav.gravityMod @ ". Altitude: " @ mFloor(getWord(%obj.getTransform(), 2)) @ ".", 5);
-				}
 			}else{
 				if(%grav.isActivated)
 				{

@@ -53,15 +53,15 @@ package SpaceBuildRulesPackage {
 		parent::onHitObject(%this, %obj, %a, %col, %fade, %pos, %normal);
 	}
 	
-	//function serverCmdPlantBrick(%client)
-	//{
-	//	if(getWord(%client.player.tempbrick.getPosition(), 2) >= $spaceHeight && !%client.isAdmin && $sbRemindBuilding)
-	//	{
-	//		commandToClient(%client, 'centerPrint', "\c3You can't build in space!\n\c0Build a module on the ground!", 5);
-	//		return;
-	//	}
-	//	parent::serverCmdPlantBrick(%client);
-	//}
+	function serverCmdPlantBrick(%client)
+	{
+		if(getWord(%client.player.tempbrick.getPosition(), 2) >= $spaceHeight && !%client.isAdmin && $sbRemindBuilding)
+		{
+			commandToClient(%client, 'centerPrint', "\c3You can't build in space!\n\c0Build a module on the ground!", 5);
+			return;
+		}
+		parent::serverCmdPlantBrick(%client);
+	}
 	
 	function getTrustLevel(%obj, %other, %a1, %a2)
 	{

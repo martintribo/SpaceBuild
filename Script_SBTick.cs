@@ -4,6 +4,7 @@ $SBTickAutoStart = 1;
 $playerBurnSpeed = 55;
 $playerBurnDamage = 10;
 $showStationLocator = 1;
+$spaceHeight = 360;
 
 if($SBTickAutoStart)
 	schedule(1000, 0, "SBTick");
