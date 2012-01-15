@@ -161,6 +161,18 @@ package SpaceBuildRulesPackage {
 		parent::onRemove(%this);
 	}
 	
+	function ServerCmdClearBricks(%client)
+	{
+		%mcf = $debugMCF;
+		%slot = %mcf.findSlotByBLID(%client.bl_id);
+		if (isObject(%slot))
+		{
+			%mcf.setSlot(%slot.number, 0);
+			%slot.delete();
+			commandToClient(%client, 'centerPrint', "Cleared Slot!", 3);
+		}
+	}
+	
 };
 activatePackage(SpaceBuildRulesPackage);
 
