@@ -15,6 +15,10 @@ package SpaceBuildRulesPackage {
 			commandToClient(%obj.client, 'centerPrint', "\c3No wrenching in space!", 2);
 			return;
 		}
+		else if (!%obj.client.isAdmin && %col.isSBTemplate)
+		{
+			return;
+		}
 		
 		parent::onHitObject(%this, %obj, %a, %col, %fade, %pos, %normal);
 	}
@@ -26,6 +30,10 @@ package SpaceBuildRulesPackage {
 			commandToClient(%obj.client, 'centerPrint', "\c3No hammering in space!", 2);
 			return;
 		}
+		else if (%col.isSBTemplate)
+		{
+			return;
+		}
 		
 		parent::onHitObject(%this, %obj, %a, %col, %fade, %pos, %normal);
 	}
@@ -35,6 +43,10 @@ package SpaceBuildRulesPackage {
 		if(getWord(%col.getPosition(), 2) >= $spaceHeight && !%obj.client.isAdmin && $sbDisableWands && %col.getClassName() $= "fxDTSBrick")
 		{
 			commandToClient(%obj.client, 'centerPrint', "\c3No wanding in space!", 2);
+			return;
+		}
+		else if (%col.isSBTemplate)
+		{
 			return;
 		}
 		
@@ -55,15 +67,16 @@ package SpaceBuildRulesPackage {
 	{
 		//if either of these objects are SB Template bricks, limit the max trust level to 1
 		//(you can't delete your own template bricks, nor can anyone else)
-		if(%obj.isSBTemplate || %other.isSBTemplate)
+		if((%other.getClassName() !$= "fxDTSBrick" || %obj.getClassName() !$= "fxDTSBrick") && (%obj.isSBTemplate || %other.isSBTemplate))
 		{
 			%ret = Parent::getTrustLevel(%obj, %other, %a1, %a2);
 			if(%ret >= 2)
 				%ret = 1;
-			return %ret;
 		}
+		else
+			%ret = Parent::getTrustLevel(%obj, %other, %a1, %a2);
 		
-		Parent::getTrustLevel(%obj, %other, %a1, %a2);
+		return %ret;
 	}
 	
 	function fxDTSBrick::onPlant(%this)
@@ -80,7 +93,7 @@ package SpaceBuildRulesPackage {
 				if(%slotFound == -1)
 				{
 					%slotFound = %brick.slot;
-				}else{
+				}else if (%slotFound != %brick.slot){
 					//a slot was already found; that means this brick is on 2 or more slots
 					//this is not allowed, so break the brick and send an error message
 					%this.killBrick();
@@ -99,7 +112,7 @@ package SpaceBuildRulesPackage {
 				if(%slotFound == -1)
 				{
 					%slotFound = %brick.slot;
-				}else{
+				}else if (%slotFound != %brick.slot) {
 					//a slot was already found; that means this brick is on 2 or more slots
 					//this is not allowed, so break the brick and send an error message
 					%this.killBrick();
