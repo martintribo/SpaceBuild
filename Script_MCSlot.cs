@@ -7,6 +7,11 @@ function MCSlot::onAdd(%this)
 	};
 }
 
+function MCSlot::onRemove(%this, %obj)
+{
+	%this.vbl.delete();
+}
+
 function MCSlot::getPosition(%this)
 {
 	return %this.position;
@@ -22,7 +27,7 @@ function MCSlot::createTemplate(%this, %vbl)
 	};
 	%pos = %this.getPosition();
 	%vbl.recenter(%pos);
-	%factory.createBricks(%vbl);
+	%factory.createBricksForBlid(%vbl, %this.ownerBLID);
 	%factory.delete();
 }
 
@@ -55,7 +60,8 @@ function MCSlot::createBricks(%this)
 	};
 	%pos = %this.getPosition();
 	%vbl.recenter(%pos);
-	%factory.createBricks(%vbl);
+	%factory.createBricksForBlid(%vbl, %this.ownerBLID);
+	
 	%factory.delete();
 }
 
