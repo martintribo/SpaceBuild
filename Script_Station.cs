@@ -74,7 +74,7 @@ function StationSO::createBricks(%obj)
 	for (%i = 0; %i < %obj.modules.getCount(); %i++)
 	{
 		%mod = %obj.modules.getObject(%i);
-		%mod.vbl.createBricks();
+		%mod.vbl.createBricksNoOwner();
 	}
 }
 

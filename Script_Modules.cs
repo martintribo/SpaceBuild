@@ -69,7 +69,7 @@ function ModuleSO::attachTo(%obj, %objHatch, %mod, %modHatch)
 function ModuleSO::deploy(%obj)
 {
 	%obj.setState("Deployed");
-	%obj.vbl.createBricks();
+	%obj.vbl.createBricksNoOwner();
 }
 
 function ModuleSO::setState(%obj, %state)
@@ -236,7 +236,7 @@ function ModuleSO::import(%obj, %file)
 	%obj.state = getField(%f.readLine(), 1);
 	%obj.numHatches = getField(%f.readLine(), 1);
 	%obj.vbl.loadBLSFile(getField(%f.readLine(), 1));
-	%obj.vbl.createBricks();
+	%obj.vbl.createBricksNoOwner();
 	
 	%f.close();
 	%f.delete();
