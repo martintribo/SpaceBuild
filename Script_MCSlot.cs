@@ -2,6 +2,7 @@ function MCSlot::onAdd(%this)
 {
 	//create a VBL to store our bricks in
 	%this.builtBricks = new SimSet();
+	%this.templateBricks = new SimSet();
 	%this.vbl = new ScriptObject()
 	{
 		class = "VirtualBrickList";
@@ -13,7 +14,10 @@ function MCSlot::onRemove(%this, %obj)
 	%this.vbl.delete();
 	while (%this.builtBricks.getCount())
 		%this.builtBricks.getObject(0).delete();
+	while (%this.templateBricks.getCount())
+		%this.templateBricks.getObject(0).delete();
 	%this.builtBricks.delete();
+	%this.templateBricks.delete();
 }
 
 function MCSlot::getPosition(%this)
@@ -50,6 +54,7 @@ function MCSlotTemplateBrickFactory::onCreateBrick(%this, %brick)
 {
 	%brick.slot = %this.slot;
 	%brick.isSBTemplate = true;
+	%this.slot.templateBricks.add(%brick);
 	%brick.setNTObjectName("spacebuildSupport"); //mark template bricks as such
 }
 
