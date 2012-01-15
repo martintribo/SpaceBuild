@@ -1,6 +1,7 @@
 function MCSlot::onAdd(%this)
 {
 	//create a VBL to store our bricks in
+	%this.builtBricks = new SimSet();
 	%this.vbl = new ScriptObject()
 	{
 		class = "VirtualBrickList";
@@ -10,6 +11,9 @@ function MCSlot::onAdd(%this)
 function MCSlot::onRemove(%this, %obj)
 {
 	%this.vbl.delete();
+	while (%this.builtBricks.getCount())
+		%this.builtBricks.getObject(0).delete();
+	%this.builtBricks.delete();
 }
 
 function MCSlot::getPosition(%this)
@@ -28,7 +32,7 @@ function MCSlot::createTemplate(%this, %vbl)
 	%pos = %this.getPosition();
 	%vbl.recenter(%pos);
 	%factory.createBricksForBlid(%vbl, %this.ownerBLID);
-	%factory.delete();
+
 	
 	//Cheap fix, should be removed
 	%bottomCenter = getWords(%vbl.getCenter(), 0, 1) SPC getWord(%pos, 2) - %vbl.getSizeZ()/2;
@@ -36,10 +40,10 @@ function MCSlot::createTemplate(%this, %vbl)
 	%supportCenter = VectorAdd(%bottomCenter, "0 0 -15.9");
 	
 	%supportVBL = newVBL();
-	echo("adding new brick" SPC %supportCenter SPC "|" SPC %pos SPC "|" SPC %vbl.getSizeZ() SPC "vbl" SPC %vbl);
 	%supportVBL.addBrick(brick64xCubeData, %supportCenter, 0, 1, 15, "", 0, 0, 1, 1, 1);
-	%supportVBL.createBricks();
+	%factory.createBricks(%supportVBL);
 	%supportVBL.delete();
+	%factory.delete();
 }
 
 function MCSlotTemplateBrickFactory::onCreateBrick(%this, %brick)
@@ -52,13 +56,12 @@ function MCSlotTemplateBrickFactory::onCreateBrick(%this, %brick)
 function MCSlot::addBrick(%this, %brick)
 {
 	%brick.slot = %this;
-	%this.vbl.addRealBrick(%brick);
+	%this.builtBricks.add(%brick);
 }
 
 function MCSlot::removeBrick(%this, %brick)
 {
-	//the VBL has no support for this
-	//silly nitramtj
+	%this.builtBricks.remove(%brick);
 }
 
 //used for loading bricks
@@ -69,8 +72,9 @@ function MCSlot::createBricks(%this)
 		class = "BrickFactory";
 		slot = %this;
 	};
+	%vbl = %this.vbl;
 	%pos = %this.getPosition();
-	%vbl.recenter(%pos);
+	//%vbl.recenter(%pos);
 	%factory.createBricksForBlid(%vbl, %this.ownerBLID);
 	
 	%factory.delete();
@@ -78,5 +82,59 @@ function MCSlot::createBricks(%this)
 
 function MCSlotBrickFactory::onCreateBrick(%this, %brick)
 {
-	%brick.slot = %this.slot;
+	%this.slot.addBrick(%brick);
 }
+
+function MCSlot::readyVbl(%obj)
+{
+	%obj.vbl.delete();
+	%obj.vbl = newVBL();
+	%obj.vbl.addSet(%obj.builtBricks);
+}
+
+//*****************************************************************
+//Nitramtj - Not in use yet
+function ModuleSO::export(%obj, %file)
+{
+	%name = fileBase(%file);
+	%path = filePath(%file);
+	%f = new FileObject();
+	
+	%f.openForWrite(%file);
+	
+	%f.writeLine("ownerBLID" TAB %obj.state);
+	
+	%f.writeLine("ownerName" TAB %obj.numHatches);
+	%saveVbl = newVBL();
+	%saveVbl.addSet(%obj.builtBricks);
+	
+	%vblPath = %path @ "/" @ %name @ "_vbl" @ %m @ ".bls";
+	%obj.vbl.exportBLSFile(%vblPath);
+	%f.writeLine("vbl" TAB %vblPath);
+		
+	%saveVbl.delete();
+	%f.close();
+	%f.delete();
+}
+
+function ModuleSO::import(%obj, %file)
+{
+	%f = new FileObject();
+	%f.openForRead(%file);
+	
+	%obj.state = getField(%f.readLine(), 1);
+	%obj.numHatches = getField(%f.readLine(), 1);
+	%obj.vbl.loadBLSFile(getField(%f.readLine(), 1));
+	%obj.vbl.createBricks();
+	
+	%f.close();
+	%f.delete();
+}
+
+function MCSlotLoadFactory::onCreateBrick(%obj, %brick)
+{
+	//bricks are not autoadded because they are created through onLoadPlant
+	%obj.slot.addRealBrick(%brick);
+}
+
+//*****************************************************************
