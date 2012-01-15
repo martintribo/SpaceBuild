@@ -38,34 +38,30 @@ function SBTick()
 					%ry = mFloor(getWord(%stationPos, 1));
 					%rz = mFloor(getWord(%stationPos, 2));
 					
-					%x = mAbs(%x);
-					%y = mAbs(%y);
-					%z = mAbs(%z);
-					
-					if(%x < 200)
+					if(%rx < 200)
 						%xColor = "\c2";
-					if(%x < 400 && %x > 200)
+					if(%rx < 400 && %x > 200)
 						%xColor = "\c3";
-					if(%x > 400)
+					if(%rx > 400)
 						%xColor = "\c0";
 					//============================
-					if(%y < 200)
+					if(%ry < 200)
 						%yColor = "\c2";
-					if(%y < 400 && %y > 200)
+					if(%ry < 400 && %y > 200)
 						%yColor = "\c3";
-					if(%y > 400)
+					if(%ry > 400)
 						%yColor = "\c0";
 					//============================
-					if(%z < 200)
+					if(%rz < 200)
 						%zColor = "\c2";
-					if(%z < 400 && %z > 200)
+					if(%rz < 400 && %z > 200)
 						%zColor = "\c3";
-					if(%z > 400)
+					if(%rz > 400)
 						%zColor = "\c0";
 					
-					commandToClient(%client, 'bottomPrint', "\c2Gravity: x" @ %grav @ ". Altitude: " @ %rz @ ". \c6Station: " @ %xColor @ %rx SPC %yColor @ %ry SPC %zColor @ %rz @ ".", 3);
+					commandToClient(%client, 'bottomPrint', "\c2Gravity: x" @ %grav @ ". \c2Altitude: " @ mFloor(getWord(%client.player.getTransform(), 2)) @ ". \c2Station: " @ %xColor @ %rx SPC %yColor @ %ry SPC %zColor @ %rz @ ".", 3);
 				}else{
-					commandToClient(%client, 'bottomPrint', "\c2Gravity: x" @ %grav @ ". Altitude: " @ mFloor(getWord(%client.player.getTransform(), 2)) @ ".", 3);
+					commandToClient(%client, 'bottomPrint', "\c2Gravity: x" @ %grav @ ". \c2Altitude: " @ mFloor(getWord(%client.player.getTransform(), 2)) @ ".", 3);
 				}
 			}
 		}
