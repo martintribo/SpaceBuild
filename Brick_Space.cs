@@ -1,17 +1,17 @@
 datablock fxDTSBrickData(brick1x4x3SpaceHatchData)
 {
 	brickFile = "./1x4x3SpaceHatch.blb";
-	category = "Bricks";
-	subCategory = "Misc";
-	uiName = "1x4x3 Space Hatch";
+	category = "Special";
+	subCategory = "SpaceBuild";
+	uiName = "Horizontal Space Hatch";
 	iconName = "Add-Ons/Brick_V15/2x2 Corner";
 };
 
 datablock fxDTSBrickData(brick4x4fDownSpaceHatchData)
 {
 	brickFile = "./4x4fBottomSpaceHatch.blb";
-	category = "Bricks";
-	subCategory = "Misc";
+	category = "Special";
+	subCategory = "SpaceBuild";
 	uiName = "Bottom Space Hatch";
 	iconName = "Add-Ons/Brick_V15/2x2 Corner";
 };
@@ -19,8 +19,8 @@ datablock fxDTSBrickData(brick4x4fDownSpaceHatchData)
 datablock fxDTSBrickData(brick4x4fTopSpaceHatchData)
 {
 	brickFile = "./4x4fTopSpaceHatch.blb";
-	category = "Bricks";
-	subCategory = "Misc";
+	category = "Special";
+	subCategory = "SpaceBuild";
 	uiName = "Top Space Hatch";
 	iconName = "Add-Ons/Brick_V15/2x2 Corner";
 };
@@ -64,20 +64,3 @@ function fxDTSBrick::isUpHatch(%obj)
 	else
 		return false;
 }
-
-//function fxDTSBr Get the hatch parameters
-
-
-//datablock fxDTSBrickData(brick16x16x1LoadingBayData)
-//{
-//	brickFile = "./1x4x3SpaceHatch.blb";
-//	category = "Bricks";
-//	subCategory = "Misc";
-//	uiName = "16x16 Loading Bay";
-//	iconName = "base/client/ui/brickIcons/16x16 Base";
-//};
-
-//function brick16x16x1LoadingBayData::onAdd(%this, %obj)
-//{
-//	
-//}
