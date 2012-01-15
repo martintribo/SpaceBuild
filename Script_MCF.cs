@@ -223,6 +223,7 @@ function MCFacility::export(%obj, %filePath)
 			%file.writeLine(%i TAB %obj.slot[%i].ownerBLID TAB %obj.slot[%i].ownerName TAB %obj.slot[%i].size);
 			
 			//save VBL
+			%obj.slot[%i].readyVbl();
 			%obj.slot[%i].vbl.exportBLSFile(%path @ "/" @ %fileName @ "_vbl" @ %i @ ".vbl");
 		}
 	}
@@ -313,7 +314,7 @@ function virtualBrickList::cs_load_SPACEHATCH(%obj, %num, %addData, %addInfo, %a
 
 function bfSpaceSupport(%brick)
 {
-	if (%brick.getName() $= "_spaceSupport")
+	if (%brick.getName() $= "_spacebuildSupport")
 		return 1;
 	return 0;
 }
