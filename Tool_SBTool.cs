@@ -133,6 +133,10 @@ function ServerCmdSetupSpace(%client)
 
 function setupSpace()
 {
+	$DebugStation = new ScriptObject()
+	{
+		class = "StationSO";
+	};
 	$DebugMCF = new ScriptObject()
 	{
 		class = "MCFacility";
