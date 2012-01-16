@@ -15,8 +15,6 @@ if (%error == $Error::AddOn_NotFound)
 }
 else
 {
-	//Contains no-gravity player scripts (should be replaced soon)
-	exec("./Script_Gravity.cs");
 
 	//Space bricks (hatches)
 	exec("./Brick_Space.cs");
@@ -41,8 +39,11 @@ else
 	//Space Shuttle (also execs Particle_Shuttle.cs)
 	exec("./Vehicle_SpaceShuttle.cs");
 
-	//SBTick (currently just burning up script)
+	//SBTick (currently burning up and station locator)
 	exec("./Script_SBTick.cs");
+	
+	//Contains no-gravity player scripts (should be replaced soon)
+	exec("./Script_Gravity.cs");
 
 	//Enforces rules for the server (no hammers/wrenches/wands/building in space)
 	exec("./Script_Rules.cs");
@@ -52,4 +53,7 @@ else
 
 	//Contains helper functions for testing out specific parts of the gamemode
 	exec("./Script_Tests.cs");
+	
+	//SpaceBuild player, that can easily navigate in a zero-gravity environment (right click)
+	exec("./Player_Space.cs");
 }
