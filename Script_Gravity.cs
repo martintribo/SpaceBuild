@@ -3,7 +3,7 @@
 
 $gravityTickTime = 5;
 $gravityDefaultScale = "2 2 3";
-$gravityDefaultMod = 0.25;
+$gravityDefaultMod = 0;
 
 //$stationPos = ""; //define this manually ingame!
 
@@ -83,15 +83,6 @@ function createGravityField(%obj, %scale)
 		gravityTick();
 }
 
-//A duplicate from Script_Lifesupport, which isn't execed yet. Remove later.
-function Armor::isInSpace(%obj)
-{
-	if(getWord(%obj.getTransform(), 2) >= $spaceHeight)
-		return(1);
-	else
-		return(0);
-}
-
 package gravityPackage
 {
 	function Armor::onNewDatablock(%this, %obj) //onNewDatablock
@@ -100,12 +91,5 @@ package gravityPackage
 		%scale = getWords(%obj.getObjectBox(), 3, 5);
 		createGravityField(%obj, %scale);
 	}
-	//function Armor::onTrigger(%this, %obj, %trig, %val)
-	//{
-	//	if(%val && %trig == 3 && %obj.isInSpace())
-	//	{
-	//		%obj.setVelocity(vectorAdd(%obj.getVelocity(), "0 0 -1.5"));
-	//	}
-	//}
 };
 activatePackage(gravityPackage);

@@ -23,7 +23,7 @@ function SBTick()
 			if(%client.player.isInSpace())
 			{
 				//Should be player's current gravity.
-				%grav = 0.25;
+				%grav = 0.0;
 				
 				if(vectorLen(%client.player.getVelocity()) > $playerBurnSpeed && !%client.player.getObjectMount())
 					playerBurnEffects(%client.player);
@@ -68,7 +68,6 @@ function SBTick()
 	}
 }
 
-//Copied from Script_LifeSupport.cs, but that isn't execed yet, so put it here for now (as a duplicate).
 function Player::isInSpace(%obj)
 {
 	if(getWord(%obj.getTransform(), 2) >= $spaceHeight)
