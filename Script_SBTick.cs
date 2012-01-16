@@ -38,25 +38,29 @@ function SBTick()
 					%ry = mFloor(getWord(%stationPos, 1));
 					%rz = mFloor(getWord(%stationPos, 2));
 					
-					if(%rx < 200)
+					%rxPositive = %rx < 0 ? %rx * -1 : %rx;
+					%ryPositive = %ry < 0 ? %ry * -1 : %ry;
+					%rzPositive = %rz < 0 ? %rz * -1 : %rz;
+
+					if(%rxPositive < 200)
 						%xColor = "\c2";
-					if(%rx < 400 && %x > 200)
+					else if(%rxPositive < 400)
 						%xColor = "\c3";
-					if(%rx > 400)
+					else
 						%xColor = "\c0";
 					//============================
-					if(%ry < 200)
+					if(%ryPositive < 200)
 						%yColor = "\c2";
-					if(%ry < 400 && %y > 200)
+					else if(%ryPositive < 400)
 						%yColor = "\c3";
-					if(%ry > 400)
+					else
 						%yColor = "\c0";
 					//============================
-					if(%rz < 200)
+					if(%rzPositive < 200)
 						%zColor = "\c2";
-					if(%rz < 400 && %z > 200)
+					else if(%rzPositive < 400)
 						%zColor = "\c3";
-					if(%rz > 400)
+					else
 						%zColor = "\c0";
 					
 					commandToClient(%client, 'bottomPrint', "\c2Gravity: x" @ %grav @ ". \c2Altitude: " @ mFloor(getWord(%client.player.getTransform(), 2)) @ ". \c2Station: " @ %xColor @ %rx SPC %yColor @ %ry SPC %zColor @ %rz @ ".", 3);
