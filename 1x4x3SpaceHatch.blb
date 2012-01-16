@@ -1,0 +1,133 @@
+4 1 9
+SPECIAL
+
+uuuu
+XXXX
+XXXX
+XXXX
+XXXX
+XXXX
+XXXX
+XXXX
+dddd
+//COLLISION
+1
+
+0 0 0
+4 1 9
+----------------top quads:
+1
+
+TEX:TOP
+POSITION:
+2 -0.5 4.5
+-2 -0.5 4.5
+-2 0.5 4.5
+2 0.5 4.5
+UV COORDS:
+0 0
+-4 0
+-4 1
+0 1
+NORMALS:
+0 0 1
+0 0 1
+0 0 1
+0 0 1
+----------------bottom quads:
+1
+
+TEX:BOTTOMEDGE
+POSITION:
+-2 -0.5 -4.5
+2 -0.5 -4.5
+2 0.5 -4.5
+-2 0.5 -4.5
+UV COORDS:
+0 0
+-4 0
+-4 1
+0 1
+NORMALS:
+0 0 -1
+0 0 -1
+0 0 -1
+0 0 -1
+----------------north quads:
+1
+
+TEX:RAMP
+POSITION:
+2 0.5 4.5
+-2 0.5 4.5
+-2 0.5 -4.5
+2 0.5 -4.5
+UV COORDS:
+0 0
+1 0
+1 1
+0 1
+NORMALS:
+0 1 0
+0 1 0
+0 1 0
+0 1 0
+----------------east quads:
+1
+
+TEX:SIDE
+POSITION:
+2 -0.5 4.5
+2 0.5 4.5
+2 0.5 -4.5
+2 -0.5 -4.5
+UV COORDS:
+0 0
+1 0
+1 1
+0 1
+NORMALS:
+1 0 0
+1 0 0
+1 0 0
+1 0 0
+----------------south quads:
+1
+
+TEX:SIDE
+POSITION:
+-2 -0.5 4.5
+2 -0.5 4.5
+2 -0.5 -4.5
+-2 -0.5 -4.5
+UV COORDS:
+0 0
+1 0
+1 1
+0 1
+NORMALS:
+0 -1 0
+0 -1 0
+0 -1 0
+0 -1 0
+----------------west quads:
+1
+
+TEX:SIDE
+POSITION:
+-2 0.5 4.5
+-2 -0.5 4.5
+-2 -0.5 -4.5
+-2 0.5 -4.5
+UV COORDS:
+0 0
+1 0
+1 1
+0 1
+NORMALS:
+-1 0 0
+-1 0 0
+-1 0 0
+-1 0 0
+----------------omni quads:
+0
