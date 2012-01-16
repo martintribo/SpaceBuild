@@ -35,6 +35,7 @@ function MCSlot::createTemplate(%this, %vbl)
 	};
 	%pos = %this.getPosition();
 	%vbl.recenter(%pos);
+	echo("owner: " @ %this.ownerBLID);
 	%factory.createBricksForBlid(%vbl, %this.ownerBLID);
 
 	
@@ -80,7 +81,7 @@ function MCSlot::createBricks(%this)
 	%vbl = %this.vbl;
 	%pos = %this.getPosition();
 	//%vbl.recenter(%pos);
-	%factory.createBricksForBlid(%vbl, %this.ownerBLID);
+	%factory.createBricksNoOwner(%vbl, %this.ownerBLID);
 	
 	%factory.delete();
 }

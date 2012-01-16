@@ -119,6 +119,7 @@ activatePackage(ModulePack);
 
 function moduleSO::getCompatibleHatches(%obj, %type)
 {
+	echo(%type);
 	// if (%dir < 4)
 		// %type = "horizontal";
 	// else if (%dir == 4)
@@ -134,8 +135,11 @@ function moduleSO::getCompatibleHatches(%obj, %type)
 	%list = "";
 	
 	for (%i = 0; %i < %obj.numHatches; %i++)
+	{
+		echo(%type SPC "look");
 		if (%obj.getHatchType(%i) $= %type)
 			%list = %list @ %i @ "\t";
+	}
 	
 	return %list;
 }
