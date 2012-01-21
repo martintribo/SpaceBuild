@@ -280,7 +280,7 @@ function MCFacility::import(%obj, %filePath)
 		%slotSO.createBricks();
 		
 		//register slotSO with this MCF
-		%obj.setSlot(%i, %slotSO);
+		%obj.setSlot(%slotNum, %slotSO);
 	}
 	
 	%file.close();
