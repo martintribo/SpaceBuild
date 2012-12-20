@@ -1,13 +1,15 @@
-ADDON Brick_Christmas_Tree
+ADDON Vehicle_Jeep
 ADDON Brick_Arch
 ADDON Brick_Large_Cubes
 ADDON Support_ToolBrick
 MUSIC Icy
+ADDON Gamemode_Spacebuild
 $MiniGame::Enabled 1
 
 //environment
 $EnvGuiServer::SimpleMode 0
-$EnvGuiServer::SkyFile Add-Ons/Sky_Spooky3/Spooky3Snow.dml
+//This doesn't work since it's not a legit sky add-on, will have to manually set on minigame load
+$EnvGuiServer::SkyFile Add-Ons/Sky_Skylands/Skylands.dml
 $EnvGuiServer::WaterFile NONE
 $EnvGuiServer::GroundFile Add-Ons/Ground_Plate/plate.ground
 
@@ -27,18 +29,18 @@ $EnvGuiServer::SunFlareSize 0
 $EnvGuiServer::VisibleDistance 600
 $EnvGuiServer::FogDistance 5
 $EnvGuiServer::FogHeight 
-$EnvGuiServer::FogColor 0.900000 0.900000 0.900000 1.000000
+$EnvGuiServer::FogColor 0.000000 0.000000 0.000000 1.000000
 $EnvGuiServer::WaterColor 255 255 255 128
 $EnvGuiServer::WaterHeight 5
 $EnvGuiServer::UnderWaterColor 51 153 153 77
 $EnvGuiServer::SkyColor 1.0 1.0 1.0 1.0
 $EnvGuiServer::WaterScrollX 0
 $EnvGuiServer::WaterScrollY 0
-$EnvGuiServer::GroundColor 0.378505 0.682243 0.995327 1.000000
+$EnvGuiServer::GroundColor 0.000000 0.607000 0.210000 1.000000
 $EnvGuiServer::GroundScrollX 0
 $EnvGuiServer::GroundScrollY 0
 $EnvGuiServer::VignetteMultiply 0
-$EnvGuiServer::VignetteColor 1.000000 1.000000 1.000000 0.400000
+$EnvGuiServer::VignetteColor 1.000000 1.000000 1.000000 0.000000
 
 //minigame rules
 $MiniGame::Enabled 1
