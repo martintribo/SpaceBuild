@@ -3,6 +3,9 @@
 //disable required add-on ui elements
 JeepVehicle.uiName = "";
 
+//First execute constants file
+exec("./Script_Constants.cs");
+
 //Space bricks (hatches)
 exec("./Brick_Space.cs");
 
@@ -44,6 +47,9 @@ exec("./Script_Tests.cs");
 //SpaceBuild player, that can easily navigate in a zero-gravity environment (right click)
 exec("./Player_Space.cs");
 
+//Core gamemode scripts (loading up initial station, etc)
+exec("./Script_Gamemode.cs");
+
 package SpacebuildGamemode
 {
 	function MiniGameSO::onAdd(%obj)
@@ -55,6 +61,8 @@ package SpacebuildGamemode
 			
 		//The gamemode system cannot load the hammer, so we must do it ourselves
 		%obj.StartEquip[0] = HammerItem.getId();
+		
+		setupSpacebuild();
 	}
 	
 	function setSkyBox(%sky)
