@@ -1,9 +1,67 @@
 ADDON Vehicle_Jeep
+ADDON Brick_2x2FRoundPrint
+ADDON Brick_18Degree
 ADDON Brick_Arch
+ADDON Brick_Doors
+ADDON Brick_ExtraRamps
+ADDON Brick_Fence
+ADDON Brick_Halloween
+ADDON Brick_InvertedCorners
+ADDON Brick_LegoChair
+ADDON Brick_Pole
+ADDON Brick_Round_Corners
+ADDON Brick_Treasure_Chest
+ADDON Brick_V15
+ADDON Brick_Wedge
+ADDON Brick_Window
 ADDON Brick_Large_Cubes
+ADDON Emote_Alarm
+ADDON Emote_Confusion
+ADDON Emote_Hate
+ADDON Emote_Love
+ADDON Player_No_Jet
+ADDON Support_Player_Persistence
+ADDON Support_Doors
 ADDON Support_ToolBrick
-MUSIC Icy
 ADDON Gamemode_Spacebuild
+ADDON Sound_Beeps
+ADDON Sound_Phone
+ADDON Sound_Synth4
+ADDON Projectile_GravityRocket
+ADDON Projectile_Pinball
+ADDON Projectile_Pong
+ADDON Projectile_Radio_Wave
+ADDON Light_Basic
+ADDON Light_Animated
+ADDON Particle_FX_Cans
+ADDON Particle_Grass
+ADDON Particle_Basic
+ADDON Particle_Tools
+ADDON Particle_Player
+ADDON Item_Key
+ADDON Print_Letters_Default
+ADDON Print_1x2f_BLPRemote
+ADDON Print_1x2f_Default
+ADDON Print_2x2f_Default
+ADDON Print_2x2r_Default
+ADDON Print_2x2r_Monitor3
+
+MUSIC After_School_Special
+MUSIC Ambient_Deep
+MUSIC Bass_1
+MUSIC Bass_2
+MUSIC Bass_3
+MUSIC Creepy
+MUSIC Distort
+MUSIC Drums
+MUSIC Factory
+MUSIC Icy
+MUSIC Jungle
+MUSIC Peaceful
+MUSIC Piano_Bass
+MUSIC Rock
+MUSIC Stress_
+
 $MiniGame::Enabled 1
 
 //environment
@@ -60,7 +118,7 @@ $MiniGame::VehicleRespawnTime 5
 $MiniGame::BrickRespawnTime 360
 
 $MiniGame::UseSpawnBricks 0
-$MiniGame::FallingDamage 0
+$MiniGame::FallingDamage 1
 $MiniGame::WeaponDamage 0
 $MiniGame::SelfDamage 0
 $MiniGame::VehicleDamage 1
