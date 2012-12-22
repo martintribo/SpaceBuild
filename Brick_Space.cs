@@ -64,3 +64,45 @@ function fxDTSBrick::isUpHatch(%obj)
 	else
 		return false;
 }
+
+
+//This feels unnecessary, but required to work with virtual bricks of hatches
+function VirtualBrick::isHatch(%obj)
+{
+	if (%obj.isHorizontalHatch() || %obj.isVerticalHatch())
+		return true;
+	else
+		return false;
+}
+
+function VirtualBrick::isHorizontalHatch(%obj)
+{
+	if (%obj.getDatablock().getId() == brick1x4x3SpaceHatchData.getId())
+		return true;
+	else
+		return false;
+}
+
+function VirtualBrick::isVerticalHatch(%obj)
+{
+	if (%obj.isDownHatch() || %obj.isUpHatch())
+		return true;
+	else
+		return false;
+}
+
+function VirtualBrick::isDownHatch(%obj)
+{
+	if (%obj.getDatablock().getId() == brick4x4fDownSpaceHatchData.getId())
+		return true;
+	else
+		return false;
+}
+
+function VirtualBrick::isUpHatch(%obj)
+{
+	if (%obj.getDatablock().getId() == brick4x4fTopSpaceHatchData.getId())
+		return true;
+	else
+		return false;
+}

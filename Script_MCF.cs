@@ -86,7 +86,17 @@ function MCFacility::findSlotByName(%this, %name)
 
 
 
-
+function MCFacility::scanVBL(%obj, %vbl)
+{
+	%mod = newModuleSO();
+	
+	for (%i = 0; %i < %vbl.getCount(); %i++)
+		%obj.scanModuleBrick(%vbl.getVirtualBrick(%i), %mod);
+	
+	%verificationError = %obj.finishScanningModuleBricks(%mod);
+	
+	return %verificationError;
+}
 
 function MCFacility::scanBuild(%obj, %brick)
 {
@@ -103,7 +113,11 @@ function MCFacility::scanBuild(%obj, %brick)
 
 function MCFacility::onFoundBrick(%obj, %sb, %mod)
 {
-	echo("%sb = " @ %sb);
+	%obj.scanModuleBrick(%sb, %mod);
+}
+
+function MCFacility::scanModuleBrick(%obj, %sb, %mod)
+{
 	if (%sb.isHatch())
 	{
 		%box = %sb.getWorldBox();
@@ -135,7 +149,6 @@ function MCFacility::onFoundBrick(%obj, %sb, %mod)
 				%point = getWords(%pos, 0, 1) SPC getWord(%box, 2);
 				%dir = 5; //down
 			}
-			
 		}
 		
 		%sb.setColor(%mod.numHatches);
@@ -145,11 +158,8 @@ function MCFacility::onFoundBrick(%obj, %sb, %mod)
 	%mod.addBrick(%sb);
 }
 
-function MCFacility::onFinishedFinding(%obj, %mod, %bf)
+function MCFacility::finishScanningModuleBricks(%obj, %mod)
 {
-	//delete the Brick Finder and make a new module with that vbl
-	echo("onfinishedfinding" SPC %mod SPC %bf);
-	
 	%verificationError = %mod.verifyVBL();
 	switch (%verificationError) //this should report errors in a better way, directly to the user
 	{
@@ -159,21 +169,25 @@ function MCFacility::onFinishedFinding(%obj, %mod, %bf)
 			error("SpaceBuild module verification error - module is empty/has too few bricks!");
 	}
 	
-	//If there was any error, abort making the module
 	if (%verificationError != 0)
-	{
 		%mod.delete();
-		%bf.delete();
-		return;
-	}
+	else
+		%obj.addToQueue(%mod);
 	
-	%obj.addToQueue(%mod);
+	return %verificationError;
+}
+
+function MCFacility::onFinishedFinding(%obj, %mod, %bf)
+{
+	//delete the Brick Finder and make a new module with that vbl
+	//echo("onfinishedfinding" SPC %mod SPC %bf);
+	
+	%verificationError = %obj.finishScanningModuleBricks(%mod);
 	%bf.delete();
 }
 
 function MCFacility::addToQueue(%obj, %mod)
 {
-	echo("add to queue" SPC %mod);
 	%obj.queue.add(%mod);
 }
 

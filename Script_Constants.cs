@@ -6,5 +6,5 @@ $Spacebuild::StationFile = "default.sbs";
 $Spacebuild::MCFFile = "default.sbm";
 $Spacebuild::DefaultMCL = "MCL_Grid";
 $Spacebuild::MCFPosition = "0 0 0";
-$Spacebuild::StationPosition = "0 -2000 3000";
-$Spacebuild::startModuleFile = "starterModule.bls";
+$Spacebuild::StationDisplacement = "0 -2000 3000";
+$Spacebuild::StarterModuleFile = "starterModule.bls";
