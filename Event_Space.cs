@@ -1,6 +1,6 @@
 function GameConnection::giveModuleSlot(%client)
 {
-	%mcf = $DebugMCF;
+	%mcf = $DefaultMiniGame.mcf;
 	if(!isObject(%mcf))
 		return;
 	
@@ -14,7 +14,7 @@ function GameConnection::giveModuleSlot(%client)
 	}
 	
 	%client.player.setVelocity("0 0 0");
-	%client.player.setTransform(vectorAdd(%slot.getPosition(), "-12 0 -6") SPC "0 0 1" SPC $pi/2);
+	%client.player.setTransform(vectorAdd(%slot.getPosition(), "2 16 1") SPC "0 0 1" SPC $pi/2);
 }
 
 registerOutputEvent("GameConnection","giveModuleSlot","",0);

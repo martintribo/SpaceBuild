@@ -127,7 +127,7 @@ $MiniGame::EnableWand 1
 $MiniGame::EnableBuilding 1
 $MiniGame::EnablePainting 1
 
-$MiniGame::PlayerDataBlockName Standard Player
+$MiniGame::PlayerDataBlockName SpaceBuild Player
 
 $MiniGame::StartEquipName0 Hammer
 $MiniGame::StartEquipName1 Wrench

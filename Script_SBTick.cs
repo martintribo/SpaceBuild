@@ -24,15 +24,16 @@ function SBTick()
 			{
 				//Should be player's current gravity.
 				%grav = 0.0;
+				%station = $DefaultMiniGame.station;
 				
 				if(vectorLen(%client.player.getVelocity()) > $playerBurnSpeed && !%client.player.getObjectMount())
 					playerBurnEffects(%client.player);
 				else if(%client.player.getMountedImage(2) == NameToID("shuttleFlameImage"))
 					removeBurnEffects(%client.player);
 				
-				if(isObject($DebugStation) && $DebugStation.getPosition() !$= "" && $showStationLocator)
+				if(isObject(%station) && %station.getPosition() !$= "" && $showStationLocator)
 				{
-					%stationPos = $DebugStation.getPosition(); //$stationPos; //convert to function at a later date!
+					%stationPos = %station.getPosition(); //$stationPos; //convert to function at a later date!
 					%stationPos = vectorSub(getWords(%client.player.getTransform(), 0, 2), %stationPos);
 					%rx = mFloor(getWord(%stationPos, 0));
 					%ry = mFloor(getWord(%stationPos, 1));

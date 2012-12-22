@@ -83,9 +83,6 @@ function MCFacility::findSlotByName(%this, %name)
 	return -1;
 }
 
-
-
-
 function MCFacility::scanVBL(%obj, %vbl)
 {
 	%mod = newModuleSO();
