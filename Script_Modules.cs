@@ -55,9 +55,10 @@ function ModuleSO::getHatchType(%obj, %i)
 
 function ModuleSO::attachTo(%obj, %objHatch, %mod, %modHatch)
 {
+	echo("obj " @ %obj @ " objHatch " @ %objHatch @ " mod " @ %mod @ " modHatch " @ %modHatch);
 	//besides just setting up links and etc, the states and owners of modules must be changed
 	%obj.vbl.markers["hatch" @ %objHatch].alignWith(%mod.vbl.markers["hatch" @ %modHatch]);
-	
+	echo("Center: " @ %obj.vbl.getCenter());
 	//%obj.vbl.createBricks();
 	%obj.setPosition(%obj.vbl.getCenter());
 	

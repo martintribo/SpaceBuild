@@ -1,5 +1,6 @@
 function GameConnection::giveModuleSlot(%client)
 {
+	echo("called it");
 	%mcf = $DefaultMiniGame.mcf;
 	if(!isObject(%mcf))
 		return;

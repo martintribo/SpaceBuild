@@ -30,7 +30,7 @@ function SBToolCollision(%obj, %col)
 {
 	%client = %obj.client;
 	
-	%mcf = $DebugMCF;
+	%mcf = $DefaultMiniGame.mcf;
 	
 	if(!isObject(%mcf))
 	{
@@ -89,7 +89,7 @@ function SBToolCollision(%obj, %col)
 			if (%attachId != -1)
 			{
 				%mod = %mcf.popModule();
-				
+				echo("The collision is: " @ %col);
 				commandToClient(%client, 'bottomPrint', "Attaching your module...", 2);
 				%mod.attachTo(%attachId, %col.module, %col.hatchId);
 				commandToClient(%client, 'bottomPrint', "Your module was attached!", 4);
@@ -173,7 +173,7 @@ function ServerCmdCheckModules(%client)
 {
 	if (%client.isAdmin)
 	{
-		messageClient(%client, '', "\c2There are \c0" @ $debugMCF.queue.getCount() @ "\c2 modules in the queue.");
+		messageClient(%client, '', "\c2There are \c0" @ $DefaultMiniGame.mcf.queue.getCount() @ "\c2 modules in the queue.");
 	}
 }
 
@@ -189,10 +189,11 @@ function ServerCmdClearModules(%client)
 
 function clearModules()
 {
-	%mod = $DebugMCF.popModule();
+	%mcf = $DefaultMiniGame.mcf;
+	%mod = %mcf.popModule();
 	while (isObject(%mod))
 	{
 		%mod.delete();
-		%mod = $DebugMCF.popModule();
+		%mod = %mcf.popModule();
 	}
 }

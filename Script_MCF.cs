@@ -115,6 +115,7 @@ function MCFacility::onFoundBrick(%obj, %sb, %mod)
 
 function MCFacility::scanModuleBrick(%obj, %sb, %mod)
 {
+	echo(%sb.getDatablock() @ "\"" SPC %sb.isHatch());
 	if (%sb.isHatch())
 	{
 		%box = %sb.getWorldBox();
@@ -148,8 +149,8 @@ function MCFacility::scanModuleBrick(%obj, %sb, %mod)
 			}
 		}
 		
-		%sb.setColor(%mod.numHatches);
 		%sb.hatchId = %mod.numHatches;
+		echo("The hatch id is: " @ %sb.hatchId);
 		%mod.addHatch(%point, %dir);
 	}
 	%mod.addBrick(%sb);
@@ -300,27 +301,38 @@ function MCFacility::import(%obj, %filePath)
 
 //so we can save hatchbricks
 addCustSave("SPACEHATCH");
-function virtualBrickList::cs_addReal_SPACEHATCH(%obj, %num, %brick)
+function virtualBrickList::cs_addReal_SPACEHATCH(%obj, %csName, %vb, %brick)
 {
-	if (%brick.hatchId !$= "") %obj.virBricks[%num, "SPACEHATCH"] = %brick.hatchId;
-	else %obj.virBricks[%num, "SPACEHATCH"] = "";
+	if (%brick.hatchId !$= "")
+	{
+		%vb.hatchId = %brick.hatchId;
+		%vb.props["SPACEHATCH"] = true;
+	}
+	else
+	{
+		%vb.hatchId = "";
+		%vb.props["SPACEHATCH"] = 0;
+	}
 }
 
-function virtualBrickList::cs_create_SPACEHATCH(%obj, %num, %brick)
+function virtualBrickList::cs_create_SPACEHATCH(%obj, %csName, %vb, %brick)
 {
-	if (%obj.virBricks[%num, "SPACEHATCH"] !$= "")
-		%brick.hatchId = %obj.virBricks[%num, "SPACEHATCH"];
+	if (%vb.hatchId !$= "")
+		%brick.hatchId = %vb.hatchId;
 }
 
-function virtualBrickList::cs_save_SPACEHATCH(%obj, %num, %file)
+function virtualBrickList::cs_save_SPACEHATCH(%obj, %csName, %vb, %file)
 {
-	if (%obj.virBricks[%num, "SPACEHATCH"] !$= "")
-		%file.writeLine("+-SPACEHATCH" SPC %obj.virBricks[%num, "SPACEHATCH"]);
+	if (%vb.hatchId !$= "")
+	{
+		%file.writeLine("+-SPACEHATCH" SPC %vb.hatchId);
+	}
 }
 
-function virtualBrickList::cs_load_SPACEHATCH(%obj, %num, %addData, %addInfo, %addArgs, %line)
+function virtualBrickList::cs_load_SPACEHATCH(%obj, %csName, %vb, %addData, %addInfo, %addArgs, %line)
 {
-	%obj.virBricks[%num, "SPACEHATCH"] = %addInfo;
+	%vb.hatchId = %addInfo;
+	%vb.props["SPACEHATCH"] = true;
 }
 
 function bfSpaceSupport(%brick)

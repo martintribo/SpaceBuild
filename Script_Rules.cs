@@ -141,7 +141,7 @@ package SpaceBuildRulesPackage {
 		//this check should be taken care of by the normal getTrustLevel in the original function.
 		
 		//is this brick within the bounds of the MCSlotSO it's connected to?
-		if(!%this.withinBounds(%slotFound.getPosition(), %slotFound.size))
+		if(!%this.withinBounds(VectorAdd(%slotFound.getPosition(), VectorScale(%slotFound.size, 0.5)), %slotFound.size))
 		{
 			%this.killBrick();
 			commandToClient(%client, 'centerPrint', "You're building too far out of your building area!", 3);
@@ -163,7 +163,7 @@ package SpaceBuildRulesPackage {
 	
 	function ServerCmdClearBricks(%client)
 	{
-		%mcf = $debugMCF;
+		%mcf = $DefaultMiniGame.mcf;
 		%slot = %mcf.findSlotByBLID(%client.bl_id);
 		if (isObject(%slot))
 		{
