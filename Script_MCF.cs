@@ -150,7 +150,7 @@ function MCFacility::scanModuleBrick(%obj, %sb, %mod)
 		}
 		
 		%sb.hatchId = %mod.numHatches;
-		echo("The hatch id is: " @ %sb.hatchId);
+		echo("The hatch id is: " @ %sb.hatchId SPC "for" SPC %sb);
 		%mod.addHatch(%point, %dir);
 	}
 	%mod.addBrick(%sb);
@@ -301,35 +301,40 @@ function MCFacility::import(%obj, %filePath)
 
 //so we can save hatchbricks
 addCustSave("SPACEHATCH");
-function virtualBrickList::cs_addReal_SPACEHATCH(%obj, %csName, %vb, %brick)
+function virtualBrickList::cs_addReal_SPACEHATCH(%obj, %vb, %brick)
 {
+	echo("added spacehatch for" SPC %brick SPC "with" SPC %brick.hatchId);
 	if (%brick.hatchId !$= "")
 	{
+		echo("really added");
 		%vb.hatchId = %brick.hatchId;
 		%vb.props["SPACEHATCH"] = true;
 	}
 	else
 	{
+		echo("didn't really add");
 		%vb.hatchId = "";
-		%vb.props["SPACEHATCH"] = 0;
+		%vb.props["SPACEHATCH"] = "";
 	}
 }
 
-function virtualBrickList::cs_create_SPACEHATCH(%obj, %csName, %vb, %brick)
+function virtualBrickList::cs_create_SPACEHATCH(%obj, %vb, %brick)
 {
 	if (%vb.hatchId !$= "")
 		%brick.hatchId = %vb.hatchId;
 }
 
-function virtualBrickList::cs_save_SPACEHATCH(%obj, %csName, %vb, %file)
+function virtualBrickList::cs_save_SPACEHATCH(%obj, %vb, %file)
 {
+	echo("tried saving space hatch 1" SPC %vb.hatchId);
 	if (%vb.hatchId !$= "")
 	{
+		echo("tried saving space hatch 2");
 		%file.writeLine("+-SPACEHATCH" SPC %vb.hatchId);
 	}
 }
 
-function virtualBrickList::cs_load_SPACEHATCH(%obj, %csName, %vb, %addData, %addInfo, %addArgs, %line)
+function virtualBrickList::cs_load_SPACEHATCH(%obj, %vb, %addData, %addInfo, %addArgs, %line)
 {
 	%vb.hatchId = %addInfo;
 	%vb.props["SPACEHATCH"] = true;
