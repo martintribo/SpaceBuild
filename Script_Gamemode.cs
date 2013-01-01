@@ -1,10 +1,7 @@
 function setupSpacebuild(%mg)
 {
+	loadRunway();
 	createSpaceObjects(%mg);
-
-	
-	
-	
 
 }
 
@@ -28,6 +25,19 @@ function createSpaceObjects(%mg)
 	
 	if (isFile(%defaultMCFPath))
 		%mg.mcf.import(%defaultMCFPath);
+}
+
+//temporary fix
+function loadRunway()
+{
+	%runwayBLS = $Spacebuild::AddOnPath @ $Spacebuild::RunwayFile;
+	echo("try loading " @ %runwayBLS);
+	%vbl = newVBL();
+	%vbl.loadBLSFile(%runwayBLS);
+	echo("The count is " @ %vbl.getCount());
+	%vbl.createBricks();
+	echo("Create the bricks");
+	%vbl.delete();
 }
 
 function createDefaultStation(%mg)
