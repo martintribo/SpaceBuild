@@ -82,12 +82,13 @@ package SpacebuildGamemode
 		Sky.setScale("1 1 1");
 	}
 	
-	function MiniGameSO::addMember(%obj, %client)
-	{	
-		parent::addMember( %obj, %client );
+	//teleport the player to the module slot on spawn if they have one
+	function GameConnection::spawnPlayer(%client)
+	{
+		parent::spawnPlayer(%client);
 		
-		// kind of a hack, but some things are delayed when the player is added
-		%client.schedule(150, "giveModuleSlot");
+		if($DefaultMinigame.mcf.findSlotByBLID(%client.bl_id) != -1)
+			%client.teleportToModuleSlot();
 	}
 };
 
