@@ -30,6 +30,12 @@ function MCL_Grid::getMCF(%this)
 
 function MCL_Grid::createSlot(%this, %num, %client)
 {
+	if(%num $= "" || !isObject(%client))
+	{
+		error("MCL cannot create slot - no slot number or client specified!");
+		return;
+	}
+	
 	//find position for this number
 	%pos = %this.numberToPosition(%num);
 	
