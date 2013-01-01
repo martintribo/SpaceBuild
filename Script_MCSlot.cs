@@ -19,6 +19,11 @@ function MCSlot::onRemove(%this, %obj)
 	%this.templateBricks.delete();
 }
 
+function MCSlot::getOwnerBLID(%obj)
+{
+	return %obj.ownerBLID;
+}
+
 function MCSlot::getPosition(%this)
 {
 	return %this.position;
@@ -109,8 +114,12 @@ function MCSlotLoadFactory::onCreateBrick(%this, %brick)
 	%this.slot.addBrick(%brick);
 }
 
+function MCSlot::getCurrentSaveSlot(%obj)
+{
+	return %obj.selectedSave;
+}
 
-function MCSlot::nextSave(%obj)
+function MCSlot::nextSaveSlot(%obj)
 {
 	%obj.selectedSave++;
 	if (%obj.selectedSave >= $Spacebuild::Prefs::MaxModuleSaves)
@@ -119,7 +128,7 @@ function MCSlot::nextSave(%obj)
 	%obj.updateSavePrintBrick();
 }
 
-function MCSlot::prevSave()
+function MCSlot::prevSaveSlot(%obj)
 {
 	%obj.selectedSave--;
 	if (%obj.selectedSave < 0)
@@ -128,7 +137,7 @@ function MCSlot::prevSave()
 	%obj.updateSavePrintBrick();
 }
 
-function MCSlot::updateSaveBrick(%obj)
+function MCSlot::updateSavePrintBrick(%obj)
 {
 	if (isObject(%obj.savePrintBrick))
 	{
@@ -156,7 +165,7 @@ function MCSlot::loadBuiltBricksInSaveSlot(%obj)
 	%path = $Spacebuild::SavePath @ "Players/" @ %blid @ "/" @ %obj.selectedSave;
 	
 	//normally would check if the file exists, but there isn't a one line way to do that and you get no errors for trying to load a nonexisting file..
-	%obj.import(%path);
+	%obj.loadBuiltBricks(%path);
 }
 
 function MCSlot::saveBuiltBricksInSaveSlot(%obj)
@@ -164,5 +173,5 @@ function MCSlot::saveBuiltBricksInSaveSlot(%obj)
 	%blid = %obj.ownerBLID;
 	%path = $Spacebuild::SavePath @ "Players/" @ %blid @ "/" @ %obj.selectedSave;
 	
-	%obj.export(%path);
+	%obj.saveBuiltBricks(%path);
 }

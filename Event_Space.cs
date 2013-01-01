@@ -18,3 +18,76 @@ function GameConnection::giveModuleSlot(%client)
 }
 
 registerOutputEvent("GameConnection","giveModuleSlot","",0);
+
+function fxDTSBrick::nextSaveSlot(%obj, %client)
+{
+	if (isObject(%obj.slot) && %obj.slot.getOwnerBLID() == %client.getBLID())
+	{
+		%obj.slot.nextSaveSlot();
+		commandToClient(%obj.client, 'centerPrint', "\c3Slot " @ %obj.slot.getCurrentSaveSlot() + 1 @ " selected.", 2);
+	}
+}
+
+registerOutputEvent("fxDTSBrick", "nextSaveSlot", "", 1);
+
+function fxDTSBrick::prevSaveSlot(%obj, %client)
+{
+	if (isObject(%obj.slot) && %obj.slot.getOwnerBLID() == %client.getBLID())
+	{
+		%obj.slot.prevSaveSlot();
+		commandToClient(%obj.client, 'centerPrint', "\c3Slot " @ %obj.slot.getCurrentSaveSlot() + 1 @ " selected.", 2);
+	}
+}
+
+registerOutputEvent("fxDTSBrick", "prevSaveSlot", "", 1);
+
+function fxDTSBrick::loadSaveSlot(%obj, %client)
+{
+	%curTime = getSimTime();
+	if (%client.lastLoadSlotTime $= "")
+		%client.lastLoadSlotTime = %curTime;
+	else if ((%curTime - %client.lastLoadSlotTime) < 2000)
+	{
+		commandToClient(%obj.client, 'centerPrint', "\c3Please wait before loading again.", 2);
+		return;
+	}
+	
+	if (isObject(%obj.slot) && %obj.slot.getOwnerBLID() == %client.getBLID())
+	{
+		%obj.slot.loadBuiltBricksInSaveSlot();
+		commandToClient(%obj.client, 'centerPrint', "\c3Bricks loaded from slot " @ %obj.slot.getCurrentSaveSlot() + 1 @ ".", 2);
+	}
+}
+
+registerOutputEvent("fxDTSBrick", "loadSaveSlot", "", 1);
+
+function fxDTSBrick::saveSaveSlot(%obj, %client)
+{
+	%curTime = getSimTime();
+	if (%client.lastSaveSlotTime $= "")
+		%client.lastSaveSlotTime = %curTime;
+	else if ((%curTime - %client.lastSaveSlotTime) < 2000)
+	{
+		commandToClient(%obj.client, 'centerPrint', "\c3Please wait before saving again.", 2);
+		return;
+	}
+	
+	if (isObject(%obj.slot) && %obj.slot.getOwnerBLID() == %client.getBLID())
+	{
+		%obj.slot.saveBuiltBricksInSaveSlot();
+		commandToClient(%obj.client, 'centerPrint', "\c3Bricks saved in slot " @ %obj.slot.getCurrentSaveSlot() + 1 @ ".", 2);
+	}
+}
+
+registerOutputEvent("fxDTSBrick", "saveSaveSlot", "", 1);
+
+function fxDTSBrick::clearSaveSlot(%obj, %client)
+{
+	if (isObject(%obj.slot) && %obj.slot.getOwnerBLID() == %client.getBLID())
+	{
+		%obj.slot.clearBuiltBricks();
+		commandToClient(%obj.client, 'centerPrint', "\c3Bricks cleared.", 2);
+	}
+}
+
+registerOutputEvent("fxDTSBrick", "clearSaveSlot", "", 1);
