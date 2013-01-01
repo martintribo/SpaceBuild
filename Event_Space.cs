@@ -13,6 +13,11 @@ function GameConnection::giveModuleSlot(%client)
 		return;
 	}
 	
+	%client.teleportToModuleSlot();
+}
+
+function GameConnection::teleportToModuleSlot(%client)
+{
 	%client.player.setVelocity("0 0 0");
 	%client.player.setTransform(vectorAdd(%slot.getPosition(), "2 16 1") SPC "0 0 1" SPC $pi/2);
 }
