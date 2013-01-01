@@ -87,7 +87,6 @@ package SpacebuildGamemode
 		parent::addMember( %obj, %client );
 		
 		// kind of a hack, but some things are delayed when the player is added
-		echo("Going to call it");
 		%client.schedule(150, "giveModuleSlot");
 	}
 };

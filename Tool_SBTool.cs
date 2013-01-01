@@ -89,7 +89,6 @@ function SBToolCollision(%obj, %col)
 			if (%attachId != -1)
 			{
 				%mod = %mcf.popModule();
-				echo("The collision is: " @ %col);
 				commandToClient(%client, 'bottomPrint', "Attaching your module...", 2);
 				%mod.attachTo(%attachId, %col.module, %col.hatchId);
 				commandToClient(%client, 'bottomPrint', "Your module was attached!", 4);
