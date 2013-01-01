@@ -3,6 +3,10 @@ function MCSlot::onAdd(%this)
 	//create a VBL to store our bricks in
 	%this.builtBricks = new SimSet();
 	%this.templateBricks = new SimSet();
+	
+	//For player saved module loading
+	%this.selectedSave = 0;
+	
 }
 
 function MCSlot::onRemove(%this, %obj)
@@ -13,6 +17,11 @@ function MCSlot::onRemove(%this, %obj)
 		%this.templateBricks.getObject(0).delete();
 	%this.builtBricks.delete();
 	%this.templateBricks.delete();
+}
+
+function MCSlot::getOwnerBLID(%obj)
+{
+	return %obj.ownerBLID;
 }
 
 function MCSlot::getPosition(%this)
@@ -103,4 +112,66 @@ function MCSlotLoadFactory::onCreateBrick(%this, %brick)
 {
 	//bricks are not autoadded to builtBricks because they are created through onLoadPlant, so we just add them here
 	%this.slot.addBrick(%brick);
+}
+
+function MCSlot::getCurrentSaveSlot(%obj)
+{
+	return %obj.selectedSave;
+}
+
+function MCSlot::nextSaveSlot(%obj)
+{
+	%obj.selectedSave++;
+	if (%obj.selectedSave >= $Spacebuild::Prefs::MaxModuleSaves)
+		%obj.selectedSave = 0;
+	
+	%obj.updateSavePrintBrick();
+}
+
+function MCSlot::prevSaveSlot(%obj)
+{
+	%obj.selectedSave--;
+	if (%obj.selectedSave < 0)
+		%obj.selectedSave = $Spacebuild::Prefs::MaxModuleSaves - 1;
+	
+	%obj.updateSavePrintBrick();
+}
+
+function MCSlot::updateSavePrintBrick(%obj)
+{
+	if (isObject(%obj.savePrintBrick))
+	{
+		//update print
+	}
+}
+
+//only clears built bricks, not the structure!
+function MCSlot::clearBuiltBricks(%obj)
+{
+	while (%obj.builtBricks.getCount())
+	{
+		%brick = %obj.builtBricks.getObject(0);
+		%obj.removeBrick(%brick); //for the future, if we want to add callbacks
+		%brick.delete();
+	}
+}
+
+function MCSlot::loadBuiltBricksInSaveSlot(%obj)
+{
+	%obj.clearBuiltBricks();
+	
+	%blid = %obj.ownerBLID;
+	
+	%path = $Spacebuild::SavePath @ "Players/" @ %blid @ "/" @ %obj.selectedSave;
+	
+	//normally would check if the file exists, but there isn't a one line way to do that and you get no errors for trying to load a nonexisting file..
+	%obj.loadBuiltBricks(%path);
+}
+
+function MCSlot::saveBuiltBricksInSaveSlot(%obj)
+{
+	%blid = %obj.ownerBLID;
+	%path = $Spacebuild::SavePath @ "Players/" @ %blid @ "/" @ %obj.selectedSave;
+	
+	%obj.saveBuiltBricks(%path);
 }
