@@ -167,6 +167,7 @@ package SpaceBuildRulesPackage {
 };
 activatePackage(SpaceBuildRulesPackage);
 
+//Used for calculating if a brick is within a slot's bounds (thus a player can place it).
 function fxDTSBrick::withinBounds(%this, %center, %checkSize)
 {
 	%brickBox = %this.getWorldBox();
@@ -188,31 +189,31 @@ function fxDTSBrick::withinBounds(%this, %center, %checkSize)
 //bonus commands!
 function serverCmdUptime(%client)
 {
-	%time = getTimeString(mFloor(getSimTime() / 1000));
-	messageClient(%client, "", "\c2This server has been running for \c0" @ %time @ "\c2.");
+	%time = getTimeString(mFloor(getSimTime() / 1000 / 60));
+	messageClient(%client, "", "\c2This server has been running for \c0" @ %time @ "\c2 minutes.");
 }
 
-//easy save
-function ServerCmdSaveSpaceBuild(%client)
+//easy save in case of emergency
+function ServerCmdSaveSpaceBuild(%client, %name)
+{
+	if(!%client.isAdmin)
+		return;
+
+	if(%name $= "")
+		%name = "sbsave";
+	
+	$DefaultMinigame.mcf.export("config/server/SpaceBuild/" @ %name @ ".sbmcf");
+	$DefaultMinigame.station.export("config/server/SpaceBuild/" @ %name @ ".sbs");
+}
+
+function ServerCmdLoadSpaceBuild(%client, %name)
 {
 	if(!%client.isAdmin)
 		return;
 	
-	if(!isObject($DebugStation))
-		return;
+	if(%name $= "")
+		%name = "sbsave";
 	
-	$DebugMCF.export("config/server/SpaceBuild/debugmcf.sbm");
-	$DebugStation.export("config/server/SpaceBuild/debugstation.sbs");
-}
-
-function ServerCmdLoadSpaceBuild(%client)
-{
-	if(!%client.isAdmin)
-		return;
-	
-	if(!isObject($DebugStation))
-		setupSpace();
-	
-	$DebugMCF.import("config/server/SpaceBuild/debugmcf.sbm");
-	$DebugStation.import("config/server/SpaceBuild/debugstation.sbs"); //also creates bricks (in moduleSO.import)
+	$DefaultMinigame.mcf.import("config/server/SpaceBuild/" @ %name @ ".sbmcf");
+	$DefaultMinigame.station..import("config/server/SpaceBuild/" @ %name @ ".sbs");
 }
