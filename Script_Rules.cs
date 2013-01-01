@@ -215,5 +215,5 @@ function ServerCmdLoadSpaceBuild(%client, %name)
 		%name = "sbsave";
 	
 	$DefaultMinigame.mcf.import("config/server/SpaceBuild/" @ %name @ ".sbmcf");
-	$DefaultMinigame.station..import("config/server/SpaceBuild/" @ %name @ ".sbs");
+	$DefaultMinigame.station.import("config/server/SpaceBuild/" @ %name @ ".sbs");
 }

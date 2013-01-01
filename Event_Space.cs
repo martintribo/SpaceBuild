@@ -18,6 +18,7 @@ function GameConnection::giveModuleSlot(%client)
 
 function GameConnection::teleportToModuleSlot(%client)
 {
+	%slot = $DefaultMiniGame.mcf.findSlotByBLID(%client.bl_id);
 	%client.player.setVelocity("0 0 0");
 	%client.player.setTransform(vectorAdd(%slot.getPosition(), "2 16 1") SPC "0 0 1" SPC $pi/2);
 }
