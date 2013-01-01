@@ -141,7 +141,7 @@ package SpaceBuildRulesPackage {
 		//this check should be taken care of by the normal getTrustLevel in the original function.
 		
 		//is this brick within the bounds of the MCSlotSO it's connected to?
-		if(!%this.withinBounds(VectorAdd(%slotFound.getPosition(), VectorScale(%slotFound.size, 0.5)), %slotFound.size))
+		if(!%this.withinBounds(%slotFound.getCenter(), %slotFound.size))
 		{
 			%this.killBrick();
 			commandToClient(%client, 'centerPrint', "You're building too far out of your building area!", 3);
@@ -150,15 +150,6 @@ package SpaceBuildRulesPackage {
 		
 		//okay, they passed all checks! now, we can add this new brick to the VBL of the slot... (this also sets the brick's slot property to %slotFound)
 		%slotFound.addBrick(%this);
-	}
-	
-	function fxDTSBrick::onRemove(%this)
-	{
-		//if this brick is in a slot, remove it from the slot's VBL
-		if(isObject(%this.slot))
-			%this.slot.removeBrick(%this);
-		
-		parent::onRemove(%this);
 	}
 	
 	function ServerCmdClearBricks(%client)

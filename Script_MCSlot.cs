@@ -3,15 +3,10 @@ function MCSlot::onAdd(%this)
 	//create a VBL to store our bricks in
 	%this.builtBricks = new SimSet();
 	%this.templateBricks = new SimSet();
-	%this.vbl = new ScriptObject()
-	{
-		class = "VirtualBrickList";
-	};
 }
 
 function MCSlot::onRemove(%this, %obj)
 {
-	%this.vbl.delete();
 	while (%this.builtBricks.getCount())
 		%this.builtBricks.getObject(0).delete();
 	while (%this.templateBricks.getCount())
@@ -25,7 +20,13 @@ function MCSlot::getPosition(%this)
 	return %this.position;
 }
 
-//Places bricks in the VBL as-is, at this slot's position.
+function MCSlot::getCenter(%this)
+{
+	return VectorAdd(%this.getPosition(), 0 SPC 0 SPC getWord(%this.size, 2) * 0.5);
+}
+
+//Places bricks in the template VBL at this slot's position.
+//Will also name the bricks in the template spacebuildSupport and add them to %this.templateBricks (see MCSlotTemplateBrickFactory::onCreateBrick())
 function MCSlot::createTemplate(%this, %vbl)
 {
 	%factory = new ScriptObject(MCSlotTemplateBrickFactory)
@@ -33,20 +34,15 @@ function MCSlot::createTemplate(%this, %vbl)
 		class = "BrickFactory";
 		slot = %this;
 	};
+	
 	%pos = %this.getPosition();
-	%vbl.setCorner(%pos);
-	%factory.createBricksForBlid(%vbl, %this.ownerBLID);
+	
+	%center = vectorAdd(%pos, 0 SPC 0 SPC (%vbl.getSizeZ() / 2));
+	
+	%vbl.recenter();
+	%vbl.shiftBricks(%center);
 
-	
-	//Cheap fix, should be removed
-	%bottomCenter = getWords(%vbl.getCenter(), 0, 1) SPC getWord(%pos, 2) - %vbl.getSizeZ()/2;
-	
-	%supportCenter = VectorAdd(%bottomCenter, "0 0 -15.9");
-	
-	%supportVBL = newVBL();
-	%supportVBL.addBrick(brick64xCubeData, %supportCenter, 0, 1, 15, "", 0, 0, 1, 1, 1);
-	%factory.createBricks(%supportVBL);
-	%supportVBL.delete();
+	%factory.createBricksForBlid(%vbl, %this.ownerBLID);
 	%factory.delete();
 }
 
@@ -69,77 +65,42 @@ function MCSlot::removeBrick(%this, %brick)
 	%this.builtBricks.remove(%brick);
 }
 
-//used for loading bricks
-function MCSlot::createBricks(%this)
-{
-	%factory = new ScriptObject(MCSlotBrickFactory)
-	{
-		class = "BrickFactory";
-		slot = %this;
-	};
-	%vbl = %this.vbl;
-	%pos = %this.getPosition();
-	//%vbl.recenter(%pos);
-	%factory.createBricksNoOwner(%vbl, %this.ownerBLID);
-	
-	%factory.delete();
-}
-
 function MCSlotBrickFactory::onCreateBrick(%this, %brick)
 {
 	%this.slot.addBrick(%brick);
 }
 
-function MCSlot::readyVbl(%obj)
+function MCSlot::saveBuiltBricks(%this, %path)
 {
-	%obj.vbl.delete();
-	%obj.vbl = newVBL();
-	%obj.vbl.addSet(%obj.builtBricks);
+	%vbl = newVBL();
+	%vbl.addSet(%this.builtBricks);
+	
+	%vbl.shiftBricks(vectorScale(%this.getPosition(), -1));
+	
+	%vbl.exportBLSFile(%path);
 }
 
-//*****************************************************************
-//Nitramtj - Not in use yet
-function ModuleSO::export(%obj, %file)
+function MCSlot::loadBuiltBricks(%this, %path)
 {
-	%name = fileBase(%file);
-	%path = filePath(%file);
-	%f = new FileObject();
+	%vbl = newVBL();
 	
-	%f.openForWrite(%file);
+	%vbl.loadBLSFile(%path);
 	
-	%f.writeLine("ownerBLID" TAB %obj.state);
+	%vbl.shiftBricks(%this.getPosition());
 	
-	%f.writeLine("ownerName" TAB %obj.numHatches);
-	%saveVbl = newVBL();
-	%saveVbl.addSet(%obj.builtBricks);
+	%factory = new ScriptObject(MCSlotLoadFactory)
+	{
+		class = "BrickFactory";
+		slot = %this;
+	};
 	
-	%vblPath = %path @ "/" @ %name @ "_vbl" @ %m @ ".bls";
-	%obj.vbl.exportBLSFile(%vblPath);
-	%f.writeLine("vbl" TAB %vblPath);
-		
-	%saveVbl.delete();
-	%f.close();
-	%f.delete();
+	//should probably not be no owner
+	%factory.createBricksNoOwner(%vbl, %this.ownerBLID);
+	%factory.delete();
 }
 
-function ModuleSO::import(%obj, %file)
+function MCSlotLoadFactory::onCreateBrick(%this, %brick)
 {
-	%f = new FileObject();
-	%f.openForRead(%file);
-	
-	%obj.state = getField(%f.readLine(), 1);
-	%obj.numHatches = getField(%f.readLine(), 1);
-	%obj.vbl.loadBLSFile(getField(%f.readLine(), 1));
-	%obj.vbl.createBricks();
-	
-	%f.close();
-	%f.delete();
+	//bricks are not autoadded to builtBricks because they are created through onLoadPlant, so we just add them here
+	%this.slot.addBrick(%brick);
 }
-
-function MCSlotLoadFactory::onCreateBrick(%obj, %brick)
-{
-	//bricks are not autoadded because they are created through onLoadPlant
-	%obj.slot.addRealBrick(%brick);
-}
-
-//*****************************************************************
