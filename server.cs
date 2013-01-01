@@ -50,6 +50,23 @@ exec("./Player_Space.cs");
 //Core gamemode scripts (loading up initial station, etc)
 exec("./Script_Gamemode.cs");
 
+//RTB Registration
+if(isFile("Add-Ons/System_ReturnToBlockland/server.cs"))
+{
+	if(!$RTB::RTBR_ServerControl_Hook)
+		exec("Add-Ons/System_ReturnToBlockland/RTBR_ServerControl_Hook.cs");
+	
+	RTB_registerPref("Max Module Saves", $Spacebuild::Name, "$Spacebuild::Prefs::MaxModuleSaves", "int 0 9999", $Spacebuild::AddOnFolderName, 30, 0, 1);
+}
+else
+{
+	$Spacebuild::Prefs::MaxModuleSaves = 30;
+}
+
+
+
+	
+
 package SpacebuildGamemode
 {
 	function MiniGameSO::onAdd(%obj)

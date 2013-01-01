@@ -9,3 +9,5 @@ $Spacebuild::MCFPosition = "0 0 0";
 $Spacebuild::StationDisplacement = "0 -2000 3000";
 $Spacebuild::StarterModuleFile = "starterModule.bls";
 $Spacebuild::RunwayFile = "runway.bls";
+$Spacebuild::AddOnFolderName = "Gamemode_Spacebuild";
+$Spacebuild::Name = "SpaceBuild";
