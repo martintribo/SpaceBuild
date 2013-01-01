@@ -54,7 +54,7 @@ exec("./Script_Gamemode.cs");
 if(isFile("Add-Ons/System_ReturnToBlockland/server.cs"))
 {
 	if(!$RTB::RTBR_ServerControl_Hook)
-		exec("Add-Ons/System_ReturnToBlockland/RTBR_ServerControl_Hook.cs");
+		exec("Add-Ons/System_ReturnToBlockland/hooks/serverControl.cs");
 	
 	RTB_registerPref("Max Module Saves", $Spacebuild::Name, "$Spacebuild::Prefs::MaxModuleSaves", "int 0 9999", $Spacebuild::AddOnFolderName, 30, 0, 1);
 }
