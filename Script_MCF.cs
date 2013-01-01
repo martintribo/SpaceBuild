@@ -213,6 +213,11 @@ function MCFacility::debugAttach(%obj)
 	%obj.queue.getObject(1).attachTo(%obj.queue.getObject(0), "hatch1", "hatch0");
 }
 
+//save format is:
+//slotNum^ownerBLID^ownerName
+//each line represents a slot
+//position can be derived from slotNum with MCL.numberToPosition(slot)
+//slot VBL is saved as saveFileDir/saveFileName_vbl[slotNum]
 function MCFacility::export(%obj, %filePath)
 {
 	%path = filePath(%filePath);
@@ -226,14 +231,10 @@ function MCFacility::export(%obj, %filePath)
 	{
 		if(isObject(%obj.slot[%i]))
 		{
-			//save format is:
-			//slotNum^ownerBLID^ownerName
-			//position can be derived from slotNum (MCL.numberToPosition(slot))
 			%file.writeLine(%i TAB %obj.slot[%i].ownerBLID TAB %obj.slot[%i].ownerName TAB %obj.slot[%i].size);
 			
 			//save VBL
-			%obj.slot[%i].readyVbl();
-			%obj.slot[%i].vbl.exportBLSFile(%path @ "/" @ %fileName @ "_vbl" @ %i @ ".vbl");
+			%obj.slot[%i].saveBuiltBricks(%path @ "/" @ %fileName @ "_vbl" @ %i @ ".vbl");
 		}
 	}
 	%file.close();
@@ -258,7 +259,7 @@ function MCFacility::import(%obj, %filePath)
 	
 	%file = new FileObject();
 	%file.openForRead(%filePath);
-	%obj.setPosition(%file.readLine()); //first line is always position
+	%obj.setPosition(%file.readLine()); //first line is always MCF position
 	while(!%file.isEOF())
 	{
 		%line = %file.readLine();
@@ -279,14 +280,11 @@ function MCFacility::import(%obj, %filePath)
 			size = %size;
 		};
 		
-		//create template
+		//place template bricks
 		%slotSO.createTemplate(%obj.getMCL().templateVBL);
 		
-		//load VBL
-		%slotSO.vbl.loadBLSFile(%vblPath);
-		
-		//place VBL bricks
-		%slotSO.createBricks();
+		//load VBL from the save file and place the bricks
+		%slotSO.loadBuiltBricks(%vblPath);
 		
 		//register slotSO with this MCF
 		%obj.setSlot(%slotNum, %slotSO);
