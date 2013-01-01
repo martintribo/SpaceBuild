@@ -159,7 +159,7 @@ package SpaceBuildRulesPackage {
 		if (isObject(%slot))
 		{
 			%mcf.setSlot(%slot.number, 0);
-			%slot.delete();
+			%slot.clearBuiltBricks();
 			commandToClient(%client, 'centerPrint', "Cleared Slot!", 3);
 		}
 	}
