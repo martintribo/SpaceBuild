@@ -115,7 +115,6 @@ function MCFacility::onFoundBrick(%obj, %sb, %mod)
 
 function MCFacility::scanModuleBrick(%obj, %sb, %mod)
 {
-	echo(%sb.getDatablock() @ "\"" SPC %sb.isHatch());
 	if (%sb.isHatch())
 	{
 		%box = %sb.getWorldBox();
@@ -150,7 +149,6 @@ function MCFacility::scanModuleBrick(%obj, %sb, %mod)
 		}
 		
 		%sb.hatchId = %mod.numHatches;
-		echo("The hatch id is: " @ %sb.hatchId SPC "for" SPC %sb);
 		%mod.addHatch(%point, %dir);
 	}
 	%mod.addBrick(%sb);
@@ -178,7 +176,6 @@ function MCFacility::finishScanningModuleBricks(%obj, %mod)
 function MCFacility::onFinishedFinding(%obj, %mod, %bf)
 {
 	//delete the Brick Finder and make a new module with that vbl
-	//echo("onfinishedfinding" SPC %mod SPC %bf);
 	
 	%verificationError = %obj.finishScanningModuleBricks(%mod);
 	%bf.delete();
@@ -303,16 +300,13 @@ function MCFacility::import(%obj, %filePath)
 addCustSave("SPACEHATCH");
 function virtualBrickList::cs_addReal_SPACEHATCH(%obj, %vb, %brick)
 {
-	echo("added spacehatch for" SPC %brick SPC "with" SPC %brick.hatchId);
 	if (%brick.hatchId !$= "")
 	{
-		echo("really added");
 		%vb.hatchId = %brick.hatchId;
 		%vb.props["SPACEHATCH"] = true;
 	}
 	else
 	{
-		echo("didn't really add");
 		%vb.hatchId = "";
 		%vb.props["SPACEHATCH"] = "";
 	}
@@ -326,10 +320,8 @@ function virtualBrickList::cs_create_SPACEHATCH(%obj, %vb, %brick)
 
 function virtualBrickList::cs_save_SPACEHATCH(%obj, %vb, %file)
 {
-	echo("tried saving space hatch 1" SPC %vb.hatchId);
 	if (%vb.hatchId !$= "")
 	{
-		echo("tried saving space hatch 2");
 		%file.writeLine("+-SPACEHATCH" SPC %vb.hatchId);
 	}
 }

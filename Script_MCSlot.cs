@@ -35,7 +35,6 @@ function MCSlot::createTemplate(%this, %vbl)
 	};
 	%pos = %this.getPosition();
 	%vbl.setCorner(%pos);
-	echo("owner: " @ %this.ownerBLID);
 	%factory.createBricksForBlid(%vbl, %this.ownerBLID);
 
 	

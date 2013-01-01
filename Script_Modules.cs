@@ -55,12 +55,9 @@ function ModuleSO::getHatchType(%obj, %i)
 
 function ModuleSO::attachTo(%obj, %objHatch, %mod, %modHatch)
 {
-	echo("obj " @ %obj @ " objHatch " @ %objHatch @ " mod " @ %mod @ " modHatch " @ %modHatch);
 	//besides just setting up links and etc, the states and owners of modules must be changed
 	%obj.vbl.markers["hatch" @ %objHatch].alignWith(%mod.vbl.markers["hatch" @ %modHatch]);
-	echo("Center: " @ %obj.vbl.getCenter());
 	//%obj.vbl.createBricks();
-	%obj.setPosition(%obj.vbl.getCenter());
 	
 	%obj.owner = %mod.owner; //update ownership, change?
 	%obj.owner.addModule(%obj);
@@ -120,7 +117,6 @@ activatePackage(ModulePack);
 
 function moduleSO::getCompatibleHatches(%obj, %type)
 {
-	echo(%type);
 	// if (%dir < 4)
 		// %type = "horizontal";
 	// else if (%dir == 4)
@@ -137,7 +133,6 @@ function moduleSO::getCompatibleHatches(%obj, %type)
 	
 	for (%i = 0; %i < %obj.numHatches; %i++)
 	{
-		echo(%type SPC "look");
 		if (%obj.getHatchType(%i) $= %type)
 			%list = %list @ %i @ "\t";
 	}

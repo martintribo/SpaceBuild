@@ -31,12 +31,9 @@ function createSpaceObjects(%mg)
 function loadRunway()
 {
 	%runwayBLS = $Spacebuild::AddOnPath @ $Spacebuild::RunwayFile;
-	echo("try loading " @ %runwayBLS);
 	%vbl = newVBL();
 	%vbl.loadBLSFile(%runwayBLS);
-	echo("The count is " @ %vbl.getCount());
 	%vbl.createBricks();
-	echo("Create the bricks");
 	%vbl.delete();
 }
 
@@ -46,7 +43,6 @@ function createDefaultStation(%mg)
 	
 	%vbl = newVBL();
 	%vbl.loadBLSFile($Spacebuild::AddOnPath @ $Spacebuild::StarterModuleFile);
-	error("vbl count " @ %vbl.getCount());
 	%mg.mcf.scanVBL(%vbl);
 	if (!%verificationError)
 	{
