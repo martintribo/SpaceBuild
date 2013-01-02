@@ -106,6 +106,8 @@ function MCSlot::loadBuiltBricks(%this, %path)
 	//should probably not be no owner
 	%factory.createBricksNoOwner(%vbl, %this.ownerBLID);
 	%factory.delete();
+	
+	%vbl.delete();
 }
 
 function MCSlotLoadFactory::onCreateBrick(%this, %brick)
