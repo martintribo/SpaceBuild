@@ -19,8 +19,6 @@ function MCL_Grid::onAdd(%this)
 	};
 	
 	%this.templateVBL.loadBLSFile("add-ons/Gamemode_SpaceBuild/MCL_Grid_Template.bls");
-	
-	//Loop through template and set all names to _spacebuildSupport here
 }
 
 function MCL_Grid::getMCF(%this)

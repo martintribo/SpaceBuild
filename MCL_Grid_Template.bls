@@ -98,7 +98,7 @@ Linecount 61
 1x1 Print" 13.75 -0.75 34.5 1 0 5 Letters/-greater_than 0 0 1 1 1
 +-EVENT	0	1	onActivate	0	Self		nextSaveSlot				
 1x1x5" 4.25 8.25 38.1 0 0 16  0 0 0 0 0
-45Â° Ramp 2x Print" 13.5 0 34.5 3 0 7 Letters/1 0 0 1 1 1
+45° Ramp 2x Print" 13.5 0 34.5 3 0 7 Letters/1 0 0 1 1 1
 1x1x5" -4.25 8.25 38.1 0 0 16  0 0 0 0 0
 1x1x5" -4.25 -8.25 38.1 0 0 16  0 0 0 0 0
 1x1x5" 4.25 -8.25 38.1 0 0 16  0 0 0 0 0
