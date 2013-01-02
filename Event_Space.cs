@@ -59,7 +59,7 @@ function fxDTSBrick::loadSaveSlot(%obj, %client)
 			commandToClient(%client, 'centerPrint', "\c3Please wait before loading again.", 2);
 			return;
 		}
-	
+		%client.lastLoadSlotTime = %curTime;
 		%obj.slot.loadBuiltBricksInSaveSlot();
 		commandToClient(%client, 'centerPrint', "\c3Bricks loaded from slot " @ %obj.slot.getCurrentSaveSlot() + 1 @ ".", 2);
 	}
@@ -79,7 +79,7 @@ function fxDTSBrick::saveSaveSlot(%obj, %client)
 			commandToClient(%client, 'centerPrint', "\c3Please wait before saving again.", 2);
 			return;
 		}
-	
+		%client.lastSaveSlotTime = %curTime;
 		%obj.slot.saveBuiltBricksInSaveSlot();
 		commandToClient(%client, 'centerPrint', "\c3Bricks saved in slot " @ %obj.slot.getCurrentSaveSlot() + 1 @ ".", 2);
 	}
