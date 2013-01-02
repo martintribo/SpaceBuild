@@ -214,7 +214,7 @@ function MCFacility::debugAttach(%obj)
 }
 
 //save format is:
-//slotNum^ownerBLID^ownerName
+//slotNum^ownerBLID^ownerName^size^selectedSave
 //each line represents a slot
 //position can be derived from slotNum with MCL.numberToPosition(slot)
 //slot VBL is saved as saveFileDir/saveFileName_vbl[slotNum]
@@ -231,7 +231,7 @@ function MCFacility::export(%obj, %filePath)
 	{
 		if(isObject(%obj.slot[%i]))
 		{
-			%file.writeLine(%i TAB %obj.slot[%i].ownerBLID TAB %obj.slot[%i].ownerName TAB %obj.slot[%i].size);
+			%file.writeLine(%i TAB %obj.slot[%i].ownerBLID TAB %obj.slot[%i].ownerName TAB %obj.slot[%i].size TAB %obj.slot[%i].selectedSave);
 			
 			//save VBL
 			%obj.slot[%i].saveBuiltBricks(%path @ "/" @ %fileName @ "_vbl" @ %i @ ".vbl");
@@ -268,6 +268,7 @@ function MCFacility::import(%obj, %filePath)
 		%blid = getField(%line, 1);
 		%name = getField(%line, 2);
 		%size = getField(%line, 3);
+		%selectedSave = getField(%line, 4);
 		%vblPath = %path @ "/" @ %fileName @ "_vbl" @ %slotNum @ ".vbl";
 		
 		%slotSO = new ScriptObject()
@@ -278,6 +279,7 @@ function MCFacility::import(%obj, %filePath)
 			ownerBLID = %blid;
 			ownerName = %name;
 			size = %size;
+			selectedSave = %selectedSave;
 		};
 		
 		//place template bricks
