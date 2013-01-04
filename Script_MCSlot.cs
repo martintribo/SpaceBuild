@@ -87,6 +87,8 @@ function MCSlot::saveBuiltBricks(%this, %path)
 	%vbl.shiftBricks(vectorScale(%this.getPosition(), -1));
 	
 	%vbl.exportBLSFile(%path);
+	
+	%vbl.delete();
 }
 
 function MCSlot::loadBuiltBricks(%this, %path)
