@@ -29,6 +29,8 @@ function createSpaceObjects(%mg)
 	
 	if (isFile(%defaultMCFPath))
 		%mg.mcf.import(%defaultMCFPath);
+		
+	$SpacebuildAutoloadComplete = true;
 }
 
 //temporary fix
@@ -48,7 +50,7 @@ function createDefaultStation(%mg)
 	%vbl = newVBL();
 	%vbl.loadBLSFile($Spacebuild::AddOnPath @ $Spacebuild::StarterModuleFile);
 	%mg.mcf.scanVBL(%vbl);
-	if (!%verificationError)
+	if (!%verificationError) //%verificationError is not defined?
 	{
 		%mod = %mg.mcf.popModule();
 		%mod.state = "Deployed"; //Shouldn't have to manually do this

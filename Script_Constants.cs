@@ -11,3 +11,4 @@ $Spacebuild::StarterModuleFile = "starterModule.bls";
 $Spacebuild::RunwayFile = "runway.bls";
 $Spacebuild::AddOnFolderName = "Gamemode_Spacebuild";
 $Spacebuild::Name = "SpaceBuild";
+$Spacebuild::AutosaveTime = 480000; //every 8 minutes

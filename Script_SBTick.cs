@@ -1,5 +1,5 @@
 $SBTickSpeed = 100;
-$SBTickAutoStart = 1;
+$SBTickAutoStart = true;
 
 $playerBurnSpeed = 55;
 $playerBurnDamage = 10;
