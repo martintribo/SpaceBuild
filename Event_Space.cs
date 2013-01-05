@@ -11,11 +11,14 @@ function GameConnection::teleportToModuleSlot(%client)
 function GameConnection::giveModuleSlot(%client)
 {
 	//a hack to get around some event object limits
-	schedule(1, 0, "GameConnectiongiveModuleSlot", %client);
+	$DefaultMiniGame.evalQueue.addStatement("GameConnectiongiveModuleSlot(" @ %client @ ");");
 }
 
 function GameConnectiongiveModuleSlot(%client)
 {
+	if (!isObject(%client))
+		return;
+	
 	%mcf = $DefaultMiniGame.mcf;
 	if(!isObject(%mcf))
 		return;
@@ -37,12 +40,12 @@ registerOutputEvent("GameConnection", "giveModuleSlot", "", false);
 
 function fxDTSBrick::nextSaveSlot(%obj, %client)
 {
-	schedule(1, 0, "fxDTSBricknextSaveSlot", %obj, %client);
+	$DefaultMiniGame.evalQueue.addStatement("fxDTSBricknextSaveSlot(" @ %obj @ ", " @ %client @ ");");
 }
 
 function fxDTSBricknextSaveSlot(%obj, %client)
 {
-	if (!isObject(%obj.slot))
+	if (!isObject(%obj) || !isObject(%client) || !isObject(%obj.slot))
 		return;
 	
 	if (%obj.slot.getOwnerBLID() == %client.getBLID())
@@ -59,12 +62,12 @@ registerOutputEvent("fxDTSBrick", "nextSaveSlot", "", true);
 
 function fxDTSBrick::prevSaveSlot(%obj, %client)
 {
-	schedule(1, 0, "fxDTSBrickprevSaveSlot", %obj, %client);
+	$DefaultMiniGame.evalQueue.addStatement("fxDTSBrickprevSaveSlot(" @ %obj @ ", " @ %client @ ");");
 }
 
 function fxDTSBrickprevSaveSlot(%obj, %client)
 {
-	if (!isObject(%obj.slot))
+	if (!isObject(%obj) || !isObject(%client) || !isObject(%obj.slot))
 		return;
 	
 	if (%obj.slot.getOwnerBLID() == %client.getBLID())
@@ -80,13 +83,13 @@ registerOutputEvent("fxDTSBrick", "prevSaveSlot", "", true);
 
 
 function fxDTSBrick::loadSaveSlot(%obj, %client)
-{	
-	schedule(1, 0, "fxDTSBrickloadSaveSlot", %obj, %client);
+{
+	$DefaultMiniGame.evalQueue.addStatement("fxDTSBrickloadSaveSlot(" @ %obj @ ", " @ %client @ ");");
 }
 
 function fxDTSBrickloadSaveSlot(%obj, %client)
 {
-	if (!isObject(%obj.slot))
+	if (!isObject(%obj) || !isObject(%client) || !isObject(%obj.slot))
 		return;
 	
 	if (%obj.slot.getOwnerBLID() == %client.getBLID())
@@ -112,12 +115,12 @@ registerOutputEvent("fxDTSBrick", "loadSaveSlot", "", true);
 
 function fxDTSBrick::saveSaveSlot(%obj, %client)
 {	
-	schedule(1, 0, "fxDTSBricksaveSaveSlot", %obj, %client);
+	$DefaultMiniGame.evalQueue.addStatement("fxDTSBricksaveSaveSlot(" @ %obj @ ", " @ %client @ ");");
 }
 
 function fxDTSBricksaveSaveSlot(%obj, %client)
 {
-	if (!isObject(%obj.slot))
+	if (!isObject(%obj) || !isObject(%client) || !isObject(%obj.slot))
 		return;
 
 	if (%obj.slot.getOwnerBLID() == %client.getBLID())
@@ -143,12 +146,12 @@ registerOutputEvent("fxDTSBrick", "saveSaveSlot", "", true);
 
 function fxDTSBrick::clearSaveSlot(%obj, %client)
 {
-	schedule(1, 0, "fxDTSBrickclearSaveSlot", %obj, %client);
+	$DefaultMiniGame.evalQueue.addStatement("fxDTSBrickclearSaveSlot(" @ %obj @ ", " @ %client @ ");");
 }
 
 function fxDTSBrickclearSaveSlot(%obj, %client)
 {
-	if (!isObject(%obj.slot))
+	if (!isObject(%obj) || !isObject(%client) || !isObject(%obj.slot))
 		return;
 	
 	if (%obj.slot.getOwnerBLID() == %client.getBLID())

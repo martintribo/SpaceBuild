@@ -6,6 +6,9 @@ JeepVehicle.uiName = "";
 //First execute constants file
 exec("./Script_Constants.cs");
 
+//EvalQueue, temporary solution to events limiting object creation
+exec("./Script_EvalQueue.cs");
+
 //Space bricks (hatches)
 exec("./Brick_Space.cs");
 
