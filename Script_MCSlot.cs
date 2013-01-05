@@ -11,12 +11,22 @@ function MCSlot::onAdd(%this)
 
 function MCSlot::onRemove(%this, %obj)
 {
-	while (%this.builtBricks.getCount())
-		%this.builtBricks.getObject(0).delete();
-	while (%this.templateBricks.getCount())
-		%this.templateBricks.getObject(0).delete();
-	%this.builtBricks.delete();
-	%this.templateBricks.delete();
+	//these are in isObject if blocks because sometimes Blockland cleans up the SimSets before the ScriptObjects on quit
+	if(isObject(%this.builtBricks))
+	{
+		while (%this.builtBricks.getCount())
+			%this.builtBricks.getObject(0).delete();
+		
+		%this.builtBricks.delete();
+	}
+	
+	if(isObject(%this.templateBricks))
+	{
+		while (%this.templateBricks.getCount())
+			%this.templateBricks.getObject(0).delete();
+		
+		%this.templateBricks.delete();
+	}
 }
 
 function MCSlot::getOwnerBLID(%this)

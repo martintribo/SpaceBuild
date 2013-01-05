@@ -53,6 +53,9 @@ exec("./Player_Space.cs");
 //Core gamemode scripts (loading up initial station, etc)
 exec("./Script_Gamemode.cs");
 
+//Autosave the station and MCF
+exec("./Script_Autosave.cs");
+
 //RTB Registration
 if(isFile("Add-Ons/System_ReturnToBlockland/server.cs"))
 {
@@ -121,6 +124,20 @@ package SpacebuildGamemode
 		
 		parent::onClientLeaveGame(%client);
 	}
+	
+	//(RTB also packages this function, so I'm pretty sure it's the right one to use, though it may be meant for client scripts)
+	function disconnectedCleanup()
+	{
+		if(isEventPending($SBTickSched))
+			cancel($SBTickSched);
+		if(isEventPending($gravityTickSched))
+			cancel($gravityTickSched);
+		if(isEventPending($SBAutosaveTick))
+			cancel($SBAutosaveTick);
+		
+		parent::disconnectedCleanup();
+	}
+	
 };
 
 activatePackage(SpacebuildGamemode);
