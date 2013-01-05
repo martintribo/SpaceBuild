@@ -1,8 +1,12 @@
 function setupSpacebuild(%mg)
 {
+	%mg.evalQueue = new ScriptObject()
+	{
+		class = "EvalQueue";
+	};
+	
 	loadRunway();
 	createSpaceObjects(%mg);
-
 }
 
 function createSpaceObjects(%mg)
