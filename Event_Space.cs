@@ -13,7 +13,7 @@ function GameConnection::teleportToModuleSlot(%client)
 
 function fxDTSBrick::giveModuleSlot(%obj, %client)
 {
-	if(%obj.getGroup().bl_id != $SpaceBuild::BLID)
+	if(%obj.getGroup().bl_id != $SpaceBuild::SpawnBLID)
 	{
 		commandToClient(%client, 'bottomPrint', "You can't place the special events.", 2);
 		return;
