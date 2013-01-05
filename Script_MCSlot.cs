@@ -82,6 +82,9 @@ function MCSlotTemplateBrickFactory::onCreateBrick(%this, %brick)
 	%brick.isSBTemplate = true;
 	%this.slot.templateBricks.add(%brick);
 	%brick.setNTObjectName("spacebuildSupport"); //mark template bricks as such
+	
+	if (%brick.isSaveSlotPrint)
+		%this.slot.savePrintBrick = %brick;
 }
 
 function MCSlot::addBrick(%this, %brick)
@@ -166,8 +169,8 @@ function MCSlot::updateSavePrintBrick(%obj)
 {
 	if (isObject(%obj.savePrintBrick))
 	{
-		//update print
-		//TODO
+		%printId = $printNameTable["Letters/" @ (%obj.selectedSave + 1)];
+		%obj.savePrintBrick.setPrint(%printId);
 	}
 }
 
@@ -245,4 +248,32 @@ function MCSlot::import(%this, %filePath, %templateVBL)
 	//but we're too close to launch to break old stuff now
 	%this.createTemplate(%templateVBL);
 	%this.loadBuiltBricks(%path @ "/" @ %fileName @ "_bricks.bls");
+}
+
+//so we can save hatchbricks
+addCustSave("SAVESLOTPRINT");
+
+function virtualBrickList::cs_save_SAVESLOTPRINT(%obj, %vb, %file)
+{
+	if (%vb.props["SAVESLOTPRINT"] !$= "")
+		%file.writeLine("+-SAVESLOTPRINT" SPC %vb.hatchId);
+}
+
+function virtualBrickList::cs_load_SAVESLOTPRINT(%obj, %vb, %addData, %addInfo, %addArgs, %line)
+{
+	%vb.props["SAVESLOTPRINT"] = true;
+}
+
+function virtualBrickList::cs_create_SAVESLOTPRINT(%obj, %vb, %brick)
+{
+	if (%vb.props["SAVESLOTPRINT"] !$= "")
+		%brick.isSaveSlotPrint = true;
+}
+
+function virtualBrickList::cs_addReal_SAVESLOTPRINT(%obj, %vb, %brick)
+{
+	if (%brick.isSaveSlotPrint !$= "")
+		%vb.props["SAVESLOTPRINT"] = true;
+	else
+		%vb.props["SAVESLOTPRINT"] = "";
 }
