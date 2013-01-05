@@ -7,6 +7,7 @@ function setupSpacebuild(%mg)
 	
 	loadRunway();
 	createSpaceObjects(%mg);
+	startTicks();
 }
 
 function createSpaceObjects(%mg)
@@ -33,7 +34,6 @@ function createSpaceObjects(%mg)
 	$SpacebuildAutoloadComplete = true;
 }
 
-//temporary fix
 function loadRunway()
 {
 	%runwayBLS = $Spacebuild::AddOnPath @ $Spacebuild::RunwayFile;
@@ -62,4 +62,11 @@ function createDefaultStation(%mg)
 		%mg.station.export(%defaultStationPath);
 	}
 	%vbl.delete();
+}
+
+function startTicks()
+{
+	//gravityTick will start itself once someone spawns
+	SBTick();
+	$SBAutosaveTick = schedule($Spacebuild::AutosaveTime, 0, "SpaceBuildAutosave"); //(don't autosave right away)
 }

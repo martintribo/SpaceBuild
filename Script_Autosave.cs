@@ -19,5 +19,3 @@ function SpaceBuildAutosave()
 	if(!isEventPending($SBAutosaveTick))
 		$SBAutosaveTick = schedule($Spacebuild::AutosaveTime, 0, "SpaceBuildAutosave");
 }
-
-$SBAutosaveTick = schedule($Spacebuild::AutosaveTime, 0, "SpaceBuildAutosave");

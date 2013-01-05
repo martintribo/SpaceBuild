@@ -1,11 +1,6 @@
-//This script should be replaced by Nitramtj's physical zone auto maker thing as soon as possible.
-//The messaging commands will be replaced with Script_SBTick.cs.
-
 $gravityTickTime = 5;
 $gravityDefaultScale = "2 2 3";
 $gravityDefaultMod = 0;
-
-//$stationPos = ""; //define this manually ingame!
 
 if(!isObject(gravityFieldGroup))
 {
