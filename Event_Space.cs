@@ -10,13 +10,20 @@ function GameConnection::teleportToModuleSlot(%client)
 	%client.player.setTransform(vectorAdd(%slot.getPosition(), "-15 0 1") SPC "0 0 1" SPC $pi/2);
 }
 
-function GameConnection::giveModuleSlot(%client)
+
+function fxDTSBrick::giveModuleSlot(%obj, %client)
 {
+	if(%obj.getGroup().bl_id != $SpaceBuild::BLID)
+	{
+		commandToClient(%client, 'bottomPrint', "You can't place the special events.", 2);
+		return;
+	}
+	
 	//a hack to get around some event object limits
-	$DefaultMiniGame.evalQueue.addStatement("GameConnectiongiveModuleSlot(" @ %client @ ");");
+	$DefaultMiniGame.evalQueue.addStatement("fxDTSBrickgiveModuleSlot(" @ %client @ ");");
 }
 
-function GameConnectiongiveModuleSlot(%client)
+function fxDTSBrickgiveModuleSlot(%client)
 {
 	if (!isObject(%client))
 		return;
@@ -37,11 +44,17 @@ function GameConnectiongiveModuleSlot(%client)
 	%client.teleportToModuleSlot();
 }
 
-registerOutputEvent("GameConnection", "giveModuleSlot", "", false);
+registerOutputEvent("fxDTSBrick", "giveModuleSlot", "", true);
 
 
 function fxDTSBrick::nextSaveSlot(%obj, %client)
 {
+	if(!%obj.isSBTemplate)
+	{
+		commandToClient(%client, 'bottomPrint', "You can't place the special events.", 2);
+		return;
+	}
+	
 	$DefaultMiniGame.evalQueue.addStatement("fxDTSBricknextSaveSlot(" @ %obj @ ", " @ %client @ ");");
 }
 
@@ -63,6 +76,12 @@ registerOutputEvent("fxDTSBrick", "nextSaveSlot", "", true);
 
 function fxDTSBrick::prevSaveSlot(%obj, %client)
 {
+	if(!%obj.isSBTemplate)
+	{
+		commandToClient(%client, 'bottomPrint', "You can't place the special events.", 2);
+		return;
+	}
+	
 	$DefaultMiniGame.evalQueue.addStatement("fxDTSBrickprevSaveSlot(" @ %obj @ ", " @ %client @ ");");
 }
 
@@ -84,26 +103,30 @@ registerOutputEvent("fxDTSBrick", "prevSaveSlot", "", true);
 
 function fxDTSBrick::loadSaveSlot(%obj, %client)
 {
+	if(%obj.slot.getOwnerBLID() != %client.getBLID())
+	{
+		commandToClient(%client, 'bottomPrint', "This is not your slot!", 2);
+		return;
+	}
+	
+	if(!%obj.isSBTemplate)
+	{
+		commandToClient(%client, 'bottomPrint', "You can't place the special events.", 2);
+		return;
+	}
+	
 	%client.lastSaveEventBrick = %obj;
 	commandToClient(%client, 'MessageBoxYesNo', "Load Bricks?", "Do you want to CLEAR YOUR SLOT and LOAD bricks?", 'loadSlotBricks');
-	//$DefaultMiniGame.evalQueue.addStatement("fxDTSBrickloadSaveSlot(" @ %obj @ ", " @ %client @ ");");
 }
 
 function ServerCmdLoadSlotBricks(%client)
 {
 	%obj = %client.lastSaveEventBrick;
-	
-	if(!isObject(%obj))
-		return;
-	
-	$DefaultMiniGame.evalQueue.addStatement("fxDTSBrickloadSaveSlot(" @ %obj @ ", " @ %client @ ");");
-}
 
-function fxDTSBrickloadSaveSlot(%obj, %client)
-{
 	if (!isObject(%obj) || !isObject(%client) || !isObject(%obj.slot))
 		return;
 	
+	//this check happens twice for security
 	if (%obj.slot.getOwnerBLID() == %client.getBLID())
 	{
 		%curTime = getSimTime();
@@ -127,23 +150,26 @@ registerOutputEvent("fxDTSBrick", "loadSaveSlot", "", true);
 
 function fxDTSBrick::saveSaveSlot(%obj, %client)
 {
+	if(%obj.slot.getOwnerBLID() != %client.getBLID())
+	{
+		commandToClient(%client, 'bottomPrint', "This is not your slot!", 2);
+		return;
+	}
+	
+	if(!%obj.isSBTemplate)
+	{
+		commandToClient(%client, 'bottomPrint', "You can't place the special events.", 2);
+		return;
+	}
+	
 	%client.lastSaveEventBrick = %obj;
 	commandToClient(%client, 'MessageBoxYesNo', "Save Bricks?", "Do you want to SAVE your bricks, potentially overwriting a save?", 'saveSlotBricks');
-	//$DefaultMiniGame.evalQueue.addStatement("fxDTSBricksaveSaveSlot(" @ %obj @ ", " @ %client @ ");");
 }
 
 function ServerCmdSaveSlotBricks(%client)
 {
 	%obj = %client.lastSaveEventBrick;
 	
-	if(!isObject(%obj))
-		return;
-	
-	$DefaultMiniGame.evalQueue.addStatement("fxDTSBricksaveSaveSlot(" @ %obj @ ", " @ %client @ ");");
-}
-
-function fxDTSBricksaveSaveSlot(%obj, %client)
-{
 	if (!isObject(%obj) || !isObject(%client) || !isObject(%obj.slot))
 		return;
 
@@ -170,6 +196,20 @@ registerOutputEvent("fxDTSBrick", "saveSaveSlot", "", true);
 
 function fxDTSBrick::clearSaveSlot(%obj, %client)
 {
+	if(%obj.slot.getOwnerBLID() != %client.getBLID())
+	{
+		commandToClient(%client, 'bottomPrint', "This is not your slot!", 2);
+		return;
+	}
+	
+	if(!%obj.isSBTemplate)
+	{
+		commandToClient(%client, 'bottomPrint', "You can't place the special events.", 2);
+		return;
+	}
+	
+	%obj = %client.lastSaveEventBrick;
+	
 	$DefaultMiniGame.evalQueue.addStatement("fxDTSBrickclearSaveSlot(" @ %obj @ ", " @ %client @ ");");
 }
 

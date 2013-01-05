@@ -10,7 +10,7 @@ $sbDisableWands = 1;    //disable wands in space (should probably be on)
 package SpaceBuildRulesPackage {
 	function WrenchImage::onHitObject(%this, %obj, %a, %col, %fade, %pos, %normal)
 	{
-		if(getWord(%col.getPosition(), 2) >= $spaceHeight && !%obj.client.isAdmin && $sbDisableWrenches && %col.getClassName() $= "fxDTSBrick")
+		if(getWord(%col.getTransform(), 2) >= $spaceHeight && !%obj.client.isAdmin && $sbDisableWrenches && %col.getClassName() $= "fxDTSBrick")
 		{
 			commandToClient(%obj.client, 'centerPrint', "\c3No wrenching in space!", 2);
 			return;
@@ -25,7 +25,7 @@ package SpaceBuildRulesPackage {
 	
 	function HammerImage::onHitObject(%this, %obj, %a, %col, %fade, %pos, %normal)
 	{
-		if(getWord(%col.getPosition(), 2) >= $spaceHeight && !%obj.client.isAdmin && $sbDisableHammers && %col.getClassName() $= "fxDTSBrick")
+		if(getWord(%col.getTransform(), 2) >= $spaceHeight && !%obj.client.isAdmin && $sbDisableHammers && %col.getClassName() $= "fxDTSBrick")
 		{
 			commandToClient(%obj.client, 'centerPrint', "\c3No hammering in space!", 2);
 			return;
@@ -40,7 +40,7 @@ package SpaceBuildRulesPackage {
 	
 	function WandImage::onHitObject(%this, %obj, %a, %col, %fade, %pos, %normal)
 	{
-		if(getWord(%col.getPosition(), 2) >= $spaceHeight && !%obj.client.isAdmin && $sbDisableWands && %col.getClassName() $= "fxDTSBrick")
+		if(getWord(%col.getTransform(), 2) >= $spaceHeight && !%obj.client.isAdmin && $sbDisableWands && %col.getClassName() $= "fxDTSBrick")
 		{
 			commandToClient(%obj.client, 'centerPrint', "\c3No wanding in space!", 2);
 			return;
