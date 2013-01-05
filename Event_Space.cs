@@ -51,7 +51,6 @@ function fxDTSBricknextSaveSlot(%obj, %client)
 	if (%obj.slot.getOwnerBLID() == %client.getBLID())
 	{
 		%obj.slot.nextSaveSlot();
-		commandToClient(%client, 'centerPrint', "\c3Slot " @ %obj.slot.getCurrentSaveSlot() + 1 @ " selected.", 2);
 	}else{
 		commandToClient(%client, 'bottomPrint', "This is not your slot!", 2);
 	}
@@ -73,7 +72,6 @@ function fxDTSBrickprevSaveSlot(%obj, %client)
 	if (%obj.slot.getOwnerBLID() == %client.getBLID())
 	{
 		%obj.slot.prevSaveSlot();
-		commandToClient(%client, 'centerPrint', "\c3Slot " @ %obj.slot.getCurrentSaveSlot() + 1 @ " selected.", 2);
 	}else{
 		commandToClient(%client, 'bottomPrint', "This is not your slot!", 2);
 	}
