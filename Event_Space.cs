@@ -1,3 +1,5 @@
+//This file needs refactoring.
+
 function GameConnection::teleportToModuleSlot(%client)
 {
 	%slot = $DefaultMiniGame.mcf.findSlotByBLID(%client.bl_id);
@@ -82,6 +84,18 @@ registerOutputEvent("fxDTSBrick", "prevSaveSlot", "", true);
 
 function fxDTSBrick::loadSaveSlot(%obj, %client)
 {
+	%client.lastSaveEventBrick = %obj;
+	commandToClient(%client, 'MessageBoxYesNo', "Load Bricks?", "Do you want to CLEAR YOUR SLOT and LOAD bricks?", 'loadSlotBricks');
+	//$DefaultMiniGame.evalQueue.addStatement("fxDTSBrickloadSaveSlot(" @ %obj @ ", " @ %client @ ");");
+}
+
+function ServerCmdLoadSlotBricks(%client)
+{
+	%obj = %client.lastSaveEventBrick;
+	
+	if(!isObject(%obj))
+		return;
+	
 	$DefaultMiniGame.evalQueue.addStatement("fxDTSBrickloadSaveSlot(" @ %obj @ ", " @ %client @ ");");
 }
 
@@ -112,7 +126,19 @@ registerOutputEvent("fxDTSBrick", "loadSaveSlot", "", true);
 
 
 function fxDTSBrick::saveSaveSlot(%obj, %client)
-{	
+{
+	%client.lastSaveEventBrick = %obj;
+	commandToClient(%client, 'MessageBoxYesNo', "Save Bricks?", "Do you want to SAVE your bricks, potentially overwriting a save?", 'saveSlotBricks');
+	//$DefaultMiniGame.evalQueue.addStatement("fxDTSBricksaveSaveSlot(" @ %obj @ ", " @ %client @ ");");
+}
+
+function ServerCmdSaveSlotBricks(%client)
+{
+	%obj = %client.lastSaveEventBrick;
+	
+	if(!isObject(%obj))
+		return;
+	
 	$DefaultMiniGame.evalQueue.addStatement("fxDTSBricksaveSaveSlot(" @ %obj @ ", " @ %client @ ");");
 }
 
