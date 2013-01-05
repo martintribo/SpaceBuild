@@ -1,0 +1,139 @@
+ADDON Vehicle_Jeep
+ADDON Brick_2x2FRoundPrint
+ADDON Brick_18Degree
+ADDON Brick_Arch
+ADDON Brick_Doors
+ADDON Brick_ExtraRamps
+ADDON Brick_Fence
+ADDON Brick_Halloween
+ADDON Brick_InvertedCorners
+ADDON Brick_LegoChair
+ADDON Brick_Pole
+ADDON Brick_Round_Corners
+ADDON Brick_Treasure_Chest
+ADDON Brick_V15
+ADDON Brick_Wedge
+ADDON Brick_Window
+ADDON Brick_Large_Cubes
+ADDON Emote_Alarm
+ADDON Emote_Confusion
+ADDON Emote_Hate
+ADDON Emote_Love
+ADDON Player_No_Jet
+ADDON Support_Player_Persistence
+ADDON Support_Doors
+ADDON Support_ToolBrick
+ADDON Gamemode_Spacebuild
+ADDON Sound_Beeps
+ADDON Sound_Phone
+ADDON Sound_Synth4
+ADDON Projectile_GravityRocket
+ADDON Projectile_Pinball
+ADDON Projectile_Pong
+ADDON Projectile_Radio_Wave
+ADDON Light_Basic
+ADDON Light_Animated
+ADDON Particle_FX_Cans
+ADDON Particle_Grass
+ADDON Particle_Basic
+ADDON Particle_Tools
+ADDON Particle_Player
+ADDON Item_Key
+ADDON Print_Letters_Default
+ADDON Print_1x2f_BLPRemote
+ADDON Print_1x2f_Default
+ADDON Print_2x2f_Default
+ADDON Print_2x2r_Default
+ADDON Print_2x2r_Monitor3
+
+MUSIC After_School_Special
+MUSIC Ambient_Deep
+MUSIC Bass_1
+MUSIC Bass_2
+MUSIC Bass_3
+MUSIC Creepy
+MUSIC Distort
+MUSIC Drums
+MUSIC Factory
+MUSIC Icy
+MUSIC Jungle
+MUSIC Peaceful
+MUSIC Piano_Bass
+MUSIC Rock
+MUSIC Stress_
+
+$MiniGame::Enabled 1
+
+//environment
+$EnvGuiServer::SimpleMode 0
+//This doesn't work since it's not a legit sky add-on, will have to manually set on minigame load
+$EnvGuiServer::SkyFile Add-Ons/Sky_Skylands/Skylands.dml
+$EnvGuiServer::WaterFile NONE
+$EnvGuiServer::GroundFile Add-Ons/Ground_Plate/plate.ground
+
+$EnvGuiServer::SunFlareTopTexture base/lighting/flare2.png
+$EnvGuiServer::SunFlareBottomTexture base/lighting/flare2.png
+$EnvGuiServer::DayOffset 
+$EnvGuiServer::DayLength 300
+$EnvGuiServer::DayCycleEnabled 0
+$EnvGuiServer::DayCycle Add-Ons/DayCycle_Default/default.daycycle
+$EnvGuiServer::SunAzimuth 0
+$EnvGuiServer::SunElevation 35
+$EnvGuiServer::DirectLightColor 0.800000 0.800000 0.900000 1.000000
+$EnvGuiServer::AmbientLightColor 0.300000 0.300000 0.500000 1.000000
+$EnvGuiServer::ShadowColor 0.466667 0.431373 0.513726 1.000000
+$EnvGuiServer::SunFlareColor 0.000000 0.000000 0.000000 0.000000
+$EnvGuiServer::SunFlareSize 0
+$EnvGuiServer::VisibleDistance 600
+$EnvGuiServer::FogDistance 5
+$EnvGuiServer::FogHeight 
+$EnvGuiServer::FogColor 0.000000 0.000000 0.000000 1.000000
+$EnvGuiServer::WaterColor 255 255 255 128
+$EnvGuiServer::WaterHeight 5
+$EnvGuiServer::UnderWaterColor 51 153 153 77
+$EnvGuiServer::SkyColor 1.0 1.0 1.0 1.0
+$EnvGuiServer::WaterScrollX 0
+$EnvGuiServer::WaterScrollY 0
+$EnvGuiServer::GroundColor 0.000000 0.607000 0.210000 1.000000
+$EnvGuiServer::GroundScrollX 0
+$EnvGuiServer::GroundScrollY 0
+$EnvGuiServer::VignetteMultiply 0
+$EnvGuiServer::VignetteColor 1.000000 1.000000 1.000000 0.000000
+
+//minigame rules
+$MiniGame::Enabled 1
+$MiniGame::GameColor 7
+$MiniGame::InviteOnly 0
+$MiniGame::IncludeAllPlayersBricks 1
+$MiniGame::PlayersUseOwnBricks 0
+
+$MiniGame::Points_BreakBrick 0
+$MiniGame::Points_PlantBrick 0
+$MiniGame::Points_KillPlayer 0
+$MiniGame::Points_KillSelf	0
+$MiniGame::Points_Die 0
+   
+$MiniGame::RespawnTime 1
+$MiniGame::VehicleRespawnTime 5
+$MiniGame::BrickRespawnTime 360
+
+$MiniGame::UseSpawnBricks 1
+$MiniGame::FallingDamage 1
+$MiniGame::WeaponDamage 0
+$MiniGame::SelfDamage 0
+$MiniGame::VehicleDamage 1
+$MiniGame::BrickDamage 1
+$MiniGame::EnableWand 1
+$MiniGame::EnableBuilding 1
+$MiniGame::EnablePainting 1
+
+$MiniGame::PlayerDataBlockName SpaceBuild Player
+
+$MiniGame::StartEquipName0 Hammer
+$MiniGame::StartEquipName1 Wrench
+$MiniGame::StartEquipName2 Printer
+$MiniGame::StartEquipName3 0
+$MiniGame::StartEquipName4 0
+
+
+$Server::WelcomeMessage \c2Welcome to the Space Station Build, %1, grab a spot and build a module!
