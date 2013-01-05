@@ -214,10 +214,8 @@ function MCFacility::debugAttach(%obj)
 }
 
 //save format is:
-//slotNum^ownerBLID^ownerName^size^selectedSave
-//each line represents a slot
-//position can be derived from slotNum with MCL.numberToPosition(slot)
-//slot VBL is saved as saveFileDir/saveFileName_vbl[slotNum]
+//position
+//slotNum^slotSaveName
 function MCFacility::export(%obj, %filePath)
 {
 	%path = filePath(%filePath);
@@ -226,17 +224,21 @@ function MCFacility::export(%obj, %filePath)
 	%file = new FileObject();
 	%file.openForWrite(%filePath);
 	
-	%file.writeLine(%obj.getPosition()); //first line is always position
+	%file.writeLine(%obj.getPosition()); //first line is always MCF position
+	
 	for(%i = 0; %i < %obj.getMCL().maxSlots; %i++)
 	{
+		
 		if(isObject(%obj.slot[%i]))
 		{
-			%file.writeLine(%i TAB %obj.slot[%i].ownerBLID TAB %obj.slot[%i].ownerName TAB %obj.slot[%i].size TAB %obj.slot[%i].selectedSave);
+			%slotSaveName = %fileName @ "_slot" @ %i @ ".mcslot";
+			%slotSavePath = %path @ "/" @ %slotSaveName;
 			
-			//save VBL
-			%obj.slot[%i].saveBuiltBricks(%path @ "/" @ %fileName @ "_vbl" @ %i @ ".vbl");
+			%file.writeLine(%i TAB %slotSaveName);
+			%obj.slot[%i].export(%slotSavePath);
 		}
 	}
+	
 	%file.close();
 	%file.delete();
 }
@@ -259,34 +261,25 @@ function MCFacility::import(%obj, %filePath)
 	
 	%file = new FileObject();
 	%file.openForRead(%filePath);
+	
 	%obj.setPosition(%file.readLine()); //first line is always MCF position
+	
 	while(!%file.isEOF())
 	{
 		%line = %file.readLine();
 		
 		%slotNum = getField(%line, 0);
-		%blid = getField(%line, 1);
-		%name = getField(%line, 2);
-		%size = getField(%line, 3);
-		%selectedSave = getField(%line, 4);
-		%vblPath = %path @ "/" @ %fileName @ "_vbl" @ %slotNum @ ".vbl";
+		%slotSaveName = getField(%line, 1);
+		%slotSavePath = %path @ "/" @ %slotSaveName;
 		
 		%slotSO = new ScriptObject()
 		{
 			class = "MCSlot";
 			number = %slotNum;
 			position = %obj.getMCL().numberToPosition(%slotNum);
-			ownerBLID = %blid;
-			ownerName = %name;
-			size = %size;
-			selectedSave = %selectedSave;
 		};
 		
-		//place template bricks
-		%slotSO.createTemplate(%obj.getMCL().templateVBL);
-		
-		//load VBL from the save file and place the bricks
-		%slotSO.loadBuiltBricks(%vblPath);
+		%slotSO.import(%slotSavePath, %obj.getMCL().templateVBL);
 		
 		//register slotSO with this MCF
 		%obj.setSlot(%slotNum, %slotSO);

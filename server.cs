@@ -107,6 +107,17 @@ package SpacebuildGamemode
 		if($DefaultMinigame.mcf.findSlotByBLID(%client.bl_id) != -1)
 			%client.teleportToModuleSlot();
 	}
+	
+	function GameConnection::onClientLeaveGame(%client)
+	{
+		%slot = $DefaultMinigame.mcf.findSlotByBLID(%client.bl_id);
+		if(%slot != -1)
+		{
+			%slot.getLastActive(); //force the lastActive property of the slot to be refreshed to now
+		}
+		
+		parent::onClientLeaveGame(%client);
+	}
 };
 
 activatePackage(SpacebuildGamemode);

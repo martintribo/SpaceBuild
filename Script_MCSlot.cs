@@ -19,9 +19,19 @@ function MCSlot::onRemove(%this, %obj)
 	%this.templateBricks.delete();
 }
 
-function MCSlot::getOwnerBLID(%obj)
+function MCSlot::getOwnerBLID(%this)
 {
-	return %obj.ownerBLID;
+	return %this.ownerBLID;
+}
+
+function MCSlot::getOwnerName(%this)
+{
+	return %this.ownerName;
+}
+
+function MCSlot::getSize(%this)
+{
+	return %this.size;
 }
 
 function MCSlot::getPosition(%this)
@@ -32,6 +42,17 @@ function MCSlot::getPosition(%this)
 function MCSlot::getCenter(%this)
 {
 	return VectorAdd(%this.getPosition(), 0 SPC 0 SPC getWord(%this.size, 2) * 0.5);
+}
+
+function MCSlot::getLastActive(%this)
+{
+	//if the player is in the server, update to now
+	if(isObject(findClientByBLID(%this.getOwnerBLID())))
+	{
+		%this.lastActive = getDateTime();
+	}
+	
+	return %this.lastActive;
 }
 
 //Places bricks in the template VBL at this slot's position.
@@ -146,6 +167,7 @@ function MCSlot::updateSavePrintBrick(%obj)
 	if (isObject(%obj.savePrintBrick))
 	{
 		//update print
+		//TODO
 	}
 }
 
@@ -178,4 +200,49 @@ function MCSlot::saveBuiltBricksInSaveSlot(%obj)
 	%path = $Spacebuild::SavePath @ "Players/" @ %blid @ "/" @ %obj.selectedSave;
 	
 	%obj.saveBuiltBricks(%path);
+}
+
+function MCSlot::export(%this, %filePath)
+{
+	%path = filePath(%filePath);
+	%fileName = fileBase(%filePath);
+	
+	%file = new FileObject();
+	%file.openForWrite(%filePath);
+	
+	%file.writeLine(%this.getOwnerBLID());
+	%file.writeLine(%this.getOwnerName());
+	%file.writeLine(%this.getSize());
+	%file.writeLine(%this.getCurrentSaveSlot());
+	%file.writeLine(%this.getLastActive());
+	%file.writeLine(%this.modulesAccepted);
+	
+	%file.close();
+	%file.delete();
+	
+	%this.saveBuiltBricks(%path @ "/" @ %fileName @ "_bricks.bls");
+}
+
+function MCSlot::import(%this, %filePath, %templateVBL)
+{
+	%path = filePath(%filePath);
+	%fileName = fileBase(%filePath);
+	
+	%file = new FileObject();
+	%file.openForRead(%filePath);
+	
+	%this.ownerBLID = %file.readLine();
+	%this.ownerName = %file.readLine();
+	%this.size = %file.readLine();
+	%this.selectedSave = %file.readLine();
+	%this.lastActive = %file.readLine();
+	%this.modulesAccepted = %file.readLine();
+
+	%file.close();
+	%file.delete();	
+	
+	//this should really be refactored so MCSlot::createTemplate infers the VBL (and has no arguments), probably through MCSlot::getTemplateVBL() or something,
+	//but we're too close to launch to break old stuff now
+	%this.createTemplate(%templateVBL);
+	%this.loadBuiltBricks(%path @ "/" @ %fileName @ "_bricks.bls");
 }
