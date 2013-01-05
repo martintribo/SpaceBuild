@@ -39,7 +39,7 @@ function loadRunway()
 	%runwayBLS = $Spacebuild::AddOnPath @ $Spacebuild::RunwayFile;
 	%vbl = newVBL();
 	%vbl.loadBLSFile(%runwayBLS);
-	%vbl.createBricksForBLID($Spacebuild::BLID);
+	%vbl.createBricksForBLID($Spacebuild::StationBLID);
 	%vbl.delete();
 }
 
