@@ -99,7 +99,7 @@ Linecount 61
 +-EVENT	0	1	onActivate	0	Self		nextSaveSlot				
 1x1x5" 4.25 8.25 38.1 0 0 16  0 0 0 0 0
 45° Ramp 2x Print" 13.5 0 34.5 3 0 7 Letters/1 0 0 1 1 1
-+-SAVESLOTPRINT
++-SAVESLOTPRINT 
 1x1x5" -4.25 8.25 38.1 0 0 16  0 0 0 0 0
 1x1x5" -4.25 -8.25 38.1 0 0 16  0 0 0 0 0
 1x1x5" 4.25 -8.25 38.1 0 0 16  0 0 0 0 0
