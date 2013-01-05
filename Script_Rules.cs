@@ -55,6 +55,8 @@ package SpaceBuildRulesPackage {
 	
 	function serverCmdPlantBrick(%client)
 	{
+		if (!isObject(%client.player) || !isObject(%client.player.tempbrick)
+			return;
 		if(getWord(%client.player.tempbrick.getPosition(), 2) >= $spaceHeight && !%client.isAdmin && $sbRemindBuilding)
 		{
 			commandToClient(%client, 'centerPrint', "\c3You can't build in space!\n\c0Build a module on the ground!", 5);
