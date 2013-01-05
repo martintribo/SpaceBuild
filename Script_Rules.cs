@@ -55,7 +55,7 @@ package SpaceBuildRulesPackage {
 	
 	function serverCmdPlantBrick(%client)
 	{
-		if (!isObject(%client.player) || !isObject(%client.player.tempbrick)
+		if (!isObject(%client.player) || !isObject(%client.player.tempbrick))
 			return;
 		if(getWord(%client.player.tempbrick.getPosition(), 2) >= $spaceHeight && !%client.isAdmin && $sbRemindBuilding)
 		{
