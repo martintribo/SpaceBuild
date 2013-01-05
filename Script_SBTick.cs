@@ -1,13 +1,9 @@
 $SBTickSpeed = 100;
-$SBTickAutoStart = true;
 
 $playerBurnSpeed = 55;
 $playerBurnDamage = 10;
 $showStationLocator = 1;
 $spaceHeight = 360;
-
-if($SBTickAutoStart)
-	schedule(1000, 0, "SBTick");
 
 function SBTick()
 {
@@ -78,9 +74,9 @@ function SBTick()
 function Player::isInSpace(%obj)
 {
 	if(getWord(%obj.getTransform(), 2) >= $spaceHeight)
-		return(1);
+		return true;
 	else
-		return(0);
+		return false;
 }
 
 function playerBurnEffects(%player)
