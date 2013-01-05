@@ -236,7 +236,7 @@ function ModuleSO::import(%obj, %file)
 	%obj.state = getField(%f.readLine(), 1);
 	%obj.numHatches = getField(%f.readLine(), 1);
 	%obj.vbl.loadBLSFile(getField(%f.readLine(), 1));
-	%obj.vbl.createBricksNoOwner();
+	%obj.vbl.createBricksForBLID($Spacebuild::BLID);
 	
 	%f.close();
 	%f.delete();
