@@ -94,7 +94,10 @@ function MCSlotTemplateBrickFactory::onCreateBrick(%this, %brick)
 	%brick.setNTObjectName("spacebuildSupport"); //mark template bricks as such
 	
 	if (%brick.isSaveSlotPrint)
+	{
 		%this.slot.savePrintBrick = %brick;
+		%this.slot.updateSavePrintBrick();
+	}
 }
 
 function MCSlot::addBrick(%this, %brick)
