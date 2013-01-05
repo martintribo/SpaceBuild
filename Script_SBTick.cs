@@ -14,6 +14,8 @@ function SBTick()
 	if(isEventPending($SBTickSched))
 		cancel($SBTickSched);
 	$SBTickSched = schedule($SBTickSpeed, 0, "SBTick");
+
+	$DefaultMiniGame.evalQueue.runStatements();
 	
 	for(%i = 0; %i < clientGroup.getCount(); %i++)
 	{
