@@ -85,7 +85,7 @@ package SpacebuildGamemode
 		//The gamemode system cannot load the hammer, so we must do it ourselves
 		%obj.StartEquip[0] = HammerItem.getId();
 		
-		setupSpacebuild(%obj);
+		schedule("10000", 0, "setupSpacebuild", %obj);
 	}
 	
 	function setSkyBox(%sky)
