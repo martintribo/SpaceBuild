@@ -66,6 +66,18 @@ function MCFacility::deleteSlot(%this, %slotobj)
 	%slotobj.delete();
 }
 
+function MCFacility::purgeEmptySlots(%this)
+{
+	for(%i = 0; %i < %this.getMCL().maxSlots; %i++)
+	{
+		%slot = %this.getSlot(%i);
+		if(isObject(%slot) && %slot.isEmpty())
+		{
+			%this.deleteSlot(%slot);
+		}
+	}
+}
+
 function MCFacility::findSlotByBLID(%this, %blid)
 {
 	for(%i = 0; %i < %this.getMCL().maxSlots; %i++)
