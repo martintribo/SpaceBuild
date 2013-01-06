@@ -1,4 +1,4 @@
-c//This script is for enforcing rules and user-friendliness stuff.
+//This script is for enforcing rules and user-friendliness stuff.
 //It is not required for normal function. Admins ignore all of these checks.
 //There are some fun bonus commands at the bottom, too.
 
