@@ -49,6 +49,11 @@ function MCSlot::getPosition(%this)
 	return %this.position;
 }
 
+function MCSlot::isEmpty(%this)
+{
+	return %this.builtBricks.getCount() == 0;
+}
+
 function MCSlot::getCenter(%this)
 {
 	return VectorAdd(%this.getPosition(), 0 SPC 0 SPC getWord(%this.size, 2) * 0.5);

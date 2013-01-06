@@ -117,9 +117,15 @@ package SpacebuildGamemode
 	function GameConnection::onClientLeaveGame(%client)
 	{
 		%slot = $DefaultMinigame.mcf.findSlotByBLID(%client.bl_id);
+		
 		if(%slot != -1)
 		{
-			%slot.getLastActive(); //force the lastActive property of the slot to be refreshed to now
+			if(%slot.isEmpty())
+			{
+				$DefaultMinigame.mcf.deleteSlot(%slot); //if the player didn't build anything, we can just get rid of the slot when they leave
+			}else{
+				%slot.getLastActive(); //force the lastActive property of the slot to be refreshed to now
+			}
 		}
 		
 		parent::onClientLeaveGame(%client);

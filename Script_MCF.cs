@@ -59,7 +59,13 @@ function MCFacility::nextFreeSlot(%this)
 	return -1;
 }
 
-//Bonus!
+//nicely unregisters slot and deletes it
+function MCFacility::deleteSlot(%this, %slotobj)
+{
+	%this.setSlot(%slotobj.slotNum, 0);
+	%slotobj.delete();
+}
+
 function MCFacility::findSlotByBLID(%this, %blid)
 {
 	for(%i = 0; %i < %this.getMCL().maxSlots; %i++)
@@ -71,7 +77,6 @@ function MCFacility::findSlotByBLID(%this, %blid)
 	return -1;
 }
 
-//Bonus!
 function MCFacility::findSlotByName(%this, %name)
 {
 	for(%i = 0; %i < %this.getMCL().maxSlots; %i++)
