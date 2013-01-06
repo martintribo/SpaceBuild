@@ -218,3 +218,12 @@ function ServerCmdLoadSpaceBuild(%client, %name)
 	$DefaultMinigame.mcf.import("config/server/SpaceBuild/" @ %name @ ".sbmcf");
 	$DefaultMinigame.station.import("config/server/SpaceBuild/" @ %name @ ".sbs");
 }
+
+function ServerCmdPurgeEmptySlots(%client)
+{
+	if(!%client.isAdmin)
+		return;
+	
+	$DefaultMinigame.mcf.purgeEmptySlots();
+	commandToClient(%client, 'centerPrint', "Deleted all empty slots.", 3);
+}
