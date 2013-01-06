@@ -138,6 +138,24 @@ package SpacebuildGamemode
 		parent::disconnectedCleanup();
 	}
 	
+	function MiniGameSO::pickSpawnpoint(%obj, %client)
+	{
+		if (isObject(%obj.spawns) && %obj.spawns.getCount())
+		{
+			%id = getRandom(%obj.spawns.getCount() - 1);
+			return %obj.spawns.getObject(%id).spacebuildSpawnPoint();
+		}
+		else
+			return Parent::pickSpawnpoint(%obj, %client);
+	}
+	
+	function fxDTSBrick::spacebuildSpawnPoint(%this)
+	{
+		%point	= %this.getPosition();
+		%trans	= %point SPC getWords(%this.getTransform(), 3, 6);
+		
+		return %trans;
+	}
 };
 
 activatePackage(SpacebuildGamemode);

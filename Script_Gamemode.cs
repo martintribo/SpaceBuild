@@ -5,7 +5,7 @@ function setupSpacebuild(%mg)
 		class = "EvalQueue";
 	};
 	
-	loadRunway();
+	loadSpawn(%mg);
 	createSpaceObjects(%mg);
 	startTicks();
 }
@@ -34,13 +34,30 @@ function createSpaceObjects(%mg)
 	$SpacebuildAutoloadComplete = true;
 }
 
-function loadRunway()
+function loadSpawn(%mg)
 {
+	%factory = new ScriptObject(SpacebuildSpawnBrickFactory)
+	{
+		class = "BrickFactory";
+		minigame = %mg;
+		spawnDB = brickSpawnPointData.getId();
+	};
 	%runwayBLS = $Spacebuild::AddOnPath @ $Spacebuild::RunwayFile;
 	%vbl = newVBL();
 	%vbl.loadBLSFile(%runwayBLS);
-	%vbl.createBricksForBLID($Spacebuild::SpawnBLID);
+	
+	%mg.spawns = new SimSet();
+	%factory.createBricksForBlid(%vbl, $Spacebuild::SpawnBLID);
+	
 	%vbl.delete();
+	
+	%factory.delete();
+}
+
+function SpacebuildSpawnBrickFactory::onCreateBrick(%this, %brick)
+{
+	if (%this.spawnDB == %brick.getDatablock().getId())
+		%this.minigame.spawns.add(%brick);
 }
 
 function createDefaultStation(%mg)
