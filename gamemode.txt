@@ -122,7 +122,7 @@ $MiniGame::FallingDamage 1
 $MiniGame::WeaponDamage 0
 $MiniGame::SelfDamage 0
 $MiniGame::VehicleDamage 1
-$MiniGame::BrickDamage 1
+$MiniGame::BrickDamage 0
 $MiniGame::EnableWand 1
 $MiniGame::EnableBuilding 1
 $MiniGame::EnablePainting 1
