@@ -34,17 +34,17 @@ function SBToolCollision(%obj, %col)
 	
 	if(!isObject(%mcf))
 	{
-		commandToClient(%client, 'bottomPrint', "No MCF object found - fix with \c3/SetupSpace\c0.", 5);
+		commandToClient(%client, 'centerPrint', "No MCF object found - fix with \c3/SetupSpace\c0.", 5);
 		return;
 	}
 	if(!isObject(%col) || %col.getClassName() !$= "fxDTSBrick")
 	{
-		commandToClient(%client, 'bottomPrint', "You must hit a brick.", 4);
+		commandToClient(%client, 'centerPrint', "You must hit a brick.", 4);
 		return;
 	}
 	if(!%client.isAdmin)
 	{
-		commandToClient(%client, 'bottomPrint', "You must be an admin to use this tool.", 4);
+		commandToClient(%client, 'centerPrint', "You must be an admin to use this tool.", 4);
 		return;
 	}
 	
@@ -62,13 +62,13 @@ function SBToolCollision(%obj, %col)
 			{
 				%col.module.delete();
 				%client.deleteModule = false;
-				commandToClient(%client, 'bottomPrint', "\c3Module Removed.", 2);
+				commandToClient(%client, 'centerPrint', "\c3Module Removed.", 2);
 			}
 			else
 				commandToClient(%client, 'centerPrint', "\c3If you want to delete this module, type /DeleteModule.", 3);
 		}
 		%mcf.scanBuild(%col);
-		commandToClient(%client, 'bottomPrint', "Scanning your build. \c3Hit a hatch brick to attach your module.", 5);
+		commandToClient(%client, 'centerPrint', "Scanning your build. \c3Hit a hatch brick to attach your module.", 5);
 	}
 	else
 	{
@@ -89,12 +89,12 @@ function SBToolCollision(%obj, %col)
 			if (%attachId != -1)
 			{
 				%mod = %mcf.popModule();
-				commandToClient(%client, 'bottomPrint', "Attaching your module...", 2);
+				commandToClient(%client, 'centerPrint', "Attaching your module...", 2);
 				%mod.attachTo(%attachId, %col.module, %col.hatchId);
-				commandToClient(%client, 'bottomPrint', "Your module was attached!", 4);
+				commandToClient(%client, 'centerPrint', "Your module was attached!", 4);
 			}
 			else
-				commandToClient(%client, 'bottomPrint', "Compatible module not found!", 4);
+				commandToClient(%client, 'centerPrint', "Compatible module not found!", 4);
 		}
 		else //hit a hatch, but no module to attach, open the hatch
 		{
@@ -110,8 +110,16 @@ function ServerCmdDeleteModule(%client)
 {
 	if (%client.isAdmin)
 	{
-		%client.deleteModule = true;
-		commandToClient(%client, 'centerPrint', "\c3Hit the module you would like to delete.", 3);
+		if (!%client.deleteModule)
+		{
+			%client.deleteModule = true;
+			commandToClient(%client, 'centerPrint', "\c3Hit the module you would like to delete.", 3);
+		}
+		else
+		{
+			%client.deleteModule = false;
+			commandToClient(%client, 'centerPrint', "\c3Delete module turned off.", 3);
+		}
 	}
 }
 
