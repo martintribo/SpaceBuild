@@ -66,7 +66,7 @@ if(isFile("Add-Ons/System_ReturnToBlockland/server.cs"))
 }
 else
 {
-	$Spacebuild::Prefs::MaxModuleSaves = 30;
+	$Spacebuild::Prefs::MaxModuleSaves = 9;
 }
 
 
@@ -90,7 +90,7 @@ package SpacebuildGamemode
 	
 	function setSkyBox(%sky)
 	{
-		%sky = "Add-Ons/Gamemode_Spacebuild/sky/space.dml";
+		%sky = "Add-Ons/Sky_SpaceBuild/SpaceBuild.dml";
 		Parent::setSkyBox(%sky);
 	}
 	

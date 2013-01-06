@@ -67,7 +67,7 @@ $MiniGame::Enabled 1
 //environment
 $EnvGuiServer::SimpleMode 0
 //This doesn't work since it's not a legit sky add-on, will have to manually set on minigame load
-$EnvGuiServer::SkyFile Add-Ons/Sky_Skylands/Skylands.dml
+$EnvGuiServer::SkyFile Add-Ons/Sky_SpaceBuild/SpaceBuild.dml
 $EnvGuiServer::WaterFile NONE
 $EnvGuiServer::GroundFile Add-Ons/Ground_Plate/plate.ground
 
