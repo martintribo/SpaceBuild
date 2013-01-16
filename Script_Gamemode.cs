@@ -17,9 +17,6 @@ function createSpaceObjects(%mg)
 	%mg.mcf = new ScriptObject(MCFacility);
 	%mg.mcf.setPosition($Spacebuild::MCFPosition);
 	
-	%mcl = new ScriptObject($Spacebuild::DefaultMCL);
-	%mg.mcf.setMCL(%mcl);
-	
 	%defaultStationPath = $Spacebuild::SavePath @ $Spacebuild::StationFile;
 	%defaultMCFPath = $Spacebuild::SavePath @ $Spacebuild::MCFFile;
 	
