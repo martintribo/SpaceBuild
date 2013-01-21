@@ -106,3 +106,49 @@ function VirtualBrick::isUpHatch(%obj)
 	else
 		return false;
 }
+
+//so we can save hatchbricks
+addCustSave("SPACEHATCH");
+function virtualBrickList::cs_addReal_SPACEHATCH(%obj, %vb, %brick)
+{
+	if (%brick.hatchId !$= "")
+	{
+		%vb.hatchId = %brick.hatchId;
+		%vb.props["SPACEHATCH"] = true;
+	}
+	else
+	{
+		%vb.hatchId = "";
+		%vb.props["SPACEHATCH"] = "";
+	}
+}
+
+function virtualBrickList::cs_create_SPACEHATCH(%obj, %vb, %brick)
+{
+	if (%vb.hatchId !$= "")
+		%brick.hatchId = %vb.hatchId;
+}
+
+function virtualBrickList::cs_save_SPACEHATCH(%obj, %vb, %file)
+{
+	if (%vb.hatchId !$= "")
+	{
+		%file.writeLine("+-SPACEHATCH" SPC %vb.hatchId);
+	}
+}
+
+function virtualBrickList::cs_load_SPACEHATCH(%obj, %vb, %addData, %addInfo, %addArgs, %line)
+{
+	%vb.hatchId = %addInfo;
+	%vb.props["SPACEHATCH"] = true;
+}
+
+function bfSpaceSupport(%brick)
+{
+	if (%brick.getName() $= "_spacebuildSupport")
+		return 1;
+	return 0;
+}
+
+addBFType("spaceSupport", "bfSpaceSupport");
+
