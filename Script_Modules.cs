@@ -324,23 +324,14 @@ function ModuleSO::scanModuleBrick(%mod, %sb)
 //cleans up brick finder and calls scanning 
 function ModuleSO::onFinishedFinding(%mod, %bf, %mcfs)
 {
-	//delete the Brick Finder and make a new module with that vbl
+	if (isObject(%mcfs))
+		%mcfs.onFinishScan(%mod); //technically %mod doesn't need to be sent, but it is sent for ease of use
+
+	//delete the Brick Finder
 	%bf.schedule(0, "delete");
-	%mcfs.onFinish(%mod);
 }
 
 //***********************************************************
 //* End scanning code
 //***********************************************************
-
-
-
-
-
-
-
-
-
-
-
 
