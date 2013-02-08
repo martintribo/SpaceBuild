@@ -1,2 +1,5 @@
 syntax: glob
 Thumbs.db
+*.swp
+*.swo
+

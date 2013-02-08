@@ -295,3 +295,4 @@ function virtualBrickList::cs_addReal_SAVESLOTPRINT(%obj, %vb, %brick)
 	else
 		%vb.props["SAVESLOTPRINT"] = "";
 }
+
