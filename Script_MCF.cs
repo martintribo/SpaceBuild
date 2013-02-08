@@ -144,74 +144,22 @@ function MCFacility::scanVBL(%obj, %vbl)
 {
 	%mod = newModuleSO();
 	
-	for (%i = 0; %i < %vbl.getCount(); %i++)
-		%obj.scanModuleBrick(%vbl.getVirtualBrick(%i), %mod);
-	
-	%verificationError = %obj.finishScanningModuleBricks(%mod);
-	
-	return %verificationError;
-}
-
-function MCFacility::scanBuild(%obj, %brick)
-{
-	//need to just initialize the scan here
-	%mod = newModuleSO();
-	%bf = new ScriptObject()
+	%mcfs = new ScriptObject()
 	{
-		class = "BrickFinder";
+		class = "MCFacilityScanner";
+		mcf = %obj;
 	};
-	%bf.setOnSelectCommand(%obj @ ".onFoundBrick(%sb, " @ %mod @ ");");
-	%bf.setFinishCommand(%obj @ ".onFinishedFinding(" @ %mod @ ", " @ %bf @ ");");
-	%bf.search(%brick, "chain", "all", "spaceSupport", 0);
+
+	%mod.scanVBL(%mcfs);
 }
 
-function MCFacility::onFoundBrick(%obj, %sb, %mod)
+function MCFacilityScanner::onAdd(%this, %obj)
 {
-	%obj.scanModuleBrick(%sb, %mod);
+	if (%obj.mcf $= "")
+		error("A MCF must be supplied."); 
 }
 
-function MCFacility::scanModuleBrick(%obj, %sb, %mod)
-{
-	if (%sb.isHatch())
-	{
-		%box = %sb.getWorldBox();
-		%pos = %sb.getPosition();
-		if (%sb.isHorizontalHatch())
-		{
-			switch (%sb.getAngleId())
-			{
-				case 0:
-					%point = getWord(%pos, 0) SPC getWord(%box, 4) SPC getWord(%pos, 2);
-				case 1:
-					%point = getWord(%box, 3) SPC getWords(%pos, 1, 2);
-				case 2:
-					%point = getWord(%pos, 0) SPC getWord(%box, 1) SPC getWord(%pos, 2);
-				case 3:
-					%point = getWord(%box, 0) SPC getWords(%pos, 1, 2);
-			}
-			%dir = %sb.getAngleId();
-		}
-		else
-		{
-			if (%sb.isUpHatch())
-			{
-				%point = getWords(%pos, 0, 1) SPC getWord(%box, 5);
-				%dir = 4; //up
-			}
-			else
-			{
-				%point = getWords(%pos, 0, 1) SPC getWord(%box, 2);
-				%dir = 5; //down
-			}
-		}
-		
-		%sb.hatchId = %mod.numHatches;
-		%mod.addHatch(%point, %dir);
-	}
-	%mod.addBrick(%sb);
-}
-
-function MCFacility::finishScanningModuleBricks(%obj, %mod)
+function MCFacilityScanner::onFinish(%obj, %mod)
 {
 	%verificationError = %mod.verifyVBL();
 	switch (%verificationError) //this should report errors in a better way, directly to the user
@@ -223,19 +171,25 @@ function MCFacility::finishScanningModuleBricks(%obj, %mod)
 	}
 	
 	if (%verificationError != 0)
-		%mod.delete();
+		%mod.schedule(0, "delete");
 	else
-		%obj.addToQueue(%mod);
-	
-	return %verificationError;
+		%obj.mcf.addToQueue(%mod);
+
+	%obj.schedule(0, "delete");
 }
 
-function MCFacility::onFinishedFinding(%obj, %mod, %bf)
+function MCFacility::scanBuild(%obj, %brick)
 {
-	//delete the Brick Finder and make a new module with that vbl
-	
-	%verificationError = %obj.finishScanningModuleBricks(%mod);
-	%bf.delete();
+	//need to just initialize the scan here
+	%mod = newModuleSO();
+	%mcfs = new ScriptObject()
+	{
+		class = "MCFacilityScanner";
+		mcf = %obj;
+	};
+	echo("The mcfs " @ %mcfs);
+	echo(%mcfs.mcf);
+	%mod.scanBuild(%brick, %mcfs);
 }
 
 function MCFacility::addToQueue(%obj, %mod)

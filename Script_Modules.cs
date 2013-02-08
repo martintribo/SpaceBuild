@@ -249,6 +249,90 @@ function loadModuleSO(%file)
 	return %mod;
 }
 
+//***********************************************************
+//* Scanning code
+//***********************************************************
+function ModuleSO::scanVBL(%mod, %vbl, %mcfs)
+{
+	for (%i = 0; %i < %vbl.getCount(); %i++)
+		%mod.scanModuleBrick(%vbl.getVirtualBrick(%i));
+	
+	%mcfs.onFinish(%mod);
+}
+//Starts the scanning script
+//creates a new module, sets up scanning object
+//module
+function ModuleSO::scanBuild(%mod, %brick, %mcfs)
+{
+	//need to just initialize the scan here
+	%bf = new ScriptObject()
+	{
+		class = "BrickFinder";
+	};
+	%bf.setOnSelectCommand(%mod @ ".onFoundBrick(%sb);");
+	%bf.setFinishCommand(%mod @ ".onFinishedFinding(" @ %bf @ ", " @ %mcfs @ ");");
+	%bf.search(%brick, "chain", "all", "spaceSupport", 0);
+}
+
+function ModuleSO::onFoundBrick(%mod, %sb)
+{
+	%mod.scanModuleBrick(%sb);
+}
+
+//
+function ModuleSO::scanModuleBrick(%mod, %sb)
+{
+	if (%sb.isHatch())
+	{
+		%box = %sb.getWorldBox();
+		%pos = %sb.getPosition();
+		if (%sb.isHorizontalHatch())
+		{
+			switch (%sb.getAngleId())
+			{
+				case 0:
+					%point = getWord(%pos, 0) SPC getWord(%box, 4) SPC getWord(%pos, 2);
+				case 1:
+					%point = getWord(%box, 3) SPC getWords(%pos, 1, 2);
+				case 2:
+					%point = getWord(%pos, 0) SPC getWord(%box, 1) SPC getWord(%pos, 2);
+				case 3:
+					%point = getWord(%box, 0) SPC getWords(%pos, 1, 2);
+			}
+			%dir = %sb.getAngleId();
+		}
+		else
+		{
+			if (%sb.isUpHatch())
+			{
+				%point = getWords(%pos, 0, 1) SPC getWord(%box, 5);
+				%dir = 4; //up
+			}
+			else
+			{
+				%point = getWords(%pos, 0, 1) SPC getWord(%box, 2);
+				%dir = 5; //down
+			}
+		}
+		
+		%sb.hatchId = %mod.numHatches;
+		%mod.addHatch(%point, %dir);
+	}
+	%mod.addBrick(%sb);
+}
+
+//cleans up brick finder and calls scanning 
+function ModuleSO::onFinishedFinding(%mod, %bf, %mcfs)
+{
+	//delete the Brick Finder and make a new module with that vbl
+	%bf.schedule(0, "delete");
+	%mcfs.onFinish(%mod);
+}
+
+//***********************************************************
+//* End scanning code
+//***********************************************************
+
 
 
 
