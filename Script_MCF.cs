@@ -147,6 +147,13 @@ function MCFacility::scanVBL(%obj, %vbl)
 	%mod.scanVBL(%obj);
 }
 
+function MCFacility::scanBuild(%obj, %brick)
+{
+	%mod = newModuleSO();
+
+	%mod.scanBuild(%brick, %obj);
+}
+
 //Called by the ModuleSO
 function MCFacility::onFinishScan(%obj, %mod)
 {
@@ -163,13 +170,6 @@ function MCFacility::onFinishScan(%obj, %mod)
 		%mod.schedule(0, "delete");
 	else
 		%obj.addToQueue(%mod);
-}
-
-function MCFacility::scanBuild(%obj, %brick)
-{
-	//need to just initialize the scan here
-	%mod = newModuleSO();
-	%mod.scanBuild(%brick, %obj);
 }
 
 function MCFacility::addToQueue(%obj, %mod)
