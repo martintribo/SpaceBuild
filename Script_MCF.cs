@@ -144,22 +144,11 @@ function MCFacility::scanVBL(%obj, %vbl)
 {
 	%mod = newModuleSO();
 	
-	%mcfs = new ScriptObject()
-	{
-		class = "MCFacilityScanner";
-		mcf = %obj;
-	};
-
-	%mod.scanVBL(%mcfs);
+	%mod.scanVBL(%obj);
 }
 
-function MCFacilityScanner::onAdd(%this, %obj)
-{
-	if (%obj.mcf $= "")
-		error("A MCF must be supplied."); 
-}
-
-function MCFacilityScanner::onFinish(%obj, %mod)
+//Called by the ModuleSO
+function MCFacility::onFinishScan(%obj, %mod)
 {
 	%verificationError = %mod.verifyVBL();
 	switch (%verificationError) //this should report errors in a better way, directly to the user
@@ -173,23 +162,14 @@ function MCFacilityScanner::onFinish(%obj, %mod)
 	if (%verificationError != 0)
 		%mod.schedule(0, "delete");
 	else
-		%obj.mcf.addToQueue(%mod);
-
-	%obj.schedule(0, "delete");
+		%obj.addToQueue(%mod);
 }
 
 function MCFacility::scanBuild(%obj, %brick)
 {
 	//need to just initialize the scan here
 	%mod = newModuleSO();
-	%mcfs = new ScriptObject()
-	{
-		class = "MCFacilityScanner";
-		mcf = %obj;
-	};
-	echo("The mcfs " @ %mcfs);
-	echo(%mcfs.mcf);
-	%mod.scanBuild(%brick, %mcfs);
+	%mod.scanBuild(%brick, %obj);
 }
 
 function MCFacility::addToQueue(%obj, %mod)
