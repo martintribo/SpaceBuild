@@ -1,3 +1,27 @@
+datablock fxDTSBrickData(brick16x32ModuleData)
+{
+	brickFile = "./16x32Module.blb";
+	category = "Special";
+	subCategory = "SpaceBuild";
+	uiName = "16x32 Module";
+	iconName = "Add-Ons/Brick_V15/2x2 Corner";
+};
+datablock fxDTSBrickData(brick16x16ModuleData)
+{
+	brickFile = "./16x16Module.blb";
+	category = "Special";
+	subCategory = "SpaceBuild";
+	uiName = "16x16 Module";
+	iconName = "Add-Ons/Brick_V15/2x2 Corner";
+};
+datablock fxDTSBrickData(brick16x32ModuleStorageData)
+{
+	brickFile = "./16x32ModuleStorage.blb";
+	category = "Special";
+	subCategory = "SpaceBuild";
+	uiName = "16x32 Module Storage";
+	iconName = "Add-Ons/Brick_V15/2x2 Corner";
+};
 datablock fxDTSBrickData(brick1x4x3SpaceHatchData)
 {
 	brickFile = "./1x4x3SpaceHatch.blb";
