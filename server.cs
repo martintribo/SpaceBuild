@@ -15,6 +15,9 @@ exec("./Brick_Space.cs");
 //Cargo player (not yet used, waste of datablocks)
 //exec("./Player_Cargo.cs");
 
+//Module Types, used my MCF and Modules
+exec("./Module_Types.cs");
+
 //Module creation facility script object, generation functions
 exec("./Script_MCF.cs");
 exec("./Script_MCSlot.cs");
