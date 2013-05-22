@@ -1,4 +1,4 @@
-function newModuleSO(%vbl)
+function newModuleSO(%moduleType, %vbl)
 {
 	if (!isObject(%vbl))
 		%vbl = newVBL(1);
@@ -6,6 +6,7 @@ function newModuleSO(%vbl)
 	{
 		class = "ModuleSO";
 		vbl = %vbl;
+		moduleType = %moduleType;
 	};
 	%vbl.module = %mod;
 	
@@ -17,8 +18,14 @@ function ModuleSO::onAdd(%this, %obj)
 	//create the queue for modules
 	%obj.numHatches = 0;
 	%obj.state = "none"; //none state basically means the module isn't represented at all in spaceyou 
+	//%obj.moduleType
 	//%obj.state
-	//%obj.owner`
+	//%obj.owner
+}
+
+function ModuleSO::getType(%obj)
+{
+	return %obj.moduleType;
 }
 
 function ModuleSO::addBrick(%obj, %brick)
@@ -223,6 +230,7 @@ function ModuleSO::export(%obj, %file)
 	%vblPath = %path @ "/" @ %name @ "_vbl" @ %m @ ".bls";
 	%obj.vbl.exportBLSFile(%vblPath);
 	%f.writeLine("vbl" TAB %vblPath);
+	%f.writeLine("moduleType" TAB %obj.moduleType.getName());
 		
 	%f.close();
 	%f.delete();
@@ -237,6 +245,12 @@ function ModuleSO::import(%obj, %file)
 	%obj.numHatches = getField(%f.readLine(), 1);
 	%obj.vbl.loadBLSFile(getField(%f.readLine(), 1));
 	%obj.vbl.createBricksForBLID($Spacebuild::StationBLID);
+	
+	//new field that doesn't exist in older files
+	if (!%f.isEOF())
+		%obj.moduleType = getField(%f.readLine(), 1);
+	else
+		%obj.moduleType = Module16x32Data; //all old modules are 16x32
 	
 	%f.close();
 	%f.delete();

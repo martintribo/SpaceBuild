@@ -50,7 +50,7 @@ function Storage16x32::createBricks(%obj, %blid)
 		%factory.brickGroup = %obj.structureBricks;
 		%factory.createBricksForBlid(%vbl, %blid);
 
-		if (%obj.moduleVbl
+		//if (%obj.moduleVbl
 
 		%vbl.createBricksForBlid(%blid);
 		%obj.bricksCreated = true;

@@ -142,14 +142,14 @@ function MCFacility::findSlotByName(%this, %name)
 
 function MCFacility::scanVBL(%obj, %vbl)
 {
-	%mod = newModuleSO();
+	%mod = newModuleSO(Module16x32Data);
 	
 	%mod.scanVBL(%obj);
 }
 
 function MCFacility::scanBuild(%obj, %brick)
 {
-	%mod = newModuleSO();
+	%mod = newModuleSO(Module16x32Data);
 
 	%mod.scanBuild(%brick, %obj);
 }
