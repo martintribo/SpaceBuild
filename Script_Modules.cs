@@ -1,14 +1,24 @@
-function newModuleSO(%moduleType, %vbl)
+//Note: ModuleSO should always have all info needed to recreate (render) the module
+//The vbl's position and angleid should not be used independently
+//If they're changed, so should the ModuleSO's position and angleId
+function newModuleSO(%position, %angleId, %moduleType)
 {
-	if (!isObject(%vbl))
-		%vbl = newVBL(1);
+	%vbl = newVBL();
+	echo("The vbl in the module is: " @ %vbl);
+
 	%mod = new ScriptObject()
 	{
 		class = "ModuleSO";
 		vbl = %vbl;
 		moduleType = %moduleType;
+		position = %position;
+		angleId = %angleId;
+		state = "none";
+		numHatches = 0;
 	};
 	%vbl.module = %mod;
+	%vbl.setListAngleId(%angleId);
+	%vbl.recenter(%position);
 	
 	return %mod;
 }
@@ -18,29 +28,153 @@ function ModuleSO::onAdd(%this, %obj)
 	//create the queue for modules
 	%obj.numHatches = 0;
 	%obj.state = "none"; //none state basically means the module isn't represented at all in spaceyou 
+	%obj.bricks = new SimSet();
+	%obj.factory = new ScriptObject(ModuleSOFactory)
+	{
+		class = "BrickFactory";
+		module = %obj;
+	};
+	%obj.hatchBrickSet = new SimSet();
+	%obj.cleaning = false;
+	//%obj.position
+	//%obj.angleId
 	//%obj.moduleType
 	//%obj.state
-	//%obj.owner
 }
 
-function ModuleSO::getType(%obj)
+function ModuleSO::onRemove(%this, %obj)
+{
+	%obj.derender();
+
+	%obj.factory.delete();
+
+	%obj.hatchBrickSet.delete();
+}
+
+function ModuleSO::getPosition(%obj)
+{
+	return %obj.position;
+}
+
+function ModuleSO::setPosition(%obj, %pos)
+{
+	%obj.position = %pos;
+
+	%obj.derender();
+	%obj.render();
+}
+
+function ModuleSO::getAngleId(%obj)
+{
+	return %obj.angleId;
+}
+
+function ModuleSO::setAngleId(%obj, %ang)
+{
+	%obj.angleId = %ang;
+
+	%obj.deleteRender();
+	%obj.render();
+}
+
+//Only rerenders once if both position and angle are changed
+function ModuleSO::setPositionAngleId(%obj, %pos, %ang)
+{
+	%obj.position = %pos;
+	%obj.angleId = %ang;
+
+	%obj.derender();
+	%obj.render();
+}
+
+function ModuleSO::getModuleType(%obj)
 {
 	return %obj.moduleType;
 }
 
-function ModuleSO::addBrick(%obj, %brick)
+function ModuleSO::addBrick(%mod, %sb)
 {
-	%obj.vbl.addRealBrick(%brick);
-	//if (%brick.getDatablock().getId() == brick1x4x3SpaceHatchData.getId()) This part is done by the scan function, revise?
-	//	%obj.addHatch();
+	if (%sb.isHatch())
+	{
+		%box = %sb.getWorldBox();
+		%pos = %sb.getPosition();
+		if (%sb.isHorizontalHatch())
+		{
+			switch (%sb.getAngleId())
+			{
+				case 0:
+					%point = getWord(%pos, 0) SPC getWord(%box, 4) SPC getWord(%pos, 2);
+				case 1:
+					%point = getWord(%box, 3) SPC getWords(%pos, 1, 2);
+				case 2:
+					%point = getWord(%pos, 0) SPC getWord(%box, 1) SPC getWord(%pos, 2);
+				case 3:
+					%point = getWord(%box, 0) SPC getWords(%pos, 1, 2);
+			}
+			%dir = %sb.getAngleId();
+		}
+		else
+		{
+			if (%sb.isUpHatch())
+			{
+				%point = getWords(%pos, 0, 1) SPC getWord(%box, 5);
+				%dir = 4; //up
+			}
+			else
+			{
+				%point = getWords(%pos, 0, 1) SPC getWord(%box, 2);
+				%dir = 5; //down
+			}
+		}
+		
+		%sb.hatchId = %mod.numHatches;
+		%vb = %mod.vbl.addRealBrick(%sb);
+		%mod.addHatch(%vb, %point, %dir);
+	}
+	else
+		%vb = %mod.vbl.addRealBrick(%sb);
+	
+	%sb.vBrick = %vb;
+	%mod.bricks.add(%sb);
+	%sb.module = %mod;
 }
 
-function ModuleSO::addHatch(%obj, %point, %dir1, %dir2)
+//Data needs to be organized so that it's possible to remove a hatch
+//And the ModuleSO will be able to still keep a list of them
+function ModuleSO::addHatch(%obj, %vb, %point, %dir1, %dir2)
 {
 	//%obj.hatches[%obj.numHatches, "point"] = %point;
 	//%obj.hatches[%obj.numHatches, "direction"] = %dir1;
-	%obj.vbl.addMarker("Hatch" @ %obj.numHatches, %point, %dir1, %dir2);
-	%obj.numHatches++;
+	%obj.vbl.addMarker("hatch" @ %obj.numHatches, %point, %dir1, %dir2);
+	%obj.registerHatchVBrick(%obj.numHatches, %vb);
+}
+
+function ModuleSO::registerHatchVBrick(%obj, %hatchId, %vb)
+{
+	%obj.hatchVBricks[%hatchId] = %vb;
+	if (%hatchId >= %obj.numHatches)
+		%obj.numHatches = %hatchId + 1;
+}
+
+function ModuleSO::registerHatchBrick(%obj, %hatchId, %brick)
+{
+	%obj.hatchBricks[%hatchId] = %brick;
+	%obj.hatchBrickSet.add(%brick);
+}
+
+//This method just takes care of removing the marker and internal references
+//It is assumed the vbl and brick will be deleted by the method callign this
+function ModuleSO::removeHatch(%obj, %hatchId)
+{
+	%obj.vbl.removeMarker("hatch" @ %hatchId);
+	
+	for (%i = %hatchId + 1; %hatchId < %obj.numHatches; %i++)
+	{
+		%obj.vbl.renameMarker("hatch" @ %i, "hatch" @ (%i - 1));
+		%obj.hatchVBricks[%i - 1] = %obj.hatchVBricks[%i];
+	}
+	
+	%obj.numHatches--;
 }
 
 function ModuleSO::getHatchType(%obj, %i)
@@ -62,41 +196,22 @@ function ModuleSO::getHatchType(%obj, %i)
 
 function ModuleSO::attachTo(%obj, %objHatch, %mod, %modHatch)
 {
+	echo("%obj" SPC %obj SPC "%objHatch" SPC %objHatch SPC "%mod" SPC %mod SPC "%modHatch" SPC %modHatch);
 	//besides just setting up links and etc, the states and owners of modules must be changed
 	%obj.vbl.markers["hatch" @ %objHatch].alignWith(%mod.vbl.markers["hatch" @ %modHatch]);
-	//%obj.vbl.createBricks();
-	
-	%obj.owner = %mod.owner; //update ownership, change?
-	%obj.owner.addModule(%obj);
-	%obj.deploy();
-}
 
-function ModuleSO::deploy(%obj)
-{
-	%obj.setState("Deployed");
-	%obj.vbl.createBricksNoOwner();
+	%obj.setPositionAngleId(%obj.vbl.getCenter(), %obj.vbl.getListAngleId());
+	
+	//%obj.owner.addModule(%obj); //this is going to be updated in future modification
 }
 
 function ModuleSO::setState(%obj, %state)
 {
-	//the position can be calculated differently depending on the state, make sure it stays the same
-	%pos = %obj.getPosition();
+	%obj.derender();
+
 	%obj.state = %state;
-	%obj.setPosition(%pos);
-}
 
-function ModuleSO::getPosition(%obj)
-{
-	//this eventually needs to change depending on the state
-	if(%obj.state $= "cargo")
-		return %obj.cargoPlayer.getPosition();
-	else
-		return %obj.vbl.getCenter();
-}
-
-function ModuleSO::setPosition(%obj, %pos)
-{
-	%obj.vbl.recenter(%pos);
+	%obj.render();
 }
 
 package ModulePack
@@ -117,6 +232,14 @@ package ModulePack
 			}
 		}
 		Parent::onCreateBrick(%obj, %b);
+	}
+
+	function fxDTSBrick::onRemove(%this, %obj)
+	{
+		if (isObject(%obj.module))
+			%obj.module.onRemoveBrick(%obj);
+
+		Parent::onRemove(%this, %obj);
 	}
 };
 
@@ -145,22 +268,6 @@ function moduleSO::getCompatibleHatches(%obj, %type)
 	}
 	
 	return %list;
-}
-
-function moduleSO::createCargoPlayer(%module)
-{
-	%cargo = new Player()
-	{
-		datablock = playerCargo;
-		moduleSO = %module;
-		//owner = %client;
-	};
-	
-	%cargo.setTransform(%module.getPosition());
-	%cargo.setScale("1 1 1"); //make this proportional to build size later on (?)
-	
-	%module.cargoPlayer = %cargo;
-	%module.setState("cargo");
 }
 
 //error codes:
@@ -231,6 +338,8 @@ function ModuleSO::export(%obj, %file)
 	%obj.vbl.exportBLSFile(%vblPath);
 	%f.writeLine("vbl" TAB %vblPath);
 	%f.writeLine("moduleType" TAB %obj.moduleType.getName());
+	%f.writeLine("position" TAB %obj.position);
+	%f.writeLine("angleId" TAB %obj.angleId);
 		
 	%f.close();
 	%f.delete();
@@ -244,16 +353,27 @@ function ModuleSO::import(%obj, %file)
 	%obj.state = getField(%f.readLine(), 1);
 	%obj.numHatches = getField(%f.readLine(), 1);
 	%obj.vbl.loadBLSFile(getField(%f.readLine(), 1));
-	%obj.vbl.createBricksForBLID($Spacebuild::StationBLID);
 	
-	//new field that doesn't exist in older files
+	//new fields that doesn't exist in older files
 	if (!%f.isEOF())
 		%obj.moduleType = getField(%f.readLine(), 1);
 	else
 		%obj.moduleType = Module16x32Data; //all old modules are 16x32
+
+	if (!%f.isEOF())
+		%obj.position = getField(%f.readLine(), 1);
+	else
+		%obj.position = %obj.vbl.getCenter();
+	
+	if (!%f.isEOF())
+		%obj.angleId = getField(%f.readLine(), 1);
+	else
+		%obj.angleId = %obj.vbl.getListAngleId();
 	
 	%f.close();
 	%f.delete();
+
+	%obj.render();
 }
 
 function loadModuleSO(%file)
@@ -263,15 +383,54 @@ function loadModuleSO(%file)
 	return %mod;
 }
 
+function ModuleSO::render(%obj)
+{
+	if (%obj.state $= "bricks")
+	{
+		%obj.vbl.setListAngleId(%obj.angleId);
+		%obj.vbl.recenter(%obj.position);
+		%obj.factory.createBricksForBLID(%obj.vbl, $Spacebuild::StationBLID); //Might want to do offset of blids instead of a station blid
+	}
+}
+
+function ModuleSOFactory::onCreateBrick(%obj, %brick)
+{
+	%obj.module.bricks.add(%brick);
+}
+
+function ModuleSO::derender(%obj)
+{
+	if (%obj.state $= "bricks")
+	{
+		%obj.cleaning = true;
+		while (%obj.bricks.getCount())
+			%obj.bricks.getObject(0).delete();
+		%obj.cleaning = false;
+	}
+}
+
+function ModuleSO::onRemoveBrick(%obj, %brick)
+{
+	if (!%obj.cleaning)
+		%obj.removeBrick(%brick);
+}
+
+function ModuleSO::removeBrick(%obj, %brick)
+{
+	if (%brick.hatchId)
+		%obj.removeHatch(%brick.hatchId);
+	
+	%brick.vBrick.delete();
+
+}
+
 //***********************************************************
 //* Scanning code
 //***********************************************************
-function ModuleSO::scanVBL(%mod, %vbl, %mcfs)
+function ModuleSO::scanVBL(%mod, %vbl)
 {
 	for (%i = 0; %i < %vbl.getCount(); %i++)
-		%mod.scanModuleBrick(%vbl.getVirtualBrick(%i));
-	
-	%mcfs.onFinish(%mod);
+		%mod.addBrick(%vbl.getVirtualBrick(%i));
 }
 //Starts the scanning script
 //creates a new module, sets up scanning object
@@ -290,48 +449,6 @@ function ModuleSO::scanBuild(%mod, %brick, %mcfs)
 
 function ModuleSO::onFoundBrick(%mod, %sb)
 {
-	%mod.scanModuleBrick(%sb);
-}
-
-//
-function ModuleSO::scanModuleBrick(%mod, %sb)
-{
-	if (%sb.isHatch())
-	{
-		%box = %sb.getWorldBox();
-		%pos = %sb.getPosition();
-		if (%sb.isHorizontalHatch())
-		{
-			switch (%sb.getAngleId())
-			{
-				case 0:
-					%point = getWord(%pos, 0) SPC getWord(%box, 4) SPC getWord(%pos, 2);
-				case 1:
-					%point = getWord(%box, 3) SPC getWords(%pos, 1, 2);
-				case 2:
-					%point = getWord(%pos, 0) SPC getWord(%box, 1) SPC getWord(%pos, 2);
-				case 3:
-					%point = getWord(%box, 0) SPC getWords(%pos, 1, 2);
-			}
-			%dir = %sb.getAngleId();
-		}
-		else
-		{
-			if (%sb.isUpHatch())
-			{
-				%point = getWords(%pos, 0, 1) SPC getWord(%box, 5);
-				%dir = 4; //up
-			}
-			else
-			{
-				%point = getWords(%pos, 0, 1) SPC getWord(%box, 2);
-				%dir = 5; //down
-			}
-		}
-		
-		%sb.hatchId = %mod.numHatches;
-		%mod.addHatch(%point, %dir);
-	}
 	%mod.addBrick(%sb);
 }
 
