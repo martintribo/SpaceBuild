@@ -142,9 +142,13 @@ function MCFacility::findSlotByName(%this, %name)
 
 function MCFacility::scanVBL(%obj, %vbl)
 {
-	%mod = newModuleSO(Module16x32Data);
+	echo("in scanVBL " @ %obj);
+	%mod = newModuleSO(%vbl.getCenter(), 0, Module16x32Data);
+	echo("The module from scanVBL is " @ %mod);
 	
-	%mod.scanVBL(%obj);
+	%mod.scanVBL(%vbl);
+
+	%obj.addToQueue(%mod);
 }
 
 function MCFacility::scanBuild(%obj, %brick)
@@ -202,6 +206,7 @@ function MCFacility::popModule(%obj)
 function MCFacility::debugAttach(%obj)
 {
 	%obj.queue.getObject(1).attachTo(%obj.queue.getObject(0), "hatch1", "hatch0");
+	//maybe remove these modules from the queue, and then set their states to "bricks"
 }
 
 //Returns the position of a slot number (center of it)

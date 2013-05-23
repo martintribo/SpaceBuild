@@ -150,7 +150,12 @@ function virtualBrickList::cs_addReal_SPACEHATCH(%obj, %vb, %brick)
 function virtualBrickList::cs_create_SPACEHATCH(%obj, %vb, %brick)
 {
 	if (%vb.hatchId !$= "")
+	{
 		%brick.hatchId = %vb.hatchId;
+
+		if (isObject(%obj.module))
+			%obj.module.registerHatchBrick(%brick.hatchId, %brick);
+	}
 }
 
 function virtualBrickList::cs_save_SPACEHATCH(%obj, %vb, %file)

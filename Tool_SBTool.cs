@@ -91,6 +91,7 @@ function SBToolCollision(%obj, %col)
 				%mod = %mcf.popModule();
 				commandToClient(%client, 'centerPrint', "Attaching your module...", 2);
 				%mod.attachTo(%attachId, %col.module, %col.hatchId);
+				%mod.setState("bricks");
 				commandToClient(%client, 'centerPrint', "Your module was attached!", 4);
 			}
 			else
