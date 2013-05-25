@@ -63,12 +63,10 @@ function createDefaultStation(%mg)
 	
 	%vbl = newVBL();
 	%vbl.loadBLSFile($Spacebuild::AddOnPath @ $Spacebuild::StarterModuleFile);
-	echo("The vbl count is: " @ %vbl.vBricks.getCount());
 	%mg.mcf.scanVBL(%vbl);
 	if (!%verificationError) //%verificationError is not defined?
 	{
 		%mod = %mg.mcf.popModule();
-		echo("The module here is " @ %mod);
 		%mod.vbl.shiftBricks($Spacebuild::StationDisplacement);
 		%mod.setPosition(%mod.vbl.getCenter()); //should just set the modules position direction, but this doesn't hurt
 		%mg.station.addModule(%mod);

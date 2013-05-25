@@ -142,9 +142,7 @@ function MCFacility::findSlotByName(%this, %name)
 
 function MCFacility::scanVBL(%obj, %vbl)
 {
-	echo("in scanVBL " @ %obj);
 	%mod = newModuleSO(%vbl.getCenter(), 0, Module16x32Data);
-	echo("The module from scanVBL is " @ %mod);
 	
 	%mod.scanVBL(%vbl);
 
