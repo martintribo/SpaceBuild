@@ -4,7 +4,6 @@
 function newModuleSO(%position, %angleId, %moduleType)
 {
 	%vbl = newVBL();
-	echo("The vbl in the module is: " @ %vbl);
 
 	%mod = new ScriptObject()
 	{
@@ -168,7 +167,7 @@ function ModuleSO::removeHatch(%obj, %hatchId)
 {
 	%obj.vbl.removeMarker("hatch" @ %hatchId);
 	
-	for (%i = %hatchId + 1; %hatchId < %obj.numHatches; %i++)
+	for (%i = %hatchId + 1; %i < %obj.numHatches; %i++)
 	{
 		%obj.vbl.renameMarker("hatch" @ %i, "hatch" @ (%i - 1));
 		%obj.hatchVBricks[%i - 1] = %obj.hatchVBricks[%i];
@@ -196,7 +195,6 @@ function ModuleSO::getHatchType(%obj, %i)
 
 function ModuleSO::attachTo(%obj, %objHatch, %mod, %modHatch)
 {
-	echo("%obj" SPC %obj SPC "%objHatch" SPC %objHatch SPC "%mod" SPC %mod SPC "%modHatch" SPC %modHatch);
 	//besides just setting up links and etc, the states and owners of modules must be changed
 	%obj.vbl.markers["hatch" @ %objHatch].alignWith(%mod.vbl.markers["hatch" @ %modHatch]);
 
@@ -351,6 +349,11 @@ function ModuleSO::import(%obj, %file)
 	%f.openForRead(%file);
 	
 	%obj.state = getField(%f.readLine(), 1);
+
+	//Deployed state is deprecated
+	if (%obj.state $= "Deployed")
+		%obj.state = "bricks";
+
 	%obj.numHatches = getField(%f.readLine(), 1);
 	%obj.vbl.loadBLSFile(getField(%f.readLine(), 1));
 	
