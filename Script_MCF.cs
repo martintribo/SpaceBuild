@@ -142,7 +142,7 @@ function MCFacility::findSlotByName(%this, %name)
 
 function MCFacility::scanVBL(%obj, %vbl)
 {
-	%mod = newModuleSO(%vbl.getCenter(), 0, Module16x32Data);
+	%mod = newModuleSO(%vbl.getCenter(), %vbl.getListAngleId(), Module16x32Data);
 	
 	%mod.scanVBL(%vbl);
 
@@ -151,7 +151,7 @@ function MCFacility::scanVBL(%obj, %vbl)
 
 function MCFacility::scanBuild(%obj, %brick)
 {
-	%mod = newModuleSO(Module16x32Data);
+	%mod = newModuleSO("0 0 0", 0, Module16x32Data);
 
 	%mod.scanBuild(%brick, %obj);
 }
