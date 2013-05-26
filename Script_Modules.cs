@@ -17,8 +17,14 @@ function newModuleSO(%position, %angleId, %moduleType)
 	};
 	%vbl.module = %mod;
 	%vbl.setListAngleId(%angleId);
-	%vbl.recenter(%position);
 	
+	return %mod;
+}
+
+function loadModuleSO(%file)
+{
+	%mod = newModuleSO();
+	%mod.import(%file);
 	return %mod;
 }
 
@@ -377,13 +383,6 @@ function ModuleSO::import(%obj, %file)
 	%f.delete();
 
 	%obj.render();
-}
-
-function loadModuleSO(%file)
-{
-	%mod = newModuleSO();
-	%mod.import(%file);
-	return %mod;
 }
 
 function ModuleSO::render(%obj)
