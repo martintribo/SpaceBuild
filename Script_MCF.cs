@@ -151,7 +151,8 @@ function MCFacility::scanVBL(%obj, %vbl)
 
 function MCFacility::scanBuild(%obj, %brick)
 {
-	%mod = newModuleSO("0 0 0", 0, Module16x32Data);
+	//7.3 is offset of module center from slot
+	%mod = newModuleSO(VectorAdd(%brick.slot.getPosition(), "0 0 7.3"), 0, Module16x32Data); 
 
 	%mod.scanBuild(%brick, %obj);
 }
