@@ -41,6 +41,7 @@ function ModuleSO::onAdd(%this, %obj)
 	};
 	%obj.hatchBrickSet = new SimSet();
 	%obj.cleaning = false;
+	%obj.norender = false;
 	//%obj.position
 	//%obj.angleId
 	//%obj.moduleType
@@ -63,7 +64,10 @@ function ModuleSO::getPosition(%obj)
 
 function ModuleSO::setPosition(%obj, %pos)
 {
+	%dis = VectorSub(%pos, %obj.position);
+
 	%obj.position = %pos;
+	%obj.vbl.shiftBricks(%dis);
 
 	%obj.derender();
 	%obj.render();
@@ -76,17 +80,38 @@ function ModuleSO::getAngleId(%obj)
 
 function ModuleSO::setAngleId(%obj, %ang)
 {
-	%obj.angleId = %ang;
+	%ang %= 4;
 
-	%obj.deleteRender();
-	%obj.render();
+	if (%ang != %obj.angleId)
+	{
+		if (%ang > %obj.angleId)
+			%ang += 4;
+
+		%relAng = %ang - %obj.angleId;
+		%vblDis = VectorSub(%obj.vbl.getCenter(), %obj.position);
+
+		%obj.angleId = %ang;
+		%obj.vbl.setListAngleId(%ang);
+
+		for (%r = 0; %r < %relAng; %r++)
+			%vblDis = getWord(%vblDis, 1) SPC -getWord(%vblDis, 0) SPC getWord(%vblDis, 2);
+		
+		%obj.vbl.recenter(VectorAdd(%obj.position, %vblDis));
+
+		%obj.derender();
+		%obj.render();
+	}
 }
 
 //Only rerenders once if both position and angle are changed
 function ModuleSO::setPositionAngleId(%obj, %pos, %ang)
 {
-	%obj.position = %pos;
-	%obj.angleId = %ang;
+	%obj.norender = true;
+
+	%obj.setAngleId(%ang);
+	%obj.setPosition(%pos);
+
+	%obj.norender = false;
 
 	%obj.derender();
 	%obj.render();
@@ -201,11 +226,26 @@ function ModuleSO::getHatchType(%obj, %i)
 
 function ModuleSO::attachTo(%obj, %objHatch, %mod, %modHatch)
 {
+	%modDis = VectorSub(%obj.position, %obj.vbl.getCenter());
+	%orgAng = %obj.vbl.getListAngleId();
+
 	//besides just setting up links and etc, the states and owners of modules must be changed
 	%obj.vbl.markers["hatch" @ %objHatch].alignWith(%mod.vbl.markers["hatch" @ %modHatch]);
 
-	%obj.setPositionAngleId(%obj.vbl.getCenter(), %obj.vbl.getListAngleId());
-	
+	%relAng = %obj.vbl.getListAngleId() - %orgAng;
+
+	if (%relAng < 0)
+		%relAng += 4;
+
+	for (%r = 0; %r < %relAng; %r++)
+		%modDis = getWord(%modDis, 1) SPC -getWord(%modDis, 0) SPC getWord(%modDis, 2);
+
+	%obj.angleId = %obj.vbl.getListAngleId();
+	%obj.position = VectorAdd(%obj.vbl.getCenter(), %modDis);
+
+	%obj.derender();
+	%obj.render();
+
 	//%obj.owner.addModule(%obj); //this is going to be updated in future modification
 }
 
@@ -387,11 +427,12 @@ function ModuleSO::import(%obj, %file)
 
 function ModuleSO::render(%obj)
 {
-	if (%obj.state $= "bricks")
+	if (!%obj.norender)
 	{
-		%obj.vbl.setListAngleId(%obj.angleId);
-		%obj.vbl.recenter(%obj.position);
-		%obj.factory.createBricksForBLID(%obj.vbl, $Spacebuild::StationBLID); //Might want to do offset of blids instead of a station blid
+		if (%obj.state $= "bricks")
+		{
+			%obj.factory.createBricksForBLID(%obj.vbl, $Spacebuild::StationBLID); //Might want to do offset of blids instead of a station blid
+		}
 	}
 }
 
@@ -402,12 +443,15 @@ function ModuleSOFactory::onCreateBrick(%obj, %brick)
 
 function ModuleSO::derender(%obj)
 {
-	if (%obj.state $= "bricks")
+	if (!%obj.norender)
 	{
-		%obj.cleaning = true;
-		while (%obj.bricks.getCount())
-			%obj.bricks.getObject(0).delete();
-		%obj.cleaning = false;
+		if (%obj.state $= "bricks")
+		{
+			%obj.cleaning = true;
+			while (%obj.bricks.getCount())
+				%obj.bricks.getObject(0).delete();
+			%obj.cleaning = false;
+		}
 	}
 }
 
