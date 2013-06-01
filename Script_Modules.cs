@@ -396,6 +396,7 @@ function ModuleSO::verifyVBL(%obj)
 
 function ModuleSO::export(%obj, %file)
 {
+	echo("Saving module at " @ %file);
 	%name = fileBase(%file);
 	%path = filePath(%file);
 	%f = new FileObject();
@@ -422,8 +423,8 @@ function ModuleSO::export(%obj, %file)
 			%modPath = %path @ "/" @ %name @ "_mod" @ %i @ ".mod";
 
 			//is there a FileObject limit?
-			%obj.modules[%i].export(%obj, %modPath);
-			%obj.writeLine("module" @ %i TAB %modPath TAB %obj.modules[%i].getParentHatch());
+			%obj.modules[%i].export(%modPath);
+			%f.writeLine("module" @ %i TAB %modPath TAB %obj.modules[%i].getParentHatch());
 		}
 	}
 		

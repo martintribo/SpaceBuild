@@ -67,8 +67,8 @@ function createDefaultStation(%mg)
 	if (!%verificationError) //%verificationError is not defined?
 	{
 		%mod = %mg.mcf.popModule();
-		%mod.vbl.shiftBricks($Spacebuild::StationDisplacement);
-		%mod.setPosition(%mod.vbl.getCenter()); //should just set the modules position direction, but this doesn't hurt
+		%mod.setPosition(VectorAdd($Spacebuild::StationDisplacement, %mod.getPosition())); //should just set the modules position direction, but this doesn't hurt
+		%mod.station = %mg.station;
 		%mg.station.addModule(%mod);
 		%mod.setState("bricks");
 		

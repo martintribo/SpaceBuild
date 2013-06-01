@@ -60,7 +60,11 @@ function StationSO::import(%obj, %file)
 		for (%i = 0; %i < %numFields; %i++)
 			%fields[%i] = getField(%line, %i);
 		if (%fields[0] $= "mod")
-			%obj.addModule(loadModuleSO(%fields[1], %obj));
+		{
+			%headModule = loadModuleSO(%fields[1], %obj);
+			%obj.addModule(%headModule);
+			%obj.headModule = %headModule;
+		}
 	}
 	
 	%f.close();
