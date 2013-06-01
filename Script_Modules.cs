@@ -21,10 +21,10 @@ function newModuleSO(%position, %angleId, %moduleType)
 	return %mod;
 }
 
-function loadModuleSO(%file)
+function loadModuleSO(%file, %station, %parentHatch, %parent)
 {
 	%mod = newModuleSO();
-	%mod.import(%file);
+	%mod.import(%file, %station, %parentHatch, %parent);
 	return %mod;
 }
 
@@ -42,6 +42,9 @@ function ModuleSO::onAdd(%this, %obj)
 	%obj.hatchBrickSet = new SimSet();
 	%obj.cleaning = false;
 	%obj.norender = false;
+	//%obj.parentModule
+	//%obj.parentHatch
+	//%obj.modules[%hatchId]
 	//%obj.position
 	//%obj.angleId
 	//%obj.moduleType
@@ -242,11 +245,38 @@ function ModuleSO::attachTo(%obj, %objHatch, %mod, %modHatch)
 
 	%obj.angleId = %obj.vbl.getListAngleId();
 	%obj.position = VectorAdd(%obj.vbl.getCenter(), %modDis);
+	%obj.addParentModule(%objHatch, %mod);
+	%mod.addChildModule(%modHatch, %obj);
+
+	%obj.station = %mod.station;
+	%mod.station.addModule(%obj); //this is going to be updated in future modification
 
 	%obj.derender();
 	%obj.render();
 
-	//%obj.owner.addModule(%obj); //this is going to be updated in future modification
+}
+
+function ModuleSO::addChildModule(%obj, %hatchId, %child)
+{
+	if (isObject(%obj.modules[%hatchId]))
+		error("Adding Child Module to already occupied hatch!");
+
+	%obj.modules[%hatchId] = %child;
+}
+
+function ModuleSO::addParentModule(%obj, %hatchId, %parent)
+{
+	if (isObject(%obj.modules[%hatchId]))
+		error("Adding Parent Module to already occupied hatch!");
+
+	%obj.modules[%hatchId] = %parent;
+	%obj.parentHatch = %hatchId;
+	%obj.parentModule = %parent;
+}
+
+function ModuleSO::getParentHatch(%obj)
+{
+	return %obj.parentHatch;
 }
 
 function ModuleSO::setState(%obj, %state)
@@ -384,12 +414,24 @@ function ModuleSO::export(%obj, %file)
 	%f.writeLine("moduleType" TAB %obj.moduleType.getName());
 	%f.writeLine("position" TAB %obj.position);
 	%f.writeLine("angleId" TAB %obj.angleId);
+	
+	for (%i = 0; %i < %obj.numHatches; %i++)
+	{
+		if (isObject(%obj.modules[%i]) && %i != %obj.parentHatch)
+		{
+			%modPath = %path @ "/" @ %name @ "_mod" @ %i @ ".mod";
+
+			//is there a FileObject limit?
+			%obj.modules[%i].export(%obj, %modPath);
+			%obj.writeLine("module" @ %i TAB %modPath TAB %obj.modules[%i].getParentHatch());
+		}
+	}
 		
 	%f.close();
 	%f.delete();
 }
 
-function ModuleSO::import(%obj, %file)
+function ModuleSO::import(%obj, %file, %station, %parentHatch, %parent)
 {
 	%f = new FileObject();
 	%f.openForRead(%file);
@@ -418,6 +460,26 @@ function ModuleSO::import(%obj, %file)
 		%obj.angleId = getField(%f.readLine(), 1);
 	else
 		%obj.angleId = %obj.vbl.getListAngleId();
+
+	while (!%f.isEOF())
+	{
+		%line = %f.readLine();
+		%hatchId = getSubStr(getField(%line, 0), 6, 1);
+		%modFile = getField(%line, 1);
+		%modPHatch = getField(%line, 2);
+		%mod = loadModuleSO(%modFile, %station, %modPHatch, %obj);
+
+		%obj.addChildModule(%hatchId, %mod);
+	}
+
+	if (isObject(%parent))
+		%obj.addParentModule(%parentHatch, %parent);
+
+	if (isObject(%station))
+	{
+		%obj.station = %station;
+		%station.addModule(%obj);
+	}
 	
 	%f.close();
 	%f.delete();
