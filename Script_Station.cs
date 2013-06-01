@@ -1,6 +1,6 @@
 function StationSO::onAdd(%this, %obj)
 {
-	//%obj.base
+	//%obj.headModule
 	
 	%obj.modules = new SimSet();
 }
@@ -15,19 +15,16 @@ function StationSO::onRemove(%this, %obj)
 
 function StationSO::addModule(%obj, %mod)
 {
-	if (!isObject(%obj.base))
-	{
-		%obj.base = %mod;
-	}
+	if (!isObject(%obj.headModule))
+		%obj.headModule = %mod;
 	
-	%mod.owner = %obj;
 	%obj.modules.add(%mod);
 }
 
 function StationSO::getPosition(%obj)
 {
-	if (isObject(%obj.base))
-		return %obj.base.getPosition();
+	if (isObject(%obj.headModule))
+		return %obj.headModule.getPosition();
 }
 
 function StationSO::export(%obj, %file)
@@ -38,13 +35,14 @@ function StationSO::export(%obj, %file)
 	
 	%f.openForWrite(%file);
 	
-	for (%m = 0; %m < %obj.modules.getCount(); %m++)
+	%mod = %obj.headModule;
+	if (isObject(%mod))
 	{
-		%mod = %obj.modules.getObject(%m);
-		%modPath = %path @ "/" @ %name @ "_mod" @ %m @ ".mod";
+		%modPath = %path @ "/" @ %name @ "_head" @ ".mod";
 		%mod.export(%modPath);
 		%f.writeLine("mod" TAB %modPath);
 	}
+
 	%f.close();
 	%f.delete();
 }
@@ -62,30 +60,10 @@ function StationSO::import(%obj, %file)
 		for (%i = 0; %i < %numFields; %i++)
 			%fields[%i] = getField(%line, %i);
 		if (%fields[0] $= "mod")
-			%obj.addModule(loadModuleSO(%fields[1]));
+			%obj.addModule(loadModuleSO(%fields[1], %obj));
 	}
 	
 	%f.close();
 	%f.delete();
 }
-
-function StationSO::createBricks(%obj)
-{
-	for (%i = 0; %i < %obj.modules.getCount(); %i++)
-	{
-		%mod = %obj.modules.getObject(%i);
-		%mod.vbl.createBricksNoOwner();
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
 
