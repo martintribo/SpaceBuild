@@ -23,7 +23,6 @@ function Storage16x32::onAdd(%this, %obj)
 {
 	//%obj.position
 	%obj.bricksCreated = false;
-	%obj.moduleBricks = new SimSet();
 	%obj.factory = new ScriptObject(Storage16x32Factory)
 	{
 		class = "BrickFactory";
@@ -65,6 +64,14 @@ function Storage16x32::setPosition(%obj)
 
 		if (%obj.bricksCreated == true)
 			%obj.createBricks();
+	}
+}
+
+function Storage16x32::setCorner(%obj)
+{
+	if (%obj.position !$= %pos)
+	{
+		%obj.position		
 	}
 }
 

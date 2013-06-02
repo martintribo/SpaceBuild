@@ -21,6 +21,19 @@ function StationSO::addModule(%obj, %mod)
 	%obj.modules.add(%mod);
 }
 
+function StationSO::removeModule(%obj, %mod)
+{
+	%obj.modules.remove(%mod);
+
+	if (isObject(%mod) && %obj.headModule.getId() == %mod.getId())
+	{
+		if (%obj.modules.getCount())
+			%obj.headModule = %obj.modules.getObject(0);
+		else
+			%obj.headModule = 0;
+	}
+}
+
 function StationSO::getPosition(%obj)
 {
 	if (isObject(%obj.headModule))
