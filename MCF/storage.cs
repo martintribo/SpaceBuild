@@ -179,6 +179,16 @@ function ModuleStorage::setModule(%obj, %module)
 	%obj.module.setState("bricks");
 }
 
+function ModuleStorage::loadModule(%obj, %file)
+{
+	%mod = loadModuleSO(%file);
+
+	if (%module.getModuleType().getId() != %obj.getModuleType().getId())
+		error("Module of incorrect type being put in storage!");
+	
+	%obj.setModule(%mod);
+}
+
 function ModuleStorage::deleteModule(%obj, %module)
 {
 	%obj.module.delete();
