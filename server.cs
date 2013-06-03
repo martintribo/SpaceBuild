@@ -52,6 +52,8 @@ exec("./Script_Tests.cs");
 //SpaceBuild player, that can easily navigate in a zero-gravity environment (right click)
 exec("./Player_Space.cs");
 
+exec("./MCF/base.cs");
+
 //Core gamemode scripts (loading up initial station, etc)
 exec("./Script_Gamemode.cs");
 

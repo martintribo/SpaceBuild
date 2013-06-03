@@ -5,12 +5,16 @@ function ModuleData::getStructureVbl(%obj)
 {
 	if (!isObject(%obj.structureVbl))
 		%obj.structureVbl = loadVBL(%obj.structureBls);
+	
+	return %obj.structureVbl;
 }
 
 function ModuleData::getStorageVbl(%obj)
 {
 	if (!isObject(%obj.storageVbl))
 		%obj.storageVbl = loadVBL(%obj.storageBls);
+	
+	return %obj.storageVbl;
 }
 
 function ModuleData::getSize(%obj)

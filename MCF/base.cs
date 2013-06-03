@@ -14,4 +14,5 @@ exec("./queue.cs");
 exec("./events.cs");
 exec("./building.cs");
 exec("./constructors.cs");
+exec("./storage.cs");
 
