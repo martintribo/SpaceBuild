@@ -22,6 +22,14 @@ datablock fxDTSBrickData(brick16x32ModuleStorageData)
 	uiName = "16x32 Module Storage";
 	iconName = "Add-Ons/Brick_V15/2x2 Corner";
 };
+datablock fxDTSBrickData(brick16x16ModuleStorageData)
+{
+	brickFile = "./16x16ModuleStorage.blb";
+	category = "Special";
+	subCategory = "SpaceBuild";
+	uiName = "16x16 Module Storage";
+	iconName = "Add-Ons/Brick_V15/2x2 Corner";
+};
 datablock fxDTSBrickData(brick1x4x3SpaceHatchData)
 {
 	brickFile = "./1x4x3SpaceHatch.blb";
