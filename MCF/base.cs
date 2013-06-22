@@ -15,4 +15,5 @@ exec("./events.cs");
 exec("./building.cs");
 exec("./constructors.cs");
 exec("./storage.cs");
+exec("./structure.cs");
 

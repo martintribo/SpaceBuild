@@ -530,7 +530,6 @@ function ModuleSO::removeBrick(%obj, %brick)
 		%obj.removeHatch(%brick.hatchId);
 	
 	%brick.vBrick.delete();
-
 }
 
 //***********************************************************
