@@ -60,7 +60,10 @@ function ModuleStorage::onRemove(%this, %obj)
 
 	%obj.structureBricks.delete();
 
-	//The module that this storage is holding should be handled by the code deleting the structure..
+	//The module should be deleted, since nothing else is theoretically keeping track of it
+	//It is responsibility of something else to move the module out of the storage if it is meant to be kept
+	if (isObject(%obj.module))
+		%obj.module.delete();
 }
 
 function ModuleStorage::render(%obj)

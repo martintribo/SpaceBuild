@@ -62,7 +62,7 @@ function ModuleStructure::onRemove(%this, %obj)
 
 	%obj.structureBricks.delete();
 
-	//The module that this structure is holding should be handled by the code deleting the structure..
+	%obj.module.delete();
 }
 
 function ModuleStructure::render(%obj)
@@ -274,6 +274,16 @@ function ModuleStructure::removeBrick(%obj, %brick)
 	if (isObject(%obj.module))
 		%obj.module.removeBrick(%brick);
 }
+
+function fxDTSBrick::getStructure(%obj)
+{
+	if (isObject(%obj.module) && isObject(%obj.module.getStructure()))
+		return %obj.module.getStructure();
+	else if (isObject(%brick.structure))
+		return %brick.structure;
+	else
+		return 0;
+}
 package ModuleStructurePackage
 {
 function fxDTSBrick::onPlant(%obj)
@@ -289,14 +299,11 @@ function fxDTSBrick::onPlant(%obj)
 	for (%d = 0; %d < %obj.getNumDownBricks(); %d++)
 	{
 		%brick = %obj.getDownBrick(%d);
-		if (isObject(%brick.module) && isObject(%brick.module.getStructure()))
+		%structure = %obj.getStructure();
+		
+		if (isObject(%brick.getStructure()))
 		{
-			%structures[%numStructures] = %brick.module.structure;
-			%numStructures++;
-		}
-		else if (isObject(%brick.structure))
-		{
-			%structures[%numStructures] = %brick.structure;
+			%structures[%numStructures] = %structure;
 			%numStructures++;
 		}
 		else
@@ -305,20 +312,18 @@ function fxDTSBrick::onPlant(%obj)
 	for (%u = 0; %u < %obj.getNumUpBricks(); %u++)
 	{
 		%brick = %obj.getUpBrick(%u);
-		if (isObject(%brick.module) && isObject(%brick.module.getStructure()))
+		%structure = %obj.getStructure();
+		
+		if (isObject(%brick.getStructure()))
 		{
-			%structures[%numStructures] = %brick.module.structure;
-			%numStructures++;
-		}
-		else if (isObject(%brick.structure))
-		{
-			%structures[%numStructures] = %brick.structure;
+			%structures[%numStructures] = %structure;
 			%numStructures++;
 		}
 		else
 			%foundOtherBrick = true;
 	}
 	
+	//doesn't check if structure is in the list multiple times
 	for (%s = 0; %s < %numStructures; %s++)
 	{
 		%structure = %structures[%s];
@@ -342,7 +347,6 @@ function fxDTSBrick::onPlant(%obj)
 				commandToClient(%obj.client, 'centerPrint', "Module bricks must fit within build structure!", 3);
 			break;
 		}
-		echo("out");
 	}
 	
 	return %ret;
