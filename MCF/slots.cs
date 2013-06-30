@@ -283,6 +283,11 @@ function SlotSO::setSlotObjectName(%obj, %slotObj, %name)
 	%slotObj.slotName = %name;
 }
 
+function ScriptObject::getSlotObjectName(%obj)
+{
+	return %obj.slotName;
+}
+
 function SlotSO::addSlotObject(%obj, %slotObj, %name)
 {
 	%slotObj.slot = %obj;
@@ -690,6 +695,10 @@ function SlotSO::export(%obj, %file)
 	%f.writeLine("angleId" TAB %obj.angleId);
 	%f.writeLine("rendering" TAB %obj.rendering);
 	%f.writeLine("blid" TAB %obj.slotBlid);
+	
+	%f.writeLine("slotObjNum" TAB %obj.slotObjNum);
+	%f.writeLine("storageNum" TAB %obj.storageNum);
+	%f.writeLine("structureNum" TAB %obj.structureNum);
 
 	%brickPath = %path @ "/" @ %name @ "_builtBricks" @ ".bls";
 	%obj.brickVbl.exportBLSFile(%brickPath);
@@ -699,10 +708,11 @@ function SlotSO::export(%obj, %file)
 	{
 		%slotObj = %obj.slotObjects.getObject(%i);
 		%scriptClass = %slotObj.getScriptClass();
+		%name = %slotObj.slotName;
 		
 		%slotObjPath = %path @ "/" @ %name @ "_slotObj" @ %i @ ".txt";
 		%slotObj.export(%slotObjPath);
-		%f.writeLine("slotObj" TAB %scriptClass TAB %slotObjPath);
+		%f.writeLine("slotObj" TAB %scriptClass TAB %slotObjPath TAB %name);
 	}
 
 	%f.close();
@@ -722,6 +732,10 @@ function SlotSO::import(%obj, %file)
 	%rendering = getField(%f.readLine(), 1);
 	%obj.slotBlid = getField(%f.readLine(), 1);
 	
+	%obj.slotObjNum = getField(%f.readLine(), 1);
+	%obj.storageNum = getField(%f.readLine(), 1);
+	%obj.structureNum = getField(%f.readLine(), 1);
+	
 	%obj.brickVbl.loadBLSFile(getField(%f.readLine(), 1));
 
 	while (!%f.isEOF())
@@ -729,6 +743,7 @@ function SlotSO::import(%obj, %file)
 		%line = %f.readLine();
 		%scriptClass = getField(%line, 1);
 		%slotObjFile = getField(%line, 2);
+		%name = getField(%line, 3);
 		
 		//this could be dangerous
 		//the scriptClass can be fetched from the slot object's name if there is no class
@@ -736,7 +751,7 @@ function SlotSO::import(%obj, %file)
 		//modify some of the name of the method being called
 		//since text is appended to the name, no critical methods should be able to be called
 		%slotObj = call(%scriptClass @ "_" @ "import", %slotObjFile);
-		%obj.addSlotObject(%slotObj);
+		%obj.addSlotObject(%slotObj, %name);
 	}
 	
 	%f.close();
