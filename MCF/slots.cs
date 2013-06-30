@@ -10,6 +10,19 @@ function newSlotSO(%slotType, %position, %angleId, %blid)
 		angleId = %angleId;
 		slotBlid = %blid;
 	};
+	%slot.setRendering(true);
+	
+	return %slot;
+}
+
+function loadSlotSO(%file)
+{
+	%slot = new ScriptObject()
+	{
+		class = "SlotSO";
+	};
+	
+	%slot.import(%file);
 	
 	return %slot;
 }
@@ -45,7 +58,7 @@ function SlotSO::onAdd(%this, %obj)
 	
 	%obj.derendering = false;
 	
-	%obj.setRendering(true);
+	%obj.setRendering(false);
 	
 	//%obj.position
 	//%obj.angleId
@@ -663,3 +676,80 @@ function SlotSO::removeBrick(%obj, %brick)
 	%obj.slot = "";
 }
 activatePackage("SlotSOPackage");
+
+function SlotSO::export(%obj, %file)
+{
+	%name = fileBase(%file);
+	%path = filePath(%file);
+	%f = new FileObject();
+	
+	%f.openForWrite(%file);
+	
+	%f.writeLine("type" TAB %obj.slotType.getName());
+	%f.writeLine("position" TAB %obj.position);
+	%f.writeLine("angleId" TAB %obj.angleId);
+	%f.writeLine("rendering" TAB %obj.rendering);
+	%f.writeLine("blid" TAB %obj.slotBlid);
+
+	%brickPath = %path @ "/" @ %name @ "_builtBricks" @ ".bls";
+	%obj.brickVbl.exportBLSFile(%brickPath);
+	%f.writeLine("builtBricks" TAB %brickPath);
+	
+	for (%i = 0; %i < %obj.slotObjects.getCount(); %i++)
+	{
+		%slotObj = %obj.slotObjects.getObject(%i);
+		%scriptClass = %slotObj.getScriptClass();
+		
+		%slotObjPath = %path @ "/" @ %name @ "_slotObj" @ %i @ ".txt";
+		%slotObj.export(%slotObjPath);
+		%f.writeLine("slotObj" TAB %scriptClass TAB %slotObjPath);
+	}
+
+	%f.close();
+	%f.delete();
+}
+
+function SlotSO::import(%obj, %file)
+{
+	%obj.setRendering(false);
+	
+	%f = new FileObject();
+	%f.openForRead(%file);
+	
+	%obj.slotType = getField(%f.readLine(), 1);
+	%obj.position = getField(%f.readLine(), 1);
+	%obj.angleId = getField(%f.readLine(), 1);
+	%rendering = getField(%f.readLine(), 1);
+	%obj.slotBlid = getField(%f.readLine(), 1);
+	
+	%obj.brickVbl.loadBLSFile(getField(%f.readLine(), 1));
+
+	while (!%f.isEOF())
+	{
+		%line = %f.readLine();
+		%scriptClass = getField(%line, 1);
+		%slotObjFile = getField(%line, 2);
+		
+		//this could be dangerous
+		//the scriptClass can be fetched from the slot object's name if there is no class
+		//if the player could influence an object's name that didn't have a class, they could
+		//modify some of the name of the method being called
+		//since text is appended to the name, no critical methods should be able to be called
+		%slotObj = call(%scriptClass @ "_" @ "import", %slotObjFile);
+		%obj.addSlotObject(%slotObj);
+	}
+	
+	%f.close();
+	%f.delete();
+
+	%obj.setRendering(%rendering);
+}
+
+//this might not be the best way to determine the object's class
+function ScriptObject::getScriptClass(%obj)
+{
+	if (%obj.class !$= "")
+		return %obj.class;
+	else if (%obj.getName() !$= "")
+		return %obj.getName();
+}
