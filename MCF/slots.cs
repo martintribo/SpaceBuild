@@ -1,5 +1,19 @@
 //The purpose of the SlotSO is to simply store all the I we
 
+function newSlotSO(%slotType, %position, %angleId, %blid)
+{
+	%slot = new ScriptObject()
+	{
+		class = "SlotSO";
+		slotType = %slotType;
+		position = %position;
+		angleId = %angleId;
+		slotBlid = %blid;
+	};
+	
+	return %slot;
+}
+
 function SlotSO::onAdd(%this, %obj)
 {
 	%obj.slotObjects = new SimSet();
@@ -13,8 +27,29 @@ function SlotSO::onAdd(%this, %obj)
 	%obj.structures = new SimSet();
 	%obj.structureNum = 0;
 	
+	%obj.baseBricks = new SimSet();
+	%obj.baseFactory = new ScriptObject(SlotSOFactory)
+	{
+		class = "BrickFactory";
+		slot = %obj;
+	};
+	
+	%obj.brickSet = new SimSet();
+	%obj.brickVbl = newVBL();
+	%obj.brickVbl.setListAngleId(%obj.getAngleId());
+	%obj.brickFactory = new ScriptObject(SlotSOBrickFactory)
+	{
+		class = "BrickFactory";
+		slot = %obj;
+	};
+	
+	%obj.derendering = false;
+	
+	%obj.setRendering(true);
+	
 	//%obj.position
 	//%obj.angleId
+	//%obj.slotType
 }
 
 function SlotSO::onRemove(%this, %obj)
@@ -32,6 +67,37 @@ function SlotSO::onRemove(%this, %obj)
 		%obj.structureSets.getObject(0).delete();
 	%obj.structureSets.delete();
 	%obj.structures.delete();
+	
+	while (%obj.brickSet.getCount())
+		%obj.brickSet.delete();
+	%obj.brickSet.delete();
+	
+	%obj.brickVbl.delete();
+	%obj.brickFactory.delete();
+	
+	while (%obj.baseBricks.getCount())
+		%obj.baseBricks.getObject(0).delete();
+	%obj.baseBricks.delete();
+	
+	%obj.baseFactory.delete();
+}
+
+function SlotSOFactory::onCreateBrick(%obj, %brick)
+{
+	%obj.slot.baseBricks.add(%brick);
+	%brick.slot = %obj.slot;
+}
+
+function SlotSOBrickFactory::onCreateBrick(%obj, %brick)
+{
+	%obj.slot.brickSet.add(%brick);
+	%brick.slot = %obj.slot;
+	%brick.built = true;
+}
+
+function SlotSO::getSlotType(%obj)
+{
+	return %obj.slotType;
 }
 
 function SlotSO::isRendering(%obj)
@@ -45,6 +111,13 @@ function SlotSO::setRendering(%obj, %value)
 	{
 		%obj.rendering = true;
 		
+		%baseVbl = %obj.slotType.getBaseVbl();
+		%baseVbl.setListAngleId(%obj.getAngleId());
+		%baseVbl.recenter(%obj.getPosition());
+		%obj.baseFactory.createBricksForBlid(%baseVbl, %obj.getOwnerBlid());
+		
+		%obj.brickFactory.createBricks(%obj.brickVbl);
+		
 		for (%i = 0; %i < %obj.slotObjects.getCount(); %i++)
 			%obj.slotObjects.getObject(%i).setRendering(true);
 	}
@@ -54,7 +127,33 @@ function SlotSO::setRendering(%obj, %value)
 		
 		for (%i = 0; %i < %obj.slotObjects.getCount(); %i++)
 			%obj.slotObjects.getObject(%i).setRendering(false);
+		
+		while (%obj.baseBricks.getCount())
+			%obj.baseBricks.getObject(0).delete();
+		
+		%obj.derendering = true;
+		
+		while (%obj.brickSet.getCount())
+			%obj.brickSet.getObject(0).delete();
+		
+		%obj.derendering = false;
 	}
+}
+
+function SlotSO::getOwnerBlid(%obj)
+{
+	return %obj.slotBlid;
+}
+
+function SlotSO::setOwnerBlid(%obj, %blid)
+{
+	%wasRendering = %obj.isRendering();
+	%obj.setRendering(false);
+	
+	%obj.slotBlid = %blid;
+	
+	if (%wasRendering)
+		%obj.setRendering(true);
 }
 
 function SlotSO::getPosition(%obj)
@@ -78,6 +177,11 @@ function SlotSO::setPosition(%obj, %newPos)
 		
 		%slotObj.setPosition(%slotObjPos);
 	}
+	
+	%vbl = %obj.brickVbl;
+	%dis = VectorSub(%vbl.getCenter(), %oldPos);
+	%vblPos = VectorAdd(%dis, %newPos);
+	%vbl.recenter(%vblPos);
 	
 	%obj.position = %newPos;
 	
@@ -109,26 +213,46 @@ function SlotSO::setAngleId(%obj, %angleId)
 			%curAng -= 4;
 		
 		%rotAng = %angleId - %curAng;
-		%center = %slotObj.getPosition(); // this isn't necessarily the center
+		%center = %obj.getPosition(); // this isn't necessarily the center
 		
 		for (%i = 0; %i < %obj.slotObjects.getCount(); %i++)
 		{
 			%slotObj = %obj.slotObjects.getObject(%i);
-			%oldDis = VectorSub(%slotObj.getPosition(), %oldPos);
+			%oldDis = VectorSub(%slotObj.getPosition(), %center);
+			%oldAng = %slotObj.getAngleId();
 			switch (%rotAng)
 			{
 				case 1:
 					%newDis = getWord(%oldDis, 1) SPC -getWord(%oldDis, 0) SPC getWord(%oldDis, 2);
 				case 2:
-					%newDis = -getWord(%oldDis, 1) SPC -getWord(%oldDis, 0) SPC getWord(%oldDis, 2);
+					%newDis = -getWord(%oldDis, 0) SPC -getWord(%oldDis, 1) SPC getWord(%oldDis, 2);
 				case 3:
 					%newDis = -getWord(%oldDis, 1) SPC getWord(%oldDis, 0) SPC getWord(%oldDis, 2);
 			}
 			
 			%newPos = VectorAdd(%newDis, %center);
-			%slotObj.setAngleId(%angleId);
+			%newAng = (%oldAng + %rotAng) % 4;
+			%slotObj.setAngleId(%newAng);
 			%slotObj.setPosition(%newPos);
 		}
+		
+		%vbl = %obj.brickVbl;
+		%oldDis = VectorSub(%vbl.getCenter(), %center);
+		switch (%rotAng)
+		{
+			case 1:
+				%newDis = getWord(%oldDis, 1) SPC -getWord(%oldDis, 0) SPC getWord(%oldDis, 2);
+			case 2:
+				%newDis = -getWord(%oldDis, 0) SPC -getWord(%oldDis, 1) SPC getWord(%oldDis, 2);
+			case 3:
+				%newDis = -getWord(%oldDis, 1) SPC getWord(%oldDis, 0) SPC getWord(%oldDis, 2);
+		}
+		
+		%newPos = VectorAdd(%newDis, %center);
+		%vbl.setListAngleId(%angleId);
+		%vbl.recenter(%newPos);
+		
+		%obj.angleId = %angleId;
 		
 		if (%wasRendering)
 			%obj.setRendering(true);
@@ -280,6 +404,81 @@ function SlotSO::getStorage(%obj, %i, %type)
 
 //Structure Code
 
+function SlotSO::addStructureSet(%obj, %type)
+{
+	%name = %type.getName();
+	%set = new SimSet();
+	%obj.structureSets.add(%set);
+	%obj.structureSets[%name] = %set;
+	%set.name = %name;
+	
+	return %set;
+}
+
+function SlotSO::getStructureSet(%obj, %type)
+{
+	%name = %type.getName();
+	
+	if (!isObject(%obj.structureSets[%name]))
+		%obj.addStructureSet(%type);
+	
+	return %obj.structureSets[%name];
+}
+
+function SlotSO::onAddStructure(%obj, %structure, %name)
+{
+	%type = %structure.getModuleType();
+
+	%set = %obj.getStructureSet(%type);
+	
+	%set.add(%structure);
+	%obj.structures.add(%structure);
+	
+	if (%name $= "")
+	{
+		%name = "Structure" @ %obj.structureNum;
+		%obj.structureNum++;
+		while (isObject(%obj.slotObjects[%name]))
+		{
+			%name = "Structure" @ %obj.structureNum;
+			%obj.structureNum++;
+		}
+	}
+	%obj.setSlotObjectName(%structure, %name);
+}
+
+function SlotSO::onRemoveStructure(%obj, %structure)
+{
+	%type = %structure.getModuleType();
+	
+	%set = %obj.getStructureSet(%type);
+	
+	%set.remove(%structure);
+	%obj.structures.remove(%structure);
+}
+
+function SlotSO::getNumStructures(%obj, %type)
+{
+	if (%type !$= "")
+		%set = %obj.getStructureSet(%type);
+	else
+		%set = %obj.structures;
+	
+	return %set.getCount();
+}
+
+function SlotSO::getStructure(%obj, %i, %type)
+{
+	if (%type !$= "")
+		%set = %obj.getStructureSet(%type);
+	else
+		%set = %obj.structures;
+	
+	return %set.getObject(%i);
+}
+
+//End Structure Code
+
 function isClass(%obj, %type)
 {
 	if (%obj.getClassName() $= %type)
@@ -289,3 +488,178 @@ function isClass(%obj, %type)
 	else
 		return false;
 }
+
+function ModuleSO::getSlot(%obj)
+{
+	if (isObject(%obj.slot))
+		return %obj.slot;
+	else
+		return 0;
+}
+
+function ModuleStructure::getSlot(%obj)
+{
+	if (isObject(%obj.slot))
+		return %obj.slot;
+	else
+		return 0;
+}
+
+function ModuleStorage::getSlot(%obj)
+{
+	if (isObject(%obj.slot))
+		return %obj.slot;
+	else
+		return 0;
+}
+
+function fxDTSBrick::getSlot(%obj)
+{
+	//oh boy
+	if (isObject(%obj.structure))
+		return %obj.structure.getSlot();
+	else if (isObject(%obj.storage))
+		return %obj.storage.getSlot();
+	else if (isObject(%obj.module))
+		return %obj.module.getSlot();
+	else if (isObject(%obj.slot))
+		return %obj.slot;
+	else
+		return 0;
+}
+
+//checks if brick is completely within bounds
+function SlotSO::brickWithinBounds(%obj, %brick)
+{
+	%brickBox = %brick.getWorldBox();
+	%slotBox = %obj.getWorldBox();
+	
+	for (%i = 0; %i < 2; %i++)
+		if (getWord(%brickBox, %i) < getWord(%slotBox, %i) || getWord(%brickBox, %i + 3) > getWord(%slotBox, %i + 3))
+			return false;
+	
+	return true;
+}
+
+//checks if brick is completely out of bounds
+function SlotSO::brickOutOfBounds(%obj, %brick)
+{
+	%brickBox = %brick.getWorldBox();
+	%slotBox = %obj.getWorldBox();
+	
+	for (%i = 0; %i < 2; %i++)
+		if (getWord(%brickBox, %i) > getWord(%slotBox, %i + 3) || getWord(%brickBox, %i + 3) < getWord(%slotBox, %i))
+			return true;
+	
+	return false;
+}
+
+function SlotSO::getWorldBox(%obj, %brick)
+{
+	%ang = %obj.getAngleId() % 2;
+	%slotRad = VectorAdd(VectorScale(%obj.getSlotType().getSize(), 0.5), "0.05 0.05 0.05");
+	%slotCen = %obj.getPosition();
+	
+	if (%ang)
+		%slotRad = getWord(%slotRad, 1) SPC getWord(%slotRad, 0) SPC getWord(%slotRad, 2);
+	
+	%min = VectorSub(%slotCen, %slotRad);
+	%max = VectorAdd(%slotCen, %slotRad);
+	
+	return %min SPC %max;
+}
+
+package SlotSOPackage
+{
+//need to verify that brick is only touching one slot
+//and that it is within slot's horizontal bounds
+function fxDTSBrick::onPlant(%obj)
+{
+	%ret = Parent::onPlant(%obj);
+	
+	//don't want to add bricks that belong to structure's module
+	if (isObject(%obj.getStructure()))
+		return %ret;
+	
+	//code done this way so the logic is in one place
+	//since bricks placed on the structure, but inside the module bounds are allowed
+	//it's possible that the brick can be touching two structures, so a list must be kept instead of a single variable
+	%numSlots = 0;
+	%foundOtherBrick = false;
+	
+	for (%d = 0; %d < %obj.getNumDownBricks(); %d++)
+	{
+		%brick = %obj.getDownBrick(%d);
+		%slot = %brick.getSlot();
+		
+		if (isObject(%slot) && !%foundSlots[%slot])
+		{
+			%slots[%numSlots] = %slot;
+			%numSlots++;
+			%foundSlots[%slot] = true;
+		}
+	}
+	for (%u = 0; %u < %obj.getNumUpBricks(); %u++)
+	{
+		%brick = %obj.getUpBrick(%u);
+		%slot = %brick.getSlot();
+		
+		if (isObject(%slot) && !%foundSlots[%slot])
+		{
+			%slots[%numSlots] = %slot;
+			%numSlots++;
+			%foundSlots[%slot] = true;
+		}
+	}
+	if (%numSlots > 1)
+	{
+		%obj.killBrick();
+			if (isObject(%obj.client))
+				commandToClient(%obj.client, 'centerPrint', "Bricks cannot go between slots!", 3);
+	}
+	else if (%numSlots == 1)
+	{
+		%slot = %slots[0];
+		if (%slot.brickWithinBounds(%obj))
+			%slot.addBrick(%obj);
+		else if (!%slot.brickOutOfBounds(%obj))
+		{
+			%obj.killBrick();
+			if (isObject(%obj.client))
+				commandToClient(%obj.client, 'centerPrint', "Bricks must be placed completely within the slot!", 3);
+		}
+	}
+	
+	return %ret;
+}
+
+function fxDTSBrick::onRemove(%this, %obj)
+{
+	if (isObject(%obj.slot) && %obj.built)
+		%obj.slot.onRemoveBrick(%obj);
+
+	Parent::onRemove(%this, %obj);
+}
+};
+
+function SlotSO::addBrick(%obj, %brick)
+{
+	%obj.brickSet.add(%brick);
+	%obj.brickVbl.addRealBrick(%brick);
+	%brick.slot = %obj;
+	%brick.built = true;
+}
+
+function SlotSO::onRemoveBrick(%obj, %brick)
+{
+	if (!%obj.derendering)
+		%obj.removeBrick(%brick);
+}
+
+function SlotSO::removeBrick(%obj, %brick)
+{
+	%brick.vBrick.delete();
+	%obj.brickSet.remove(%brick);
+	%obj.slot = "";
+}
+activatePackage("SlotSOPackage");
