@@ -16,6 +16,8 @@ function newModuleStructure(%moduleType, %position, %angleId, %blid)
 	
 	%struct.setModule(%mod);
 	
+	%struct.render();
+	
 	return %struct;
 }
 
@@ -30,6 +32,11 @@ function loadModuleStructure(%file)
 	%structure.import(%file);
 
 	return %structure;
+}
+
+function ModuleStructure_import(%file)
+{
+	return loadModuleStructure(%file);
 }
 
 function ModuleStructure::onAdd(%this, %obj)
@@ -52,8 +59,6 @@ function ModuleStructure::onAdd(%this, %obj)
 		brickGroup = %obj.structureBricks;
 		structure = %obj;
 	};
-
-	%obj.render();
 }
 
 function ModuleStructure::onRemove(%this, %obj)

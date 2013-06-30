@@ -8,7 +8,7 @@ function newModuleStorage(%moduleType, %position, %angleId, %blid)
 	if (%blid $= "")
 		%blid = $SpaceBuild::SpawnBLID;
 
-	return new ScriptObject()
+	%storage = new ScriptObject()
 	{
 		class = "ModuleStorage";
 		moduleType = %moduleType;
@@ -16,6 +16,9 @@ function newModuleStorage(%moduleType, %position, %angleId, %blid)
 		angleId = %angleId;
 		blid = %blid;
 	};
+	%storage.render();
+	
+	return %storage;
 }
 
 function loadModuleStorage(%file)
@@ -29,6 +32,11 @@ function loadModuleStorage(%file)
 	%storage.import(%file);
 
 	return %storage;
+}
+
+function ModuleStorage_import(%file)
+{
+	return loadModuleStorage(%file);
 }
 
 function ModuleStorage::onAdd(%this, %obj)
@@ -51,8 +59,6 @@ function ModuleStorage::onAdd(%this, %obj)
 		brickGroup = %obj.structureBricks;
 		storage = %obj;
 	};
-
-	%obj.render();
 }
 
 function ModuleStorage::onRemove(%this, %obj)
