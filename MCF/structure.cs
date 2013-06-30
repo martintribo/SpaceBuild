@@ -74,16 +74,21 @@ function ModuleStructure::render(%obj)
 		%vbl.setListAngleId(%obj.angleId);
 		%vbl.recenter(%obj.position);
 
-		%obj.factory.createBricksForBlid(%vbl, %obj.blid);
+		%obj.factory.createBricksForBlid(%vbl, %obj.structureBlid);
 
 		if (isObject(%obj.module))
 			%obj.module.setState("bricks");
 	}
 }
 
-function ModuleStructure::setStructureBlid(%obj, %blid)
+function ModuleStructure::setOwnerBlid(%obj, %blid)
 {
 	%obj.structureBlid = %blid;
+	if (%obj.isRendering())
+	{
+		%obj.derender();
+		%obj.render();
+	}
 }
 
 function ModuleStructure::getStructureBlid(%obj)
@@ -111,6 +116,11 @@ function ModuleStructure::derender(%obj)
 		%obj.module.setState("none");
 }
 
+function ModuleStructure::isRendering(%obj)
+{
+	return !%obj.norender;
+}
+
 function ModuleStructure::setRendering(%obj, %on)
 {
 	%on = !%on;
@@ -133,6 +143,7 @@ function ModuleStructure::getPosition(%obj)
 
 function ModuleStructure::setPosition(%obj, %pos)
 {
+	%wasRendering = %obj.isRendering();
 	%obj.derender();
 
 	%obj.position = %pos;
@@ -140,7 +151,8 @@ function ModuleStructure::setPosition(%obj, %pos)
 	if (isObject(%obj.module))
 		%obj.module.setPosition(%obj.getModuleCenter());
 
-	%obj.render();
+	if (%wasRendering)
+		%obj.render();
 }
 
 function ModuleStructure::getModule(%obj)
@@ -155,6 +167,11 @@ function ModuleStructure::getAngleId(%obj)
 
 function ModuleStructure::setAngleId(%obj, %angleId)
 {
+	%angleId %= 4;
+	if (%angleId == %obj.angleId)
+		return;
+	
+	%wasRendering = %obj.isRendering();
 	%obj.derender();
 	
 	%obj.angleId = %angleId;
@@ -162,7 +179,8 @@ function ModuleStructure::setAngleId(%obj, %angleId)
 	if (isObject(%obj.module))
 		%obj.module.setAngleId(%angleId);
 
-	%obj.render();
+	if (%wasRendering)
+		%obj.render();
 }
 
 function ModuleStructure::setModule(%obj, %module)
@@ -287,9 +305,7 @@ function fxDTSBrick::getStructure(%obj)
 package ModuleStructurePackage
 {
 function fxDTSBrick::onPlant(%obj)
-{
-	%ret = Parent::onPlant(%obj);
-	
+{	
 	//code done this way so the logic is in one place
 	//since bricks placed on the structure, but inside the module bounds are allowed
 	//it's possible that the brick can be touching two structures, so a list must be kept instead of a single variable
@@ -299,9 +315,8 @@ function fxDTSBrick::onPlant(%obj)
 	for (%d = 0; %d < %obj.getNumDownBricks(); %d++)
 	{
 		%brick = %obj.getDownBrick(%d);
-		%structure = %obj.getStructure();
-		
-		if (isObject(%brick.getStructure()))
+		%structure = %brick.getStructure();
+		if (isObject(%structure))
 		{
 			%structures[%numStructures] = %structure;
 			%numStructures++;
@@ -312,9 +327,9 @@ function fxDTSBrick::onPlant(%obj)
 	for (%u = 0; %u < %obj.getNumUpBricks(); %u++)
 	{
 		%brick = %obj.getUpBrick(%u);
-		%structure = %obj.getStructure();
+		%structure = %brick.getStructure();
 		
-		if (isObject(%brick.getStructure()))
+		if (isObject(%structure))
 		{
 			%structures[%numStructures] = %structure;
 			%numStructures++;
@@ -349,7 +364,7 @@ function fxDTSBrick::onPlant(%obj)
 		}
 	}
 	
-	return %ret;
+	return Parent::onPlant(%obj);
 }
 };
 activatePackage("ModuleStructurePackage");
@@ -358,22 +373,20 @@ function ModuleStructure::getModuleCenter(%obj)
 {
 	return VectorAdd(%obj.position, %obj.moduleOffset);
 }
-
+//checks if brick is completely within bounds
 function ModuleStructure::brickWithinBounds(%obj, %brick)
 {
 	%brickBox = %brick.getWorldBox();
 	%modBox = %obj.getModuleBox();
 	
-	echo("BrickBox" SPC %brickBox);
-	echo("ModBox" SPC %modBox);
-	
 	for (%i = 0; %i < 3; %i++)
 		if (getWord(%brickBox, %i) < getWord(%modBox, %i) || getWord(%brickBox, %i + 3) > getWord(%modBox, %i + 3))
 			return false;
-	
+			
 	return true;
 }
 
+//checks if brick is completely out of bounds
 function ModuleStructure::brickOutOfBounds(%obj, %brick)
 {
 	%brickBox = %brick.getWorldBox();
@@ -393,7 +406,7 @@ function ModuleStructure::getModuleBox(%obj, %brick)
 	%modCen = %obj.getModuleCenter();
 	
 	if (%ang)
-		%extent = getWord(%modRad, 1) SPC getWord(%modRad, 0) SPC getWord(%modRad, 2);
+		%modRad = getWord(%modRad, 1) SPC getWord(%modRad, 0) SPC getWord(%modRad, 2);
 	
 	%min = VectorSub(%modCen, %modRad);
 	%max = VectorAdd(%modCen, %modRad);
@@ -405,7 +418,17 @@ function ModuleStructure::getModuleBox(%obj, %brick)
 function ModuleSO::getStructure(%obj)
 {
 	if (isObject(%obj.structure) && %obj.structure.getModule().getId() == %obj.getId())
-		return %Obj.structure;
+		return %obj.structure;
+	else
+		return 0;
+}
+
+function fxDTSBrick::getStructure(%obj)
+{
+	if (isObject(%obj.module))
+		return %obj.module.getStructure();
+	else if (isObject(%obj.structure))
+		return %obj.structure;
 	else
 		return 0;
 }

@@ -87,8 +87,8 @@ function ModuleSO::setAngleId(%obj, %ang)
 
 	if (%ang != %obj.angleId)
 	{
-		if (%ang > %obj.angleId)
-			%ang += 4;
+		if (%ang < %obj.angleId)
+			%obj.angleId -= 4;
 
 		%relAng = %ang - %obj.angleId;
 		%vblDis = VectorSub(%obj.vbl.getCenter(), %obj.position);
@@ -167,7 +167,6 @@ function ModuleSO::addBrick(%mod, %sb)
 	else
 		%vb = %mod.vbl.addRealBrick(%sb);
 	
-	%sb.vBrick = %vb;
 	%mod.bricks.add(%sb);
 	%sb.module = %mod;
 }
@@ -396,7 +395,6 @@ function ModuleSO::verifyVBL(%obj)
 
 function ModuleSO::export(%obj, %file)
 {
-	echo("Saving module at " @ %file);
 	%name = fileBase(%file);
 	%path = filePath(%file);
 	%f = new FileObject();
@@ -530,6 +528,7 @@ function ModuleSO::removeBrick(%obj, %brick)
 		%obj.removeHatch(%brick.hatchId);
 	
 	%brick.vBrick.delete();
+	%obj.bricks.remove(%brick);
 }
 
 //***********************************************************

@@ -49,6 +49,7 @@ function ModuleStorage::onAdd(%this, %obj)
 	{
 		class = "BrickFactory";
 		brickGroup = %obj.structureBricks;
+		storage = %obj;
 	};
 
 	%obj.render();
@@ -82,9 +83,15 @@ function ModuleStorage::render(%obj)
 	}
 }
 
-function ModuleStorage::setStorageBlid(%obj, %blid)
+function ModuleStorage::setOwnerBlid(%obj, %blid)
 {
+	%wasRendering = %obj.isRendering();
+	%obj.derender();
+	
 	%obj.storageBlid = %blid;
+	
+	if (%wasRendering)
+		%obj.render();
 }
 
 function ModuleStorage::getStorageBlid(%obj)
@@ -100,6 +107,7 @@ function ModuleStorage::getModuleType(%obj)
 function ModuleStorageFactory::onCreateBrick(%obj, %brick)
 {
 	%obj.brickGroup.add(%brick);
+	%brick.storage = %obj.storage;
 }
 
 function ModuleStorage::derender(%obj)
@@ -109,6 +117,11 @@ function ModuleStorage::derender(%obj)
 	
 	if (isObject(%obj.module))
 		%obj.module.setState("none");
+}
+
+function ModuleStorage::isRendering(%obj)
+{
+	return !%obj.norender;
 }
 
 function ModuleStorage::setRendering(%obj, %on)
@@ -133,6 +146,7 @@ function ModuleStorage::getPosition(%obj)
 
 function ModuleStorage::setPosition(%obj, %pos)
 {
+	%wasRendering = %obj.isRendering();
 	%obj.derender();
 
 	%obj.position = %pos;
@@ -140,7 +154,8 @@ function ModuleStorage::setPosition(%obj, %pos)
 	if (isObject(%obj.module))
 		%obj.module.setPosition(VectorAdd(%pos, %obj.moduleOffset));
 
-	%obj.render();
+	if (%wasRendering)
+		%obj.render();
 }
 
 function ModuleStorage::getAngleId(%obj)
@@ -150,6 +165,7 @@ function ModuleStorage::getAngleId(%obj)
 
 function ModuleStorage::setAngleId(%obj, %angleId)
 {
+	%wasRendering = %obj.isRendering();
 	%obj.derender();
 	
 	%obj.angleId = %angleId;
@@ -157,7 +173,8 @@ function ModuleStorage::setAngleId(%obj, %angleId)
 	if (isObject(%obj.module))
 		%obj.module.setAngleId(%angleId);
 
-	%obj.render();
+	if (%wasRendering)
+		%obj.render();
 }
 
 function ModuleStorage::setModule(%obj, %module)
